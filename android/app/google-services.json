@@ -1,0 +1,67 @@
+{
+  "project_info": {
+    "project_number": "988887443301",
+    "project_id": "car-rental-5ea33",
+    "storage_bucket": "car-rental-5ea33.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:988887443301:android:5f221ea19aea134c92a38c",
+        "android_client_info": {
+          "package_name": "com.example.app2"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCWwOhhlkeDX9d_idfe1pEZojbZ6KHxwaw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:988887443301:android:420b4dbcb679e67f92a38c",
+        "android_client_info": {
+          "package_name": "com.example.untitle"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCWwOhhlkeDX9d_idfe1pEZojbZ6KHxwaw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:988887443301:android:7e0baf63f6d917bc92a38c",
+        "android_client_info": {
+          "package_name": "com.example.untitled2"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCWwOhhlkeDX9d_idfe1pEZojbZ6KHxwaw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
