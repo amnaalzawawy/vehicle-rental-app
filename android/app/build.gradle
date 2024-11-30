@@ -1,8 +1,12 @@
 plugins {
     id "com.android.application"
     id "kotlin-android"
+ 
     id "dev.flutter.flutter-gradle-plugin"
+    
 }
+apply plugin: 'kotlin-android'
+
 
 def localProperties = new Properties()
 def localPropertiesFile = rootProject.file("local.properties")
@@ -28,9 +32,13 @@ android {
         targetCompatibility = JavaVersion.VERSION_1_8
     }
 
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_1_8
+    }
+
     defaultConfig {
         applicationId = "com.example.untitled2"
-        minSdk = 22
+        minSdk = 23
         targetSdk = flutter.targetSdkVersion
         versionCode = flutterVersionCode.toInteger()
         versionName = flutterVersionName
@@ -52,4 +60,7 @@ dependencies {
     implementation platform('com.google.firebase:firebase-bom:32.0.0') // استخدم أحدث إصدار
     implementation 'com.google.firebase:firebase-analytics' // إضافة Firebase Analytics كمثال
     // يمكنك إضافة مكتبات Firebase أخرى هنا إذا كنت بحاجة إليها
+
+//    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+
 }
