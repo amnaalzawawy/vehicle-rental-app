@@ -2,7 +2,6 @@ plugins {
     id "com.android.application"
     id "kotlin-android"
     id "dev.flutter.flutter-gradle-plugin"
-    id "com.google.gms.google-services"
 }
 
 def localProperties = new Properties()
@@ -21,8 +20,7 @@ apply plugin: 'com.google.gms.google-services' // تأكد من إضافة هذ�
 
 android {
     namespace = "com.example.untitled2"
-    //compileSdk = flutter.compileSdkVersion
-    compileSdk 33
+    compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
@@ -32,21 +30,15 @@ android {
 
     defaultConfig {
         applicationId = "com.example.untitled2"
-        minSdk = 21
-        //targetSdk = flutter.targetSdkVersion
-        targetSdk 33
-        versionCode 1
-        versionName "1.0"
-       // versionCode = flutterVersionCode.toInteger()
-        //versionName = flutterVersionName
-        manifestPlaceholders = [applicationName: "com.example.MyApplication"]
+        minSdk = 22
+        targetSdk = flutter.targetSdkVersion
+        versionCode = flutterVersionCode.toInteger()
+        versionName = flutterVersionName
     }
 
     buildTypes {
         release {
-            //signingConfig = signingConfigs.debug
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig = signingConfigs.debug
         }
     }
 }
@@ -57,10 +49,7 @@ flutter {
 
 // إضافة قسم dependencies هنا
 dependencies {
-    //implementation platform('com.google.firebase:firebase-bom:32.0.0') // استخدم أحدث إصدار
-    //implementation 'com.google.firebase:firebase-analytics' // إضافة Firebase Analytics كمثال
+    implementation platform('com.google.firebase:firebase-bom:32.0.0') // استخدم أحدث إصدار
+    implementation 'com.google.firebase:firebase-analytics' // إضافة Firebase Analytics كمثال
     // يمكنك إضافة مكتبات Firebase أخرى هنا إذا كنت بحاجة إليها
-    implementation 'androidx.core:core-ktx:1.10.1'
-    implementation 'com.google.firebase:firebase-bom:32.0.0'
-    implementation 'com.google.firebase:firebase-analytics-ktx'
 }
