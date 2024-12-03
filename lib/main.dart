@@ -7,39 +7,39 @@ import 'dart:async';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
-  Future <void> main() async {
-    var firebaseApp = await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
-    runApp(MyApp());
-  }
-  class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-    @override
-  Widget build(BuildContext context) {
-  return MaterialApp(
-  title: 'تأجير السيارات',
-  theme: ThemeData(
-  primarySwatch: Colors.blue,
-  ),
-  home: CarRentalScreen(), // واجهة البداية
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
   );
-  }
-  }
+  runApp(MyApp());
+}
 
-  class CarRentalScreen extends StatefulWidget {
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'تأجير السيارات',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: CarRentalScreen(), // واجهة البداية
+    );
+  }
+}
+
+class CarRentalScreen extends StatefulWidget {
   @override
   _CarRentalScreenState createState() => _CarRentalScreenState();
-  }
+}
 
-  class _CarRentalScreenState extends State<CarRentalScreen> {
-  String locationText = ''; // نص الموقع
+class _CarRentalScreenState extends State<CarRentalScreen> {
+  String locationText = '';
 
   @override
   Widget build(BuildContext context) {
-  return Scaffold(
-
-
-  );
+    return Scaffold();
   }
-  }
+}
