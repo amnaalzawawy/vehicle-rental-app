@@ -1,8 +1,9 @@
-import 'package:car_rental_admin/widgets/custom_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../providers/booking_provider.dart';
-import '../models/booking.dart';
+
+import '../../models/booking.dart';
+import '../../providers/booking_provider.dart';
+import '../../widgets/custom_drawer.dart';
 import 'booking_form.dart';
 import 'booking_detail_screen.dart';
 
@@ -29,9 +30,15 @@ class _BookingScreenState extends State<BookingScreen> {
     // فلترة الحجوزات حسب التاريخ المختار إذا تم تحديده
     if (_selectedDate != null) {
       filteredBookings = filteredBookings
-          .where((booking) =>
-      booking.startDate.toLocal().isAtSameMomentAs(_selectedDate!) ||
-          booking.endDate.toLocal().isAtSameMomentAs(_selectedDate!))
+          .where((booking) {
+        // التحقق من أن startDate و endDate ليسا null
+        if (booking.startDate != null && booking.endDate != null) {
+          // استخدام toLocal() مع فحص التواريخ
+          return booking.startDate!.toLocal().isAtSameMomentAs(_selectedDate!) ||
+              booking.endDate!.toLocal().isAtSameMomentAs(_selectedDate!);
+        }
+        return false; // إذا كانت التواريخ null
+      })
           .toList();
     }
 
@@ -152,7 +159,7 @@ class _BookingScreenState extends State<BookingScreen> {
                             );
                             if (confirm == true) {
                               try {
-                                await bookingProvider.deleteBooking(booking.id);
+                                await bookingProvider.deleteBooking(booking.id!);
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(content: Text('Booking deleted successfully')),
                                 );

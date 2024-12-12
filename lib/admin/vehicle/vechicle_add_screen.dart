@@ -1,14 +1,14 @@
-
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'dart:io';
 
-import 'package:untitled2/models/car.dart'; // لاستيراد File
-
+import 'package:untitled2/models/car.dart';
+import '../../providers/car_provider.dart';
 
 class AddCarDialog extends StatefulWidget {
   final CarModel? carToEdit;
+
   AddCarDialog({this.carToEdit});
 
   @override
@@ -16,9 +16,10 @@ class AddCarDialog extends StatefulWidget {
 }
 
 class _AddCarDialogState extends State<AddCarDialog> {
-  final _nameController = TextEditingController(); // الحقل الجديد
+  final _nameController = TextEditingController();
   final _categoryController = TextEditingController();
   final _ownerNameController = TextEditingController();
+  final _priceController = TextEditingController(); // حقل السعر
   List<String> _imageUrls = [];
   final ImagePicker _picker = ImagePicker();
 
@@ -26,9 +27,10 @@ class _AddCarDialogState extends State<AddCarDialog> {
   void initState() {
     super.initState();
     if (widget.carToEdit != null) {
-      _nameController.text = widget.carToEdit!.name; // تعيين القيمة الحالية
+      _nameController.text = widget.carToEdit!.name;
       _categoryController.text = widget.carToEdit!.category;
       _ownerNameController.text = widget.carToEdit!.ownerName;
+      _priceController.text = widget.carToEdit!.pricePerDay.toString();
       _imageUrls = widget.carToEdit!.imageUrls;
     }
   }
@@ -39,6 +41,7 @@ class _AddCarDialogState extends State<AddCarDialog> {
       title: Text(widget.carToEdit == null ? 'إضافة مركبة جديدة' : 'تعديل المركبة'),
       content: SingleChildScrollView(
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             TextField(
               controller: _nameController,
@@ -51,6 +54,11 @@ class _AddCarDialogState extends State<AddCarDialog> {
             TextField(
               controller: _ownerNameController,
               decoration: InputDecoration(labelText: 'اسم المالك'),
+            ),
+            TextField(
+              controller: _priceController,
+              decoration: InputDecoration(labelText: 'السعر اليومي (بالدينار)'),
+              keyboardType: TextInputType.number,
             ),
             SizedBox(height: 10),
             ElevatedButton(
@@ -97,6 +105,7 @@ class _AddCarDialogState extends State<AddCarDialog> {
                   ownerName: _ownerNameController.text,
                   imageUrls: _imageUrls,
                   isBooking: false,
+                  pricePerDay: double.parse(_priceController.text),
                 );
 
                 Provider.of<CarProvider>(context, listen: false).addCar(newCar);
@@ -120,6 +129,7 @@ class _AddCarDialogState extends State<AddCarDialog> {
                       ownerName: _ownerNameController.text,
                       imageUrls: _imageUrls,
                       isBooking: widget.carToEdit!.isBooking,
+                      pricePerDay: double.parse(_priceController.text),
                     );
 
                     Provider.of<CarProvider>(context, listen: false)
@@ -157,12 +167,14 @@ class _AddCarDialogState extends State<AddCarDialog> {
   bool _validateInputs() {
     return _nameController.text.isNotEmpty &&
         _categoryController.text.isNotEmpty &&
-        _ownerNameController.text.isNotEmpty;
+        _ownerNameController.text.isNotEmpty &&
+        _priceController.text.isNotEmpty &&
+        double.tryParse(_priceController.text) != null;
   }
 
   void _showValidationError() {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('يرجى ملء جميع الحقول')),
+      SnackBar(content: Text('يرجى ملء جميع الحقول بشكل صحيح')),
     );
   }
 }

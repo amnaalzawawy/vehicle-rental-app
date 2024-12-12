@@ -1,6 +1,8 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '../models/user.dart';
+import 'otp_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -8,218 +10,155 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
-  final _verificationCodeController = TextEditingController();
-  final _formKey = GlobalKey<FormState>();
+  final _firstNameController = TextEditingController();
+  final _lastNameController = TextEditingController();
+  final _phoneController = TextEditingController();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  String _verificationId = '';
   bool _isLoading = false;
-  bool _isLogin = true; // لتحديد هل هي تسجيل دخول أو تسجيل حساب جديد
-  String _selectedRole = 'ادمن'; // القيمة الافتراضية
 
-  Future<void> _submit() async {
-    final auth = FirebaseAuth.instance;
-
-    if (!_formKey.currentState!.validate()) return;
-
-    setState(() {
-      _isLoading = true;
-    });
+  // التحقق من دور المستخدم وتسجيل الدخول
+  void _checkUserRole() async {
+    setState(() => _isLoading = true);
+    final phoneNumber = _phoneController.text.trim();
+    final firstName = _firstNameController.text.trim();
+    final lastName = _lastNameController.text.trim();
 
     try {
-      if (_isLogin) {
-        // تسجيل الدخول
-        UserCredential userCredential = await auth.signInWithEmailAndPassword(
-          email: _emailController.text.trim(),
-          password: _passwordController.text.trim(),
-        );
+      // التحقق إذا كان المستخدم موجودًا في Firestore
+      final userDoc = await _firestore
+          .collection('users')
+          .doc(phoneNumber)
+          .get();
 
-        // التحقق من البريد الإلكتروني
-        if (auth.currentUser != null && !auth.currentUser!.emailVerified) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Please verify your email.')),
-          );
+      if (userDoc.exists) {
+        final userData = userDoc.data();
+        if (userData != null && userData['role'] == 'admin') {
+          // إذا كان المستخدم أدمن، الانتقال إلى واجهة الأدمن
+          Navigator.pushReplacementNamed(context, '/admin_dashboard');
         } else {
-          Navigator.pushReplacementNamed(context, '/users');
+          // إذا كان مستخدمًا عاديًا، إرسال رمز التحقق
+          _sendOtp(phoneNumber);
         }
       } else {
-        // تسجيل حساب جديد
-        UserCredential userCredential = await auth.createUserWithEmailAndPassword(
-          email: _emailController.text.trim(),
-          password: _passwordController.text.trim(),
-        );
-
-        // إرسال رمز التحقق عبر البريد الإلكتروني
-        await auth.currentUser!.sendEmailVerification();
-
-        // إضافة الدور في قاعدة البيانات
-        await FirebaseFirestore.instance.collection('Admins').doc(userCredential.user!.uid).set({
-          'email': _emailController.text.trim(),
-          'role': _selectedRole,
-          'createdAt': FieldValue.serverTimestamp(),
-        });
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Account created! Please verify your email.')),
-        );
-
-        // توجيه المستخدم إلى واجهة لوحة الأدمن إذا كان دوره "ادمن"
-        if (_selectedRole == 'ادمن') {
-          Navigator.pushReplacementNamed(context, '/users');
-        }
-
-        // عرض نافذة إدخال الرمز للتحقق منه
-        _showVerificationDialog();
+        // إذا لم يكن المستخدم موجودًا، إرسال رمز التحقق
+        _sendOtp(phoneNumber);
       }
-    } on FirebaseAuthException catch (e) {
-      String message = 'An error occurred';
-      if (e.code == 'user-not-found') message = 'No user found for that email.';
-      if (e.code == 'wrong-password') message = 'Incorrect password.';
-      if (e.code == 'email-already-in-use') message = 'Email is already in use.';
-      if (e.code == 'invalid-email') message = 'Invalid email address.';
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
-    } catch (error) {
-      print(error);
+    } catch (e) {
+      // التعامل مع الأخطاء
+      print("خطأ: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('حدث خطأ أثناء التحقق من المستخدم.')),
+      );
+    } finally {
+      setState(() => _isLoading = false);
     }
-
-    setState(() {
-      _isLoading = false;
-    });
   }
 
-  void _showVerificationDialog() {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text('Verify Your Email'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text('Please enter the verification code sent to your email.'),
-              TextField(
-                controller: _verificationCodeController,
-                decoration: InputDecoration(labelText: 'Verification Code'),
-                keyboardType: TextInputType.number,
+  // إرسال رمز التحقق OTP
+  void _sendOtp(String phoneNumber) async {
+    try {
+      await _auth.verifyPhoneNumber(
+        phoneNumber: '+218$phoneNumber',
+        verificationCompleted: (PhoneAuthCredential credential) async {
+          // التحقق التلقائي وتسجيل الدخول
+          await _auth.signInWithCredential(credential);
+          _saveUserData();
+          Navigator.pushReplacementNamed(context, '/user_dashboard');
+        },
+        verificationFailed: (FirebaseAuthException e) {
+          // التعامل مع أخطاء التحقق
+          print('فشل التحقق: ${e.message}');
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('فشل التحقق: ${e.message}')),
+          );
+        },
+        codeSent: (String verificationId, int? resendToken) {
+          // حفظ معرف التحقق وإظهار شاشة OTP
+          setState(() => _verificationId = verificationId);
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => OtpScreen(
+                verificationId: verificationId,
+                phoneNumber: phoneNumber,
+                onVerified: _saveUserData,
               ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () async {
-                String verificationCode = _verificationCodeController.text.trim();
-                if (verificationCode.isNotEmpty) {
-                  // منطق التحقق من الرمز (يمكنك إضافة التحقق هنا)
-                  Navigator.of(context).pop();
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Verification successful!')),
-                  );
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Please enter the verification code.')),
-                  );
-                }
-              },
-              child: Text('Verify'),
             ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () async {
-                // منطق لإعادة إرسال رمز التحقق
-                final auth = FirebaseAuth.instance;
-                await auth.currentUser!.sendEmailVerification();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Verification code resent.')),
-                );
-              },
-              child: Text('Resend Code'),
-            ),
-          ],
-        );
-      },
-    );
+          );
+        },
+        codeAutoRetrievalTimeout: (String verificationId) {
+          // انتهاء صلاحية الرمز
+          setState(() => _verificationId = verificationId);
+        },
+      );
+    } catch (e) {
+      // التعامل مع أخطاء الإرسال
+      print('خطأ في إرسال OTP: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('خطأ في إرسال رمز التحقق.')),
+      );
+    }
+  }
+
+  // حفظ بيانات المستخدم الجديد في Firestore
+  void _saveUserData() async {
+    final phoneNumber = _phoneController.text.trim();
+    final firstName = _firstNameController.text.trim();
+    final lastName = _lastNameController.text.trim();
+
+    try {
+      await _firestore.collection('users').doc(phoneNumber).set({
+        'userId': phoneNumber,
+        'firstName': firstName,
+        'lastName': lastName,
+        'phoneNumber': phoneNumber,
+        'walletBalance': 0.0,
+        'role': 'user',
+      });
+    } catch (e) {
+      print("خطأ في حفظ البيانات: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('خطأ في حفظ بيانات المستخدم.')),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(_isLogin ? 'Login' : 'Register'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
+      body: Center(
+        child: SingleChildScrollView(
+          padding: EdgeInsets.all(16.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              TextFormField(
-                controller: _emailController,
-                keyboardType: TextInputType.emailAddress,
-                decoration: InputDecoration(labelText: 'Email'),
-                validator: (value) {
-                  if (value == null || value.isEmpty || !value.contains('@')) {
-                    return 'Please enter a valid email.';
-                  }
-                  return null;
-                },
+              Text(
+                'أهلًا بك!',
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
-              TextFormField(
-                controller: _passwordController,
-                obscureText: true,
-                decoration: InputDecoration(labelText: 'Password'),
-                validator: (value) {
-                  if (value == null || value.isEmpty || value.length < 6) {
-                    return 'Password must be at least 6 characters.';
-                  }
-                  return null;
-                },
-              ),
-              if (!_isLogin)
-                DropdownButtonFormField<String>(
-                  value: _selectedRole,
-                  decoration: InputDecoration(labelText: 'Role'),
-                  items: ['ادمن', 'مالك', 'مستخدم نهائي'].map((role) {
-                    return DropdownMenuItem(
-                      value: role,
-                      child: Text(role),
-                    );
-                  }).toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      _selectedRole = value!;
-                    });
-                  },
-                  validator: (value) {
-                    if (value == null) {
-                      return 'Please select a role.';
-                    }
-                    return null;
-                  },
-                ),
               SizedBox(height: 20),
-              if (_isLoading)
-                CircularProgressIndicator()
-              else
-                ElevatedButton(
-                  onPressed: _submit,
-                  child: Text(_isLogin ? 'Login' : 'Register'),
-                ),
-              SizedBox(height: 10),
-              // عرض زر التنقل بين صفحة تسجيل الدخول والتسجيل
-              TextButton(
-                onPressed: () {
-                  setState(() {
-                    _isLogin = !_isLogin;
-                  });
-                },
-                child: Text(_isLogin
-                    ? 'Don\'t have an account? Register'
-                    : 'Already have an account? Login'),
+              TextField(
+                controller: _firstNameController,
+                decoration: InputDecoration(labelText: 'الاسم الأول'),
+              ),
+              TextField(
+                controller: _lastNameController,
+                decoration: InputDecoration(labelText: 'الاسم الأخير'),
+              ),
+              TextField(
+                controller: _phoneController,
+                keyboardType: TextInputType.phone,
+                decoration: InputDecoration(labelText: 'رقم الهاتف الليبي'),
+              ),
+              SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: _isLoading ? null : _checkUserRole,
+                child: _isLoading
+                    ? CircularProgressIndicator(color: Colors.white)
+                    : Text('تسجيل الدخول'),
               ),
             ],
           ),

@@ -34,12 +34,12 @@ class BookingDetailScreen extends StatelessWidget {
             ),
             SizedBox(height: 10),
             Text(
-              'Start Date: ${booking.startDate.toLocal().toString().split(' ')[0]}',
+              'Start Date: ${booking.startDate?.toLocal().toString().split(' ')[0]}',
               style: TextStyle(fontSize: 16),
             ),
             SizedBox(height: 10),
             Text(
-              'End Date: ${booking.endDate.toLocal().toString().split(' ')[0]}',
+              'End Date: ${booking.endDate?.toLocal().toString().split(' ')[0]}',
               style: TextStyle(fontSize: 16),
             ),
             SizedBox(height: 10),
@@ -49,7 +49,7 @@ class BookingDetailScreen extends StatelessWidget {
             ),
             SizedBox(height: 10),
             Text(
-              'Created At: ${booking.createdAt.toLocal().toString().split(' ')[0]}',
+              'Created At: ${booking.createdAt?.toLocal().toString().split(' ')[0]}',
               style: TextStyle(fontSize: 16),
             ),
             SizedBox(height: 20),

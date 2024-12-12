@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../providers/booking_provider.dart';
-import '../models/booking.dart';
 /*
+import '../../models/booking.dart';
+import '../../providers/booking_provider.dart';
+
+
 class EditBookingScreen extends StatefulWidget {
   final String bookingId;
   EditBookingScreen({required this.bookingId});

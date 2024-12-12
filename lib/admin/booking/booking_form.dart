@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../providers/booking_provider.dart';
-import '../models/booking.dart';
+import '../../models/booking.dart';
+import '../../providers/booking_provider.dart';
+
 
 class BookingFormScreen extends StatefulWidget {
   final Booking? bookingToEdit;
@@ -23,10 +24,10 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
   void initState() {
     super.initState();
     if (widget.bookingToEdit != null) {
-      userName = widget.bookingToEdit!.userName;
-      vehicleDetails = widget.bookingToEdit!.vehicleDetails;
-      startDate = widget.bookingToEdit!.startDate;
-      endDate = widget.bookingToEdit!.endDate;
+      userName = widget.bookingToEdit!.userName!;
+      vehicleDetails = widget.bookingToEdit!.vehicleDetails!;
+      startDate = widget.bookingToEdit!.startDate!;
+      endDate = widget.bookingToEdit!.endDate!;
     } else {
       userName = '';
       vehicleDetails = '';
@@ -88,7 +89,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                           .addBooking(newBooking);
                     } else {
                       Provider.of<BookingProvider>(context, listen: false)
-                          .updateBooking(newBooking.id, newBooking.toMap());
+                          .updateBooking(newBooking.id!, newBooking.toMap());
                     }
                     Navigator.pop(context);
                   }

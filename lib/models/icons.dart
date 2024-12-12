@@ -9,4 +9,5 @@ class AppIcons {
   static const IconData wallet = Icons.account_balance_wallet; // أيقونة المحفظة
   static const IconData admin = Icons.admin_panel_settings;    // أيقونة لوحة التحكم
   static const IconData vehicle = Icons.car_rental ;
+  static const IconData account = Icons.account_circle; // أيقونة حسابي
 }

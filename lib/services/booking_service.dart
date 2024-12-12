@@ -1,4 +1,4 @@
-
+/*
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:untitled2/models/booking.dart';
 
@@ -13,6 +13,6 @@ class BookingService {
     final snapshot = await _db.collection('bookings').where('userId', isEqualTo: userId).get();
     return snapshot.docs.map((doc) => Booking.fromMap(doc.data())).toList();
   }
-}
+}*/
 
 

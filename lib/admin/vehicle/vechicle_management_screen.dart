@@ -1,9 +1,12 @@
-import 'package:car_rental_admin/screens/vechicle_add_screen.dart';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../models/vehicle.dart';
-import '../providers/vechicle_provider.dart';
-import '../widgets/custom_drawer.dart';
+import 'package:untitled2/admin/vehicle/vechicle_add_screen.dart';
+import '../../models/car.dart';
+import '../../providers/car_provider.dart';
+import '../../widgets/custom_drawer.dart';
+
+
 
 class CarScreen extends StatefulWidget {
   @override
