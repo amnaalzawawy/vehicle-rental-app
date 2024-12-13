@@ -1,37 +1,45 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'providers/car_provider.dart'; // استدعاء CarProvider
-import 'screens/car_details_screen.dart';
-import 'screens/home_screen.dart'; // استدعاء الشاشة الرئيسية
+import 'package:sqflite/sqflite.dart';
+import 'package:path/path.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'dart:async';
 import 'package:firebase_core/firebase_core.dart';
-Future<void> main() async {
- {
-    WidgetsFlutterBinding.ensureInitialized();
-    await Firebase.initializeApp();
+import 'firebase_options.dart';
+
+  Future <void> main() async {
+    var firebaseApp = await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
     runApp(MyApp());
   }
-  runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => VehicleProvider()),
-      ],
-      child: const MyApp(),
-    ),
+  class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+    @override
+  Widget build(BuildContext context) {
+  return MaterialApp(
+  title: 'تأجير السيارات',
+  theme: ThemeData(
+  primarySwatch: Colors.blue,
+  ),
+  home: CarRentalScreen(), // واجهة البداية
   );
-}
+  }
+  }
 
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  class CarRentalScreen extends StatefulWidget {
+  @override
+  _CarRentalScreenState createState() => _CarRentalScreenState();
+  }
+
+  class _CarRentalScreenState extends State<CarRentalScreen> {
+  String locationText = ''; // نص الموقع
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'GO Car',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home:  VehicleDetailScreen(vehicleId: '',), // هنا يتم استدعاء الشاشة الرئيسية
-    );
+  return Scaffold(
+
+
+  );
   }
-}
+  }
