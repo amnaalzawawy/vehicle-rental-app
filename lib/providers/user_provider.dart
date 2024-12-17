@@ -118,7 +118,7 @@ class UserProvider with ChangeNotifier {
       if (pickedFile != null) {
         final file = File(pickedFile.path);
 
-        // تحويل الصورة إلى Base64
+        // تحويل الصورة إلى Base6
         final bytes = await file.readAsBytes();
         final base64String = base64Encode(bytes);
 

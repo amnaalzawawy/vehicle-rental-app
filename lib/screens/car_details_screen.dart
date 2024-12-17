@@ -123,7 +123,7 @@ class VehicleDetailScreen extends StatelessWidget {
       ),
     );
   }
-}*/
+}
 import 'package:flutter/material.dart';
 import '../models/car.dart';
 
@@ -263,5 +263,5 @@ class VehicleDetailScreen extends StatelessWidget {
       },
     );
   }
-}
+}*/
 
