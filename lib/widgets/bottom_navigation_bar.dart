@@ -16,16 +16,11 @@ class BottomNavigationBarWidget extends StatelessWidget {
       currentIndex: selectedIndex,
       onTap: onItemTapped,
       items: [
-        BottomNavigationBarItem(
-          icon: Icon(AppIcons.account),  // أيقونة حسابي
-          label: 'حسابي',
-        ),
 
 
-        BottomNavigationBarItem(
-          icon: Icon(AppIcons.wallet),  // أيقونة المحفظة
-          label: 'المحفظة',
-        ),
+        BottomNavigationBarItem(icon: Icon(Icons.home), label: 'حسابي'),
+        BottomNavigationBarItem(icon: Icon(Icons.search), label: 'حجواتي'),
+        BottomNavigationBarItem(icon: Icon(Icons.account_circle), label: 'المحفظة'),
       ],
     );
   }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'dart:io';  // لإضافة دعم الملفات المحلية
 import '../models/car.dart';
-
 
 class CarCard extends StatelessWidget {
   final CarModel car;  // استلام نموذج المركبة
@@ -18,13 +18,20 @@ class CarCard extends StatelessWidget {
         children: [
           // عرض الصورة الأولى من الصور
           car.imageUrls.isNotEmpty
+              ? car.imageUrls[0].startsWith('http')  // تحقق إذا كان الرابط هو رابط إنترنت
               ? Image.network(
-            car.imageUrls[0], // عرض أول صورة
+            car.imageUrls[0], // عرض أول صورة من الإنترنت
             fit: BoxFit.cover,
             height: 150,
             width: double.infinity,
           )
-              : Container(height: 150, color: Colors.grey),
+              : Image.file(
+            File(Uri.parse(car.imageUrls[0]).toFilePath()),  // معالجة المسار المحلي بشكل صحيح
+            fit: BoxFit.cover,
+            height: 150,
+            width: double.infinity,
+          )
+              : Container(height: 150, color: Colors.grey), // عرض حاوية بديلة إذا كانت الصورة فارغة
 
           Padding(
             padding: EdgeInsets.all(8.0),
@@ -45,7 +52,7 @@ class CarCard extends StatelessWidget {
                 SizedBox(height: 5),
                 // السعر
                 Text(
-                  'السعر: ${car.pricePerDay.toStringAsFixed(2)} د.ل', // عرض السعر
+                  'السعر: ${car.pricePerDay.toStringAsFixed(2)} ', // عرض السعر
                   style: TextStyle(fontSize: 16, color: Colors.green),
                 ),
                 SizedBox(height: 10),

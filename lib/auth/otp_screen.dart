@@ -1,129 +1,97 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-class OtpScreen extends StatefulWidget {
+class OTPScreen extends StatefulWidget {
   final String verificationId;
+  final String firstName;
+  final String lastName;
   final String phoneNumber;
-  final VoidCallback onVerified;
 
-  OtpScreen({
+  OTPScreen({
     required this.verificationId,
+    required this.firstName,
+    required this.lastName,
     required this.phoneNumber,
-    required this.onVerified,
   });
 
   @override
-  _OtpScreenState createState() => _OtpScreenState();
+  _OTPScreenState createState() => _OTPScreenState();
 }
 
-class _OtpScreenState extends State<OtpScreen> {
+class _OTPScreenState extends State<OTPScreen> {
   final _otpController = TextEditingController();
-  bool _isResending = false;
-  late String _verificationId;  // متغير محلي لحفظ verificationId
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  @override
-  void initState() {
-    super.initState();
-    // تعيين _verificationId بالقيمة المبدئية من widget
-    _verificationId = widget.verificationId;
-  }
-
-  // إعادة إرسال رمز التحقق
-  void _resendOtp() async {
-    setState(() => _isResending = true);
+  void _verifyOTP() async {
     try {
-      await FirebaseAuth.instance.verifyPhoneNumber(
-        phoneNumber: '+218${widget.phoneNumber}',
-        verificationCompleted: (PhoneAuthCredential credential) async {
-          await FirebaseAuth.instance.signInWithCredential(credential);
-          widget.onVerified();
-          Navigator.pushReplacementNamed(context, '/user_dashboard');
-        },
-        verificationFailed: (FirebaseAuthException e) {
-          print('فشل التحقق: ${e.message}');
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('فشل التحقق: ${e.message}')),
-          );
-        },
-        codeSent: (String verificationId, int? resendToken) {
-          setState(() {
-            _verificationId = verificationId;  // تحديث _verificationId
-            _isResending = false;
-          });
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('تم إعادة إرسال رمز التحقق.')),
-          );
-        },
-        codeAutoRetrievalTimeout: (String verificationId) {
-          setState(() {
-            _verificationId = verificationId;
-          });
-        },
+      PhoneAuthCredential credential = PhoneAuthProvider.credential(
+        verificationId: widget.verificationId,
+        smsCode: _otpController.text,
       );
+
+      UserCredential userCredential =
+      await _auth.signInWithCredential(credential);
+
+      // You have an issue at this line
+      // cannot route
+      // You should add route for client, owner, and admin
+      if (userCredential.user != null) {
+        await _handleUserRole(widget.phoneNumber);
+      }
     } catch (e) {
-      print('خطأ في إعادة الإرسال: $e');
+      print(e);
+      print("***************************");
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('حدث خطأ أثناء إعادة إرسال الرمز.')),
+        SnackBar(content: Text("رمز التحقق غير صحيح")),
       );
     }
   }
 
-  // التحقق من رمز OTP
-  void _verifyOtp() async {
-    final otp = _otpController.text.trim();
-    try {
-      final credential = PhoneAuthProvider.credential(
-        verificationId: _verificationId,
-        smsCode: otp,
-      );
-      await FirebaseAuth.instance.signInWithCredential(credential);
-      widget.onVerified();
-      Navigator.pushReplacementNamed(context, '/user_dashboard');
-    } catch (e) {
-      print('خطأ في التحقق من OTP: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('رمز التحقق غير صحيح.')),
-      );
+  Future<void> _handleUserRole(String phoneNumber) async {
+    final userDoc =
+    await _firestore.collection('users').doc(phoneNumber).get();
+
+    if (userDoc.exists) {
+      String role = userDoc.data()?['role'];
+      if (role == 'admin') {
+        Navigator.pushReplacementNamed(context, '/carDisplay');
+      } else if (role == 'owner') {
+        Navigator.pushReplacementNamed(context, '/ownerHome');
+      } else {
+        Navigator.pushReplacementNamed(context, '/myAccount');
+      }
+    } else {
+      await _firestore.collection('users').doc(phoneNumber).set({
+        'firstName': widget.firstName,
+        'lastName': widget.lastName,
+        'phoneNumber': widget.phoneNumber,
+        'role': 'user',
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+
+      Navigator.pushReplacementNamed(context, '/userHome');
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('التحقق من الرمز'),
-      ),
+      appBar: AppBar(title: Text("التحقق من OTP")),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
-              'تم إرسال رمز التحقق إلى الرقم ${widget.phoneNumber}',
-              style: TextStyle(fontSize: 18),
-              textAlign: TextAlign.center,
-            ),
-            SizedBox(height: 20),
             TextField(
               controller: _otpController,
-              decoration: InputDecoration(
-                labelText: 'أدخل رمز التحقق',
-                border: OutlineInputBorder(),
-              ),
+              decoration: InputDecoration(labelText: "أدخل رمز OTP"),
               keyboardType: TextInputType.number,
-              maxLength: 6,
             ),
             SizedBox(height: 20),
             ElevatedButton(
-              onPressed: _verifyOtp,
-              child: Text('التحقق'),
-            ),
-            SizedBox(height: 20),
-            _isResending
-                ? CircularProgressIndicator()
-                : TextButton(
-              onPressed: _resendOtp,
-              child: Text('إعادة إرسال الرمز'),
+              onPressed: _verifyOTP,
+              child: Text("تحقق"),
             ),
           ],
         ),

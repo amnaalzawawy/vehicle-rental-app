@@ -7,6 +7,7 @@ class Booking {
   final double? totalAmount;
   final String? id;
   final String? userName;
+  final String? ownerName;
   final String? vehicleDetails;
   final DateTime? startDate;
   final DateTime? endDate;
@@ -20,20 +21,21 @@ class Booking {
     this.totalAmount,
     this.id,
     this.userName,
+    this.ownerName,
     this.vehicleDetails,
     this.startDate,
     this.endDate,
     this.status,
     this.createdAt,
   });
-
   Map<String, dynamic> toMap() {
     return {
       'carId': carId,
-      'userId': userId,
+      'userId': userId, // تأكد من إضافة userId هنا
       'date': date?.toIso8601String(),
       'totalAmount': totalAmount,
       'userName': userName,
+      'ownerName': ownerName,
       'vehicleDetails': vehicleDetails,
       'startDate': startDate?.toIso8601String(),
       'endDate': endDate?.toIso8601String(),
@@ -44,12 +46,13 @@ class Booking {
 
   factory Booking.fromMap(Map<String, dynamic> data, String id) {
     return Booking(
-      id: id, // تعيين `id` هنا
+      id: id,
       carId: data['carId'],
-      userId: data['userId'],
+      userId: data['userId'], // استرجاع userId
       date: data['date'] != null ? DateTime.parse(data['date']) : null,
       totalAmount: data['totalAmount'] != null ? data['totalAmount'].toDouble() : null,
       userName: data['userName'] ?? '',
+      ownerName: data['ownerName'] ?? '',
       vehicleDetails: data['vehicleDetails'] ?? '',
       startDate: data['startDate'] != null ? (data['startDate'] as Timestamp).toDate() : null,
       endDate: data['endDate'] != null ? (data['endDate'] as Timestamp).toDate() : null,
@@ -57,4 +60,5 @@ class Booking {
       createdAt: data['createdAt'] != null ? (data['createdAt'] as Timestamp).toDate() : null,
     );
   }
+
 }

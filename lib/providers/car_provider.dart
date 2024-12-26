@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/car.dart';
-
-
+import 'dart:io';  // لإضافة دعم الملفات المحلية
 
 class CarProvider with ChangeNotifier {
   final CollectionReference _carCollection = FirebaseFirestore.instance.collection('cars');

@@ -6,6 +6,7 @@ class CarModel {
   List<String> imageUrls;
   bool isBooking; // حالة الحجز (للعرض فقط)
   double pricePerDay;
+
   CarModel({
     required this.id,
     required this.name,
@@ -13,7 +14,7 @@ class CarModel {
     required this.ownerName,
     required this.imageUrls,
     this.isBooking = false,
-    required  this.pricePerDay,
+    required this.pricePerDay,
   });
 
   // تحويل من Map إلى CarModel
@@ -25,19 +26,19 @@ class CarModel {
       ownerName: map['ownerName'] ?? '',
       imageUrls: List<String>.from(map['imageUrls'] ?? []),
       isBooking: map['isBooking'] ?? false,
-      pricePerDay: map['pricePerDay'] ?? 0.0,
+      pricePerDay: (map['pricePerDay'] ?? 0.0).toDouble(), // تحويل إلى double
     );
   }
 
   // تحويل من CarModel إلى Map
   Map<String, dynamic> toMap() {
     return {
-      'name': name, // تأكد من إضافة الحقل name
+      'name': name,
       'category': category,
       'ownerName': ownerName,
       'imageUrls': imageUrls,
       'isBooking': isBooking,
-      'price':  pricePerDay,
+      'pricePerDay': pricePerDay,
     };
   }
 }
