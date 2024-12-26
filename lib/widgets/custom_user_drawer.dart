@@ -5,7 +5,7 @@ import '../style/styles.dart';
 
 
 /// قائمة جانبية للوحة التحكم تحتوي على الروابط الرئيسية
-class CustomDrawer extends StatelessWidget {
+class CustomDrawer2 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -18,7 +18,7 @@ class CustomDrawer extends StatelessWidget {
             ),
             child: Center(
               child: Text(
-                'Admin Panel',
+                'مرحبا بك',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 24,
@@ -30,49 +30,28 @@ class CustomDrawer extends StatelessWidget {
 
           ListTile(
             leading: Icon(AppIcons.users, color: Colors.black),
-            title: Text('Users', style: AppStyles.drawerText),
+            title: Text('حسابي', style: AppStyles.drawerText),
             onTap: () {
-              Navigator.pushNamed(context, '/users');
+              Navigator.pushNamed(context, '/myAccount');
             },
           ),
           ListTile(
             leading: Icon(AppIcons.owners, color: Colors.black),
-            title: Text('Owners', style: AppStyles.drawerText),
+            title: Text('المركبات', style: AppStyles.drawerText),
             onTap: () {
-              Navigator.pushNamed(context, '/owners');
+              Navigator.pushNamed(context, '/vehicalScreen');
             },
           ),
           ListTile(
             leading: Icon(AppIcons.bookings, color: Colors.black),
-            title: Text('Bookings', style: AppStyles.drawerText),
+            title: Text('حجوزاتي', style: AppStyles.drawerText),
             onTap: () {
-              Navigator.pushNamed(context, '/bookings');
+              Navigator.pushNamed(context, '/myBooking');
             },
           ),
-          ListTile(
-            leading: Icon(AppIcons.vehicle, color: Colors.black),
-            title: Text('Vechicle', style: AppStyles.drawerText),
-            onTap: () {
-              Navigator.pushNamed(context, '/vehicle');
-            },
-          ),
-          ListTile(
-            leading: Icon(AppIcons.advertisements, color: Colors.black),
-            title: Text('Advertisements', style: AppStyles.drawerText),
-            onTap: () {
-              Navigator.pushNamed(context, '/advertisements');
-            },
-          ),
-          ListTile(
-            leading: Icon(Icons.logout),
-            title: Text('Logout'),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => LogoutScreen()),
-              );
-            },
-          ),
+
+
+
 
         ],
       ),

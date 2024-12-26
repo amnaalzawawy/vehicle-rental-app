@@ -4,96 +4,84 @@ import 'package:provider/provider.dart';
 import '../../models/booking.dart';
 import '../../providers/booking_provider.dart';
 
-class AddBookingScreen extends StatelessWidget {
-  // مفاتيح للنموذج والنصوص
+
+class AddBookingScreen extends StatefulWidget {
+  @override
+  _AddBookingScreenState createState() => _AddBookingScreenState();
+}
+
+class _AddBookingScreenState extends State<AddBookingScreen> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _customerNameController = TextEditingController();
-  final TextEditingController _vehicleDetailsController = TextEditingController();
-  final TextEditingController _startDateController = TextEditingController();
-  final TextEditingController _endDateController = TextEditingController();
+  String userName = '';
+  String vehicleDetails = '';
+  DateTime startDate = DateTime.now();
+  DateTime endDate = DateTime.now();
+  String status = 'Pending'; // الوضع الافتراضي
 
   @override
   Widget build(BuildContext context) {
+    final bookingProvider = Provider.of<BookingProvider>(context);
+
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add Booking'),
-        backgroundColor: Color(0xFFF78B00),
+        title: Text('إضافة حجز'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
-          key: _formKey, // ربط النموذج بالمفتاح للتحقق من القيم
+          key: _formKey,
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // حقل إدخال اسم العميل
               TextFormField(
-                controller: _customerNameController,
-                decoration: InputDecoration(labelText: 'Customer Name'),
-                validator: (value) => value!.isEmpty ? 'Please enter the customer name' : null,
+                decoration: InputDecoration(labelText: 'اسم العميل'),
+                onSaved: (value) {
+                  userName = value!;
+                },
+                validator: (value) {
+                  if (value!.isEmpty) {
+                    return 'يرجى إدخال اسم العميل';
+                  }
+                  return null;
+                },
               ),
-              // حقل إدخال تفاصيل المركبة
               TextFormField(
-                controller: _vehicleDetailsController,
-                decoration: InputDecoration(labelText: 'Vehicle Details'),
-                validator: (value) => value!.isEmpty ? 'Please enter the vehicle details' : null,
+                decoration: InputDecoration(labelText: 'تفاصيل المركبة'),
+                onSaved: (value) {
+                  vehicleDetails = value!;
+                },
+                validator: (value) {
+                  if (value!.isEmpty) {
+                    return 'يرجى إدخال تفاصيل المركبة';
+                  }
+                  return null;
+                },
               ),
-              // حقل إدخال تاريخ البدء
-              TextFormField(
-                controller: _startDateController,
-                decoration: InputDecoration(labelText: 'Start Date (yyyy-MM-dd)'),
-                keyboardType: TextInputType.datetime,
-                validator: (value) => value!.isEmpty ? 'Please enter the start date' : null,
-              ),
-              // حقل إدخال تاريخ الانتهاء
-              TextFormField(
-                controller: _endDateController,
-                decoration: InputDecoration(labelText: 'End Date (yyyy-MM-dd)'),
-                keyboardType: TextInputType.datetime,
-                validator: (value) => value!.isEmpty ? 'Please enter the end date' : null,
-              ),
+              // استخدم DatePicker لاختيار التواريخ
+              // على سبيل المثال، استخدام `showDatePicker` لاختيار startDate و endDate
+              // ثم إضافة TextFormField لـ status أو استخدام Dropdown
+
               SizedBox(height: 20),
-              // زر إضافة الحجز
               ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
                   if (_formKey.currentState!.validate()) {
-                    try {
-                      // محاولة تحليل التواريخ من النصوص
-                      final startDate = DateTime.parse(_startDateController.text);
-                      final endDate = DateTime.parse(_endDateController.text);
+                    _formKey.currentState!.save();
+                    final booking = Booking(
+                      id: '',
+                      userName: userName,
+                      vehicleDetails: vehicleDetails,
+                      startDate: startDate,
+                      endDate: endDate,
+                      status: status,
+                      createdAt: DateTime.now(),
+                    );
 
-                      // التحقق من أن تاريخ البدء قبل تاريخ الانتهاء
-                      if (startDate.isAfter(endDate)) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Start date must be before end date.')),
-                        );
-                        return;
-                      }
-
-                      // إنشاء كائن الحجز
-                      final booking = Booking(
-                        id: '', // سيتم توليد ID عند الإضافة إلى Firestore
-                        userName: _customerNameController.text,
-                        vehicleDetails: _vehicleDetailsController.text,
-                        startDate: startDate,
-                        endDate: endDate,
-                        status: 'Pending',
-                        createdAt: DateTime.now(),
-                      );
-
-                      // استدعاء الدالة لإضافة الحجز
-                      Provider.of<BookingProvider>(context, listen: false).addBooking(booking);
-
-                      // الرجوع إلى الشاشة السابقة
-                      Navigator.pop(context);
-                    } catch (e) {
-                      // معالجة الأخطاء عند تحليل التواريخ
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Invalid date format. Use yyyy-MM-dd.')),
-                      );
-                    }
+                    // تم تمرير `userId` إلى الدالة
+                    await bookingProvider.addBooking(booking, 'userId'); // تأكد من تم تمرير userId
+                    Navigator.pop(context);
                   }
                 },
-                child: Text('Add Booking'),
+                child: Text('إضافة الحجز'),
               ),
             ],
           ),

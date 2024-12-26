@@ -1,3 +1,5 @@
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/car.dart';
@@ -20,7 +22,7 @@ class _BookingScreenState extends State<BookingScreen> {
   DateTime? _endDate;
   String? _errorMessage;
 
-  // دالة لاختيار تاريخ البداية
+  // اختيار تاريخ البداية
   Future<void> _selectStartDate(BuildContext context) async {
     DateTime? pickedDate = await showDatePicker(
       context: context,
@@ -36,11 +38,11 @@ class _BookingScreenState extends State<BookingScreen> {
     }
   }
 
-  // دالة لاختيار تاريخ النهاية
+  // اختيار تاريخ النهاية
   Future<void> _selectEndDate(BuildContext context) async {
     DateTime? pickedDate = await showDatePicker(
       context: context,
-      initialDate: DateTime.now(),
+      initialDate: _startDate ?? DateTime.now(),
       firstDate: _startDate ?? DateTime.now(),
       lastDate: DateTime(2101),
     );
@@ -52,9 +54,10 @@ class _BookingScreenState extends State<BookingScreen> {
     }
   }
 
-  // دالة للتحقق من تعارض الحجز
+  // التحقق من تداخل الحجز
   Future<bool> _checkBookingConflict(DateTime startDate, DateTime endDate) async {
-    final querySnapshot = await _firestore.collection('bookings')
+    final querySnapshot = await _firestore
+        .collection('bookings')
         .where('carId', isEqualTo: widget.car.id)
         .get();
 
@@ -62,16 +65,14 @@ class _BookingScreenState extends State<BookingScreen> {
       DateTime bookedStartDate = (doc['startDate'] as Timestamp).toDate();
       DateTime bookedEndDate = (doc['endDate'] as Timestamp).toDate();
 
-      // التحقق من التداخل بين الحجزين
-      if ((startDate.isBefore(bookedEndDate) && endDate.isAfter(bookedStartDate)) ||
-          (startDate.isAtSameMomentAs(bookedStartDate) || endDate.isAtSameMomentAs(bookedEndDate))) {
+      if (startDate.isBefore(bookedEndDate) && endDate.isAfter(bookedStartDate)) {
         return true;
       }
     }
     return false;
   }
 
-  // دالة لحفظ الحجز
+  // حفظ الحجز
   Future<void> _saveBooking() async {
     if (_startDate == null || _endDate == null) {
       setState(() {
@@ -87,7 +88,6 @@ class _BookingScreenState extends State<BookingScreen> {
       return;
     }
 
-    // التحقق من تعارض الحجز
     bool conflict = await _checkBookingConflict(_startDate!, _endDate!);
     if (conflict) {
       setState(() {
@@ -96,20 +96,22 @@ class _BookingScreenState extends State<BookingScreen> {
       return;
     }
 
-    // إضافة الحجز إلى قاعدة البيانات
     await _firestore.collection('bookings').add({
       'carId': widget.car.id,
-      'userId': 'userID', // يتم تحديده بناءً على المستخدم الحالي
+      'userId':  FirebaseAuth.instance.currentUser!.uid,
       'startDate': Timestamp.fromDate(_startDate!),
       'endDate': Timestamp.fromDate(_endDate!),
-      'status': 'مؤكد', // أو حسب الحالة المناسبة
+      'status': 'مؤكد',
     });
 
-    setState(() {
-      _errorMessage = null; // إعادة تعيين رسالة الخطأ عند الحجز بنجاح
-    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('تم الحجز بنجاح'),
+        backgroundColor: Colors.green,
+      ),
+    );
 
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('تم الحجز بنجاح')));
+    Navigator.pop(context); // العودة للخلف بعد الحجز
   }
 
   @override
@@ -117,54 +119,107 @@ class _BookingScreenState extends State<BookingScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('تفاصيل الحجز'),
+        backgroundColor: Colors.orange.shade700,
+        elevation: 0,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // عرض بيانات المركبة
-            Text('اسم المركبة: ${widget.car.name}', style: TextStyle(fontSize: 18)),
-            SizedBox(height: 10),
-            Text('الفئة: ${widget.car.category}', style: TextStyle(fontSize: 16)),
-            SizedBox(height: 10),
-            Text('اسم الشركة المالكة: ${widget.car.ownerName}', style: TextStyle(fontSize: 16)),
-            SizedBox(height: 10),
-            Text('السعر اليومي: ${widget.car.pricePerDay} ل.س', style: TextStyle(fontSize: 16)),
-            SizedBox(height: 10),
-
-            // اختيار تاريخ البداية
-            Text('تاريخ البداية: ${_startDate != null ? DateFormat('yyyy-MM-dd').format(_startDate!) : 'لم يتم تحديده'}'),
-            ElevatedButton(
-              onPressed: () => _selectStartDate(context),
-              child: Text('اختيار تاريخ البداية'),
-            ),
-            SizedBox(height: 10),
-
-            // اختيار تاريخ النهاية
-            Text('تاريخ النهاية: ${_endDate != null ? DateFormat('yyyy-MM-dd').format(_endDate!) : 'لم يتم تحديده'}'),
-            ElevatedButton(
-              onPressed: () => _selectEndDate(context),
-              child: Text('اختيار تاريخ النهاية'),
-            ),
-            SizedBox(height: 20),
-
-            // عرض رسالة الخطأ إذا كانت هناك مشكلة
-            if (_errorMessage != null)
-              Text(
-                _errorMessage!,
-                style: TextStyle(color: Colors.red, fontSize: 16),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              Card(
+                elevation: 5,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                child: Column(
+                  children: [
+                    ListTile(
+                      leading: Icon(Icons.date_range, color: Colors.orange),
+                      title: Text(
+                        'تاريخ البداية:',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      subtitle: Text(
+                        _startDate != null
+                            ? DateFormat('yyyy-MM-dd').format(_startDate!)
+                            : 'لم يتم تحديده',
+                      ),
+                      trailing: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.orange.shade700,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        onPressed: () => _selectStartDate(context),
+                        child: Text('اختيار'),
+                      ),
+                    ),
+                    Divider(),
+                    ListTile(
+                      leading: Icon(Icons.event, color: Colors.orange),
+                      title: Text(
+                        'تاريخ النهاية:',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      subtitle: Text(
+                        _endDate != null
+                            ? DateFormat('yyyy-MM-dd').format(_endDate!)
+                            : 'لم يتم تحديده',
+                      ),
+                      trailing: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.orange.shade700,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        onPressed: () => _selectEndDate(context),
+                        child: Text('اختيار'),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            SizedBox(height: 20),
-
-            // زر الحجز
-            ElevatedButton(
-              onPressed: _saveBooking,
-              child: Text('تأكيد الحجز'),
-            ),
-          ],
+              SizedBox(height: 20),
+              if (_errorMessage != null)
+                Text(
+                  _errorMessage!,
+                  style: TextStyle(color: Colors.red, fontSize: 16),
+                ),
+              SizedBox(height: 20),
+              ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.orange.shade700,
+                  padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                icon: Icon(Icons.check_circle, color: Colors.white),
+                label: Text(
+                  'تأكيد الحجز',
+                  style: TextStyle(fontSize: 18, color: Colors.white),
+                ),
+                onPressed: _saveBooking,
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+

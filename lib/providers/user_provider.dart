@@ -98,8 +98,6 @@ class UserProvider with ChangeNotifier {
         userId: user.uid, // معرّف المستخدم
         walletBalance: 0.0, // رصيد المحفظة الافتراضي
         profileImageBase64: null, // في البداية لا يوجد صورة
-        role: '',
-
       );
 
       await _firestore.collection('users').doc(user.uid).set(newUser.toMap());

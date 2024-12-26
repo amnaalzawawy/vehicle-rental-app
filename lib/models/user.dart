@@ -3,9 +3,8 @@ class UserModel {
   final String firstName;
   final String lastName;
   final String phoneNumber;
-  final double? walletBalance;
+  final double walletBalance;
   final String? profileImageBase64; // تخزين الصورة كـ Base64
-  final String role; // إضافة دور المستخدم (أدمن أو مستخدم عادي)
 
   UserModel({
     required this.userId,
@@ -14,7 +13,6 @@ class UserModel {
     required this.phoneNumber,
     required this.walletBalance,
     this.profileImageBase64, // يمكن أن تكون null إذا لم توجد صورة
-    required this.role, // دور المستخدم
   });
 
   // تحويل الكائن إلى خريطة (Map) لتخزينه في Firestore
@@ -26,7 +24,6 @@ class UserModel {
       'phoneNumber': phoneNumber,
       'walletBalance': walletBalance,
       'profileImageBase64': profileImageBase64, // حفظ الصورة كـ Base64
-      'role': role, // حفظ دور المستخدم
     };
   }
 
@@ -39,7 +36,6 @@ class UserModel {
       phoneNumber: map['phoneNumber'],
       walletBalance: map['walletBalance'],
       profileImageBase64: map['profileImageBase64'], // استرجاع الصورة كـ Base64
-      role: map['role'], // استرجاع دور المستخدم
     );
   }
 
@@ -51,7 +47,6 @@ class UserModel {
     String? phoneNumber,
     double? walletBalance,
     String? profileImageBase64,
-    String? role,
   }) {
     return UserModel(
       userId: userId ?? this.userId,
@@ -60,9 +55,6 @@ class UserModel {
       phoneNumber: phoneNumber ?? this.phoneNumber,
       walletBalance: walletBalance ?? this.walletBalance,
       profileImageBase64: profileImageBase64 ?? this.profileImageBase64,
-      role: role ?? this.role, // إضافة دور المستخدم
     );
   }
 }
-
-

@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 import '../../models/booking.dart';
 import '../../providers/booking_provider.dart';
 
-
 class BookingFormScreen extends StatefulWidget {
   final Booking? bookingToEdit;
 
@@ -36,8 +35,29 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
     }
   }
 
+  // دالة لاختيار التاريخ
+  Future<void> _selectDate(BuildContext context, bool isStartDate) async {
+    final DateTime picked = await showDatePicker(
+      context: context,
+      initialDate: isStartDate ? startDate : endDate,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    ) ?? DateTime.now();
+    if (isStartDate) {
+      setState(() {
+        startDate = picked;
+      });
+    } else {
+      setState(() {
+        endDate = picked;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final userId = 'userId'; // استبدلها بـ userId الحقيقي
+
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.bookingToEdit != null ? 'Edit Booking' : 'Add Booking'),
@@ -70,7 +90,27 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                   return null;
                 },
               ),
-              // Use a DateTime picker or other input methods for dates
+              // اختيار التاريخ لبدء الحجز
+              Row(
+                children: [
+                  Text('Start Date: ${startDate.toLocal()}'),
+                  IconButton(
+                    icon: Icon(Icons.calendar_today),
+                    onPressed: () => _selectDate(context, true),
+                  ),
+                ],
+              ),
+              // اختيار التاريخ لنهاية الحجز
+              Row(
+                children: [
+                  Text('End Date: ${endDate.toLocal()}'),
+                  IconButton(
+                    icon: Icon(Icons.calendar_today),
+                    onPressed: () => _selectDate(context, false),
+                  ),
+                ],
+              ),
+              SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
@@ -86,7 +126,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                     );
                     if (widget.bookingToEdit == null) {
                       Provider.of<BookingProvider>(context, listen: false)
-                          .addBooking(newBooking);
+                          .addBooking(newBooking, userId); // تم تمرير userId هنا
                     } else {
                       Provider.of<BookingProvider>(context, listen: false)
                           .updateBooking(newBooking.id!, newBooking.toMap());
