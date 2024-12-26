@@ -31,7 +31,7 @@ class _AddCarDialogState extends State<AddCarDialog> {
       _categoryController.text = widget.carToEdit!.category;
       _ownerNameController.text = widget.carToEdit!.ownerName;
       _priceController.text = widget.carToEdit!.pricePerDay.toString();
-      _imageUrls = widget.carToEdit!.imageUrls;
+      // _imageUrls = widget.carToEdit!.image;
     }
   }
 
@@ -103,7 +103,7 @@ class _AddCarDialogState extends State<AddCarDialog> {
                   name: _nameController.text,
                   category: _categoryController.text,
                   ownerName: _ownerNameController.text,
-                  imageUrls: _imageUrls,
+                  // image: _imageUrls,
                   isBooking: false,
                   pricePerDay: double.parse(_priceController.text),
                 );
@@ -127,7 +127,7 @@ class _AddCarDialogState extends State<AddCarDialog> {
                       name: _nameController.text,
                       category: _categoryController.text,
                       ownerName: _ownerNameController.text,
-                      imageUrls: _imageUrls,
+                      // image: _imageUrls,
                       isBooking: widget.carToEdit!.isBooking,
                       pricePerDay: double.parse(_priceController.text),
                     );

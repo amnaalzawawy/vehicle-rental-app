@@ -1,37 +1,97 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-//import '../provider/car_provider.dart';
-import '../models/car.dart';
+import 'package:untitled2/Owners/vehicle%20_Management_screen.dart';
+import '../models/icons.dart';
 import '../providers/car_provider.dart';
 import '../widgets/car_card.dart';
-import '../models/icons.dart';
-import 'vehicle _Management_screen.dart'; // استدعاء الأيقونات
-//import 'manage_car_page.dart'; // صفحة إدارة المركبات
+//import '../models/app_icons.dart'; // استدعاء الأيقونات من ملف app_icons.dart
+import 'booking _Management_screen.dart';
+import 'owner_profile_page.dart'; // صفحة معلومات المالك
+//import 'booking_management_page.dart'; // صفحة إدارة الحجوزات
+//import 'financial_transactions_page.dart'; // صفحة المعاملات المالية
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    final carProvider = Provider.of<CarProvider>(context, listen: false);
+  State<StatefulWidget> createState() {
+    return HomePageState();
+  }
+}
 
+
+class HomePageState extends State<HomePage>{
+
+  @override
+  void initState() {
+    super.initState();
+
+    final carProvider = Provider.of<CarProvider>(this.context, listen: false);
     // جلب البيانات بعد بناء الصفحة
     WidgetsBinding.instance.addPostFrameCallback((_) {
       carProvider.fetchCars();
     });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+
 
     return Scaffold(
       appBar: AppBar(
         title: Text("الصفحة الرئيسية"),
-        actions: [
-          IconButton(
-            icon: Icon(AppIcons.account), // أيقونة حسابي
-            onPressed: () {
-              // إضافة وظيفة التنقل إلى صفحة حسابي
-              print("الذهاب إلى صفحة حسابي");
-            },
-          ),
-        ],
+      ),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            DrawerHeader(
+              decoration: BoxDecoration(
+                color: Colors.blue,
+              ),
+              child: Text(
+                'مرحبا بك',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                ),
+              ),
+            ),
+            ListTile(
+              leading: Icon(AppIcons.account), // أيقونة حسابي
+              title: Text('حسابي'),
+              onTap: () {
+                // الانتقال إلى صفحة حسابي
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => OwnerProfilePage()),
+                );
+              },
+            ),
+            ListTile(
+              leading: Icon(AppIcons.bookings), // أيقونة حجوزاتي
+              title: Text('حجوزاتي'),
+              onTap: () {
+                // الانتقال إلى صفحة إدارة الحجوزات
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => BookingManagementPage()),
+                );
+              },
+            ),
+            /*ListTile(
+             // leading: Icon(AppIcons.wallet), // أيقونة المعاملات المالية
+             // title: Text('المعاملات المالية'),
+              //onTap: () {
+                // الانتقال إلى صفحة المعاملات المالية
+               // Navigator.push(
+                 // context,
+                  MaterialPageRoute(builder: (context) => FinancialTransactionsPage()),
+                );
+              },
+            ),*/
+          ],
+        ),
       ),
       body: Column(
         children: [
@@ -42,10 +102,10 @@ class HomePage extends StatelessWidget {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) =>  ManageCarPage()),
+                  MaterialPageRoute(builder: (context) => ManageCarPage()),
                 );
               },
-              icon: Icon(Icons.add),
+              icon: Icon(AppIcons.vehicle), // أيقونة المركبة
               label: Text("إضافة مركبة"),
             ),
           ),
@@ -67,7 +127,7 @@ class HomePage extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) =>  ManageCarPage(car: car),
+                            builder: (context) => ManageCarPage(car: car),
                           ),
                         );
                       },
@@ -84,4 +144,4 @@ class HomePage extends StatelessWidget {
       ),
     );
   }
-  }
+}

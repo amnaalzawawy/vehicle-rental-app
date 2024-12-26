@@ -98,6 +98,8 @@ class UserProvider with ChangeNotifier {
         userId: user.uid, // معرّف المستخدم
         walletBalance: 0.0, // رصيد المحفظة الافتراضي
         profileImageBase64: null, // في البداية لا يوجد صورة
+        role: '',
+
       );
 
       await _firestore.collection('users').doc(user.uid).set(newUser.toMap());
@@ -118,7 +120,7 @@ class UserProvider with ChangeNotifier {
       if (pickedFile != null) {
         final file = File(pickedFile.path);
 
-        // تحويل الصورة إلى Base6
+        // تحويل الصورة إلى Base64
         final bytes = await file.readAsBytes();
         final base64String = base64Encode(bytes);
 

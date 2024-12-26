@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/car.dart';
+import 'dart:io';  // لإضافة دعم الملفات المحلية
 
 class CarProvider with ChangeNotifier {
   final CollectionReference _carCollection = FirebaseFirestore.instance.collection('cars');
@@ -8,63 +10,78 @@ class CarProvider with ChangeNotifier {
   List<CarModel> _cars = [];
   List<CarModel> get cars => _cars;
 
+  // وظيفة لإضافة مركبة جديدة
+  Future<void> addCar(CarModel car) async {
+    try {
+      await _carCollection.add(car.toMap());
+      // supabase upload file
+      final avatarFile = car.image;
+      final String fullPath = await Supabase.instance.client.storage.from('avatars').upload(
+        'public/avatar1.png',
+        (car.image??[]).first,
+        fileOptions: const FileOptions(cacheControl: '3600', upsert: false),
+      );
+
+      await fetchCars(); // إعادة تحميل البيانات بعد الإضافة
+      notifyListeners();
+    } catch (e) {
+      print("Error adding car: $e");
+    }
+  }
+
   // وظيفة لجلب قائمة المركبات
   Future<void> fetchCars() async {
     try {
-      /*QuerySnapshot snapshot = await _carCollection.get();
-      _cars = snapshot.docs.map((doc) => CarModel.fromMap(doc.data() as Map<String, dynamic>, doc.id)).toList();
-      notifyListeners();  // التأكد من تحديث المستمعين بعد جلب البيانات
-    } catch (e) {
-      print("Error fetching cars: $e");
-    }*/
       QuerySnapshot snapshot = await _carCollection.get();
-      _cars = snapshot.docs.map((doc) {
-        return CarModel.fromMap(doc.data() as Map<String, dynamic>, doc.id);
-      }).toList();
+      _cars = snapshot.docs.map((doc) => CarModel.fromMap(doc.data() as Map<String, dynamic>, doc.id)).toList();
       notifyListeners();
     } catch (e) {
       print("Error fetching cars: $e");
     }
   }
 
-  // إضافة مركبة جديدة
-  Future<void> addCar(CarModel car) async {
+  // وظيفة لإحضار تفاصيل مركبة مفصلة باستخدام معرفها
+  Future<CarModel?> getCarById(String id) async {
     try {
-      final docRef = await _carCollection.add(car.toMap());
-      car.id = docRef.id;  // إضافة id بعد الإدخال
-      _cars.add(car);  // إضافة السيارة للقائمة المحلية
-      notifyListeners();  // التحديث بعد الإضافة
+      DocumentSnapshot doc = await _carCollection.doc(id).get();
+      if (doc.exists) {
+        return CarModel.fromMap(doc.data() as Map<String, dynamic>, id);
+      } else {
+        return null;
+      }
     } catch (e) {
-      print("Error adding car: $e");
+      print("Error fetching car by ID: $e");
+      return null;
     }
   }
 
-  // حذف مركبة
+  // وظيفة لتعديل بيانات مركبة
+  Future<void> updateCar(String id, CarModel updatedCar) async {
+    try {
+      await _carCollection.doc(id).update(updatedCar.toMap());
+      await fetchCars(); // إعادة تحميل البيانات بعد التحديث
+      notifyListeners();
+    } catch (e) {
+      print("Error updating car: $e");
+    }
+  }
+
+  // وظيفة لحذف مركبة
   Future<void> deleteCar(String id) async {
     try {
       await _carCollection.doc(id).delete();
-      _cars.removeWhere((car) => car.id == id);  // إزالة السيارة من القائمة
-      notifyListeners();  // التحديث بعد الحذف
+      _cars.removeWhere((car) => car.id == id);
+      notifyListeners();
     } catch (e) {
       print("Error deleting car: $e");
     }
   }
 
-  // تحديث بيانات مركبة
-  Future<void> updateCar(String id, CarModel updatedCar) async {
-    try {
-      await _carCollection.doc(id).update(updatedCar.toMap());
-      // لا حاجة لجلب السيارات مرة أخرى بعد التحديث
-      final index = _cars.indexWhere((car) => car.id == id);
-      if (index != -1) {
-        _cars[index] = updatedCar;
-      }
-      notifyListeners();  // التحديث بعد التعديل
-    } catch (e) {
-      print("Error updating car: $e");
-    }
-  }
+  // وظيفة للبحث ضمن المركبات حسب فئة أو اسم المالك
   List<CarModel> searchCars(String query) {
-    return _cars.where((car) => car.name.toLowerCase().contains(query.toLowerCase())).toList();
+    return _cars.where((car) =>
+    car.category.toLowerCase().contains(query.toLowerCase()) ||
+        car.ownerName.toLowerCase().contains(query.toLowerCase())
+    ).toList();
   }
 }

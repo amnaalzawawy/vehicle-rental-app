@@ -43,6 +43,7 @@ class BookingProvider with ChangeNotifier {
         'status': booking.status,
         'createdAt': booking.createdAt,
       });
+
       // إضافة الحجز إلى القائمة المحلية بعد إضافته إلى قاعدة البيانات
       _bookings.add(Booking(
         id: docRef.id,
@@ -94,3 +95,4 @@ class BookingProvider with ChangeNotifier {
     }
   }
 }
+

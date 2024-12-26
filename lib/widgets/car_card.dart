@@ -22,9 +22,9 @@ class CarCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // صورة المركبة
-          if (car.imageUrls.isNotEmpty)
+          if ((car.image ?? []).isNotEmpty)
             Image.network(
-              car.imageUrls[0],
+              (car.image ?? []).first.path,
               height: 150,
               width: double.infinity,
               fit: BoxFit.cover,

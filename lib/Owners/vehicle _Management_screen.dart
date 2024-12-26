@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/car.dart';
@@ -52,18 +53,19 @@ class _ManageCarPageState extends State<ManageCarPage> {
   }
 
   // دالة لحفظ البيانات
-  void _saveCar() {
+  void _saveCar() async {
     if (_formKey.currentState!.validate()) {
       final carProvider = Provider.of<CarProvider>(context, listen: false);
+
 
       final newCar = CarModel(
         id: widget.car?.id ?? '',
         name: _nameController.text,
         category: _fuelController.text,
         ownerName: _ownerController.text,
-        imageUrls: _imageFile != null
-            ? ['${_imageFile!.path}'] // تمثيل الصور في شكل نصوص
-            : widget.car?.imageUrls ?? [],
+        image: _imageFile != null
+            ? [_imageFile!] // تمثيل الصور في شكل نصوص
+            : widget.car?.image ?? [],
         isBooking: _isAvailable,
         pricePerDay: double.parse(_priceController.text),
       );

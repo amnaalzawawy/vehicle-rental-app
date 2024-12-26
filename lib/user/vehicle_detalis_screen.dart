@@ -23,11 +23,11 @@ class CarDetailScreen extends StatelessWidget {
               height: 200,
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
-                itemCount: car.imageUrls.length,
+                itemCount: car.image?.length,
                 itemBuilder: (context, index) {
                   return Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Image.network(car.imageUrls[index]),
+                    child: Image.network(car.image![index].path),
                   );
                 },
               ),

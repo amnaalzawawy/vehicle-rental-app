@@ -1,48 +1,47 @@
+
+import 'dart:io';
+
 class CarModel {
-  late final String id;
-  final String name;
-  final String category; // نوع الوقود
-  final String ownerName;
-  final List<String> imageUrls; // صور المركبة
-  final double pricePerDay;
-  final bool isBooking;
+  String id;
+  String name; // اسم المركبة
+  String category;
+  String ownerName;
+  List<File>? image;
+  bool isBooking; // حالة الحجز (للعرض فقط)
+  double pricePerDay;
 
   CarModel({
     required this.id,
     required this.name,
     required this.category,
     required this.ownerName,
-    required this.imageUrls,
+    this.isBooking = false,
     required this.pricePerDay,
-    required this.isBooking,
+    this.image ,
   });
 
-  factory CarModel.fromMap(Map<String, dynamic> data, String id) {
+  // تحويل من Map إلى CarModel
+  factory CarModel.fromMap(Map<String, dynamic> map, String id) {
     return CarModel(
       id: id,
-      name: data['name'] ?? '',
-      category: data['category'] ?? '',
-      ownerName: data['ownerName'] ?? '',
-      imageUrls: List<String>.from(data['imageUrls'] ?? []),
-      pricePerDay: (data['pricePerDay'] ?? 0).toDouble(),
-      isBooking: data['isBooking'] ?? true,
+      name: map['name'] ?? '', // تأكد من إضافة الحقل name
+      category: map['category'] ?? '',
+      ownerName: map['ownerName'] ?? '',
+      // image: List<File>.from(map['imageUrls'] ?? []),
+      isBooking: map['isBooking'] ?? false,
+      pricePerDay: (map['pricePerDay'] ?? 0.0).toDouble(), // تحويل إلى double
     );
   }
 
+  // تحويل من CarModel إلى Map
   Map<String, dynamic> toMap() {
     return {
-      /*'name': name,
-      'category': category,
-      'ownerName': ownerName,
-      'imageUrls': imageUrls,
-      'pricePerDay': pricePerDay,
-      'isBooking': isBooking,*/
       'name': name,
       'category': category,
       'ownerName': ownerName,
-      'imageUrls': imageUrls,
+      'imageUrls': image,
       'isBooking': isBooking,
-      'pricePerDay': pricePerDay
+      'pricePerDay': pricePerDay,
     };
   }
 }
