@@ -1,5 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:untitled2/providers/current_user_provider.dart';
 import 'package:untitled2/widgets/custom_user_drawer.dart';
 
 import '../models/car.dart';
@@ -9,11 +11,13 @@ import '../widgets/vehicle_card.dart';
 import 'vehicle_detalis_screen.dart';
 
 class CarDisplayScreen extends StatefulWidget {
+  const CarDisplayScreen({super.key});
+
   @override
-  _CarDisplayScreenState createState() => _CarDisplayScreenState();
+  CarDisplayScreenState createState() => CarDisplayScreenState();
 }
 
-class _CarDisplayScreenState extends State<CarDisplayScreen> {
+class CarDisplayScreenState extends State<CarDisplayScreen> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   List<CarModel> _cars = [];
   List<CarModel> _filteredCars = [];
@@ -27,26 +31,45 @@ class _CarDisplayScreenState extends State<CarDisplayScreen> {
 
   // جلب المركبات من قاعدة البيانات
   Future<void> _fetchCars() async {
-    try {
-      final querySnapshot = await _firestore.collection('cars').get();
-      setState(() {
-        _cars = querySnapshot.docs
-            .map((doc) => CarModel.fromMap(doc.data() as Map<String, dynamic>, doc.id))
-            .toList();
-        _filteredCars = List.from(_cars); // تعيين كل المركبات إلى _filteredCars في البداية
-      });
-    } catch (e) {
-      print('فشل في جلب المركبات: $e');
-    }
+    UserProvider().getCurrentUser().then((user) {
+      var querySnapshot = _firestore.collection('cars');
+
+      if (user?.role == "owner") {
+        querySnapshot.where("owner", isEqualTo: user!.userId).get().then(
+          (value) {
+            setState(() {
+              _cars = value.docs
+                  .map((doc) => CarModel.fromMap(doc.data(), doc.id))
+                  .toList();
+              _filteredCars = List.from(
+                  _cars); // تعيين كل المركبات إلى _filteredCars في البداية
+            });
+          },
+        );
+      } else {
+        querySnapshot.get().then(
+          (value) {
+            setState(() {
+              _cars = value.docs
+                  .map((doc) => CarModel.fromMap(doc.data(), doc.id))
+                  .toList();
+              _filteredCars = List.from(
+                  _cars); // تعيين كل المركبات إلى _filteredCars في البداية
+            });
+          },
+        );
+      }
+    });
   }
 
   // تطبيق الفلاتر
   void _applyFilters(Map<String, dynamic> filters) {
     setState(() {
       _filteredCars = _cars.where((car) {
-        bool matchesCategory = filters['category'] == null ||
-            car.category == filters['category'];
-        bool matchesOwner = filters['owner'] == null || car.ownerName == filters['owner'];
+        bool matchesCategory =
+            filters['category'] == null || car.category == filters['category'];
+        bool matchesOwner =
+            filters['owner'] == null || car.owner == filters['owner'];
 
         // معالجة السعر
         bool matchesPrice = true;
@@ -68,21 +91,44 @@ class _CarDisplayScreenState extends State<CarDisplayScreen> {
     });
   }
 
-
   // دالة لتغيير الصفحة عند الضغط على عناصر الشريط
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
+    // if (role == 'admin') {
+    //   Navigator.pushReplacementNamed(context, '/CarScreen');
+    // } else if (role == 'owner') {
+    //   Navigator.pushReplacementNamed(context, '/ownerDashboard');
+    // } else {
+    //   Navigator.pushReplacementNamed(context, '/myAccount');
+    // }
     // يمكنك إضافة التنقل بين الصفحات هنا
-    switch (index) {
-      case 0:
-        print('فتح واجهة حسابي');
-        break;
-      case 1:
-        print('فتح واجهة المحفظة');
-        break;
-    }
+    var userProvider = UserProvider();
+
+    userProvider.getCurrentUser().then(
+      (user) {
+        if (user != null) {
+          switch (index) {
+            case 1:
+              Navigator.pushNamed(context, "/myBooking");
+
+              break;
+            case 2:
+              if (user.role == "owner") {
+                Navigator.pushNamed(context, "/owner/manage");
+              }
+              if (user.role == "user") {
+                Navigator.pushNamed(context, "/myAccount");
+              }
+
+              break;
+          }
+        } else {
+          Navigator.pushNamed(context, "/login");
+        }
+      },
+    );
   }
 
   @override
@@ -107,29 +153,32 @@ class _CarDisplayScreenState extends State<CarDisplayScreen> {
           ),
         ],
       ),
-
       drawer: CustomDrawer2(),
       body: Column(
         children: [
           Expanded(
             child: _filteredCars.isEmpty
                 ? Center(child: Text('لا توجد مركبات لعرضها'))
-                : ListView.builder(
-              itemCount: _filteredCars.length,
-              itemBuilder: (context, index) {
-                return CarCard(
-                  car: _filteredCars[index],
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => CarDetailScreen(car: _filteredCars[index]),
-                      ),
-                    );
-                  },
-                );
-              },
-            ),
+                : CarCard(car: _cars[0], onPressed: () {
+                  print("On card action");
+                },)
+            // ListView.builder(
+            //         itemCount: _filteredCars.length,
+            //         itemBuilder: (context, index) {
+            //           return CarCard(
+            //             car: _filteredCars[index],
+            //             onPressed: () {
+            //               Navigator.push(
+            //                 context,
+            //                 MaterialPageRoute(
+            //                   builder: (context) =>
+            //                       CarDetailScreen(car: _filteredCars[index]),
+            //                 ),
+            //               );
+            //             },
+            //           );
+            //         },
+            //       ),
           ),
         ],
       ),

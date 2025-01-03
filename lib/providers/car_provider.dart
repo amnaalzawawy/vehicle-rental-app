@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:untitled2/providers/current_user_provider.dart';
+import 'package:uuid/uuid.dart';
 import '../models/car.dart';
 import 'dart:io';  // لإضافة دعم الملفات المحلية
 
@@ -12,15 +14,23 @@ class CarProvider with ChangeNotifier {
 
   // وظيفة لإضافة مركبة جديدة
   Future<void> addCar(CarModel car) async {
+    print("Adding new car");
     try {
-      await _carCollection.add(car.toMap());
+      var user = UserProvider().firebaseUser;
+      car.owner = user?.uid ?? "";
+      var doc = await _carCollection.add(car.toMap());
       // supabase upload file
-      final avatarFile = car.image;
-      final String fullPath = await Supabase.instance.client.storage.from('avatars').upload(
-        'public/avatar1.png',
-        (car.image??[]).first,
+      var image = File((car.images ?? []).first);
+      var extension = image.path.split(".").last;
+      var filename = "${const Uuid().v4()}.$extension";
+      final String fullPath = await Supabase.instance.client.storage.from('cars').upload(
+        filename,
+        image,
         fileOptions: const FileOptions(cacheControl: '3600', upsert: false),
       );
+      _carCollection.doc(doc.id).update({
+            "imageUrls":[fullPath]
+          });
 
       await fetchCars(); // إعادة تحميل البيانات بعد الإضافة
       notifyListeners();
@@ -81,7 +91,7 @@ class CarProvider with ChangeNotifier {
   List<CarModel> searchCars(String query) {
     return _cars.where((car) =>
     car.category.toLowerCase().contains(query.toLowerCase()) ||
-        car.ownerName.toLowerCase().contains(query.toLowerCase())
+        car.owner.toLowerCase().contains(query.toLowerCase())
     ).toList();
   }
 }

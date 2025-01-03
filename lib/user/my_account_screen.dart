@@ -32,6 +32,7 @@ class _AccountScreenState extends State<AccountScreen> {
     }
 
     Future<void> _loadCurrentUser() async {
+
         final user = Provider.of<UserProvider>(context, listen: false).currentUser;
         if (user != null) {
             setState(() {
@@ -63,8 +64,8 @@ class _AccountScreenState extends State<AccountScreen> {
 
         return Scaffold(
             appBar: AppBar(
-                title: Text('حسابي'),
-                backgroundColor: Color(0xFFF78B00),
+                title: const Text('حسابي'),
+                backgroundColor: const Color(0xFFF78B00),
                 elevation: 0,
             ),
             drawer: CustomDrawer2(),
@@ -99,7 +100,7 @@ class _AccountScreenState extends State<AccountScreen> {
                             //         ),
                             //     ),
                             // ),
-                            SizedBox(height: 20),
+                            const SizedBox(height: 20),
 
                             // الاسم الأول
                             Row(
@@ -110,7 +111,7 @@ class _AccountScreenState extends State<AccountScreen> {
                                         style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.grey[700]),
                                     ),
                                     IconButton(
-                                        icon: Icon(Icons.edit, color: Color(0xFFF78B00)),
+                                        icon: const Icon(Icons.edit, color: Color(0xFFF78B00)),
                                         onPressed: () {
                                             setState(() {
                                                 _isEditingFirstName = true;
@@ -127,7 +128,7 @@ class _AccountScreenState extends State<AccountScreen> {
                                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                                     focusedBorder: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(12),
-                                        borderSide: BorderSide(color: Color(0xFFF78B00)),
+                                        borderSide: const BorderSide(color: Color(0xFFF78B00)),
                                     ),
                                 ),
                             )
@@ -135,7 +136,7 @@ class _AccountScreenState extends State<AccountScreen> {
                                 user?.firstName ?? '',
                                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.grey[600]),
                             ),
-                            SizedBox(height: 20),
+                            const SizedBox(height: 20),
 
                             // الاسم الأخير
                             Row(
@@ -146,7 +147,7 @@ class _AccountScreenState extends State<AccountScreen> {
                                         style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.grey[700]),
                                     ),
                                     IconButton(
-                                        icon: Icon(Icons.edit, color: Color(0xFFF78B00)),
+                                        icon: const Icon(Icons.edit, color: Color(0xFFF78B00)),
                                         onPressed: () {
                                             setState(() {
                                                 _isEditingLastName = true;
@@ -163,7 +164,7 @@ class _AccountScreenState extends State<AccountScreen> {
                                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                                     focusedBorder: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(12),
-                                        borderSide: BorderSide(color: Color(0xFFF78B00)),
+                                        borderSide: const BorderSide(color: Color(0xFFF78B00)),
                                     ),
                                 ),
                             )
@@ -171,7 +172,7 @@ class _AccountScreenState extends State<AccountScreen> {
                                 user?.lastName ?? '',
                                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.grey[600]),
                             ),
-                            SizedBox(height: 20),
+                            const SizedBox(height: 20),
 
                             // رقم الهاتف
                             Row(
@@ -182,7 +183,7 @@ class _AccountScreenState extends State<AccountScreen> {
                                         style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.grey[700]),
                                     ),
                                     IconButton(
-                                        icon: Icon(Icons.edit, color: Color(0xFFF78B00)),
+                                        icon: const Icon(Icons.edit, color: Color(0xFFF78B00)),
                                         onPressed: () {
                                             setState(() {
                                                 _isEditingPhone = true;
@@ -199,7 +200,7 @@ class _AccountScreenState extends State<AccountScreen> {
                                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                                     focusedBorder: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(12),
-                                        borderSide: BorderSide(color: Color(0xFFF78B00)),
+                                        borderSide: const BorderSide(color: Color(0xFFF78B00)),
                                     ),
                                 ),
                             )
@@ -207,7 +208,7 @@ class _AccountScreenState extends State<AccountScreen> {
                                 user?.phoneNumber ?? '',
                                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.grey[600]),
                             ),
-                            SizedBox(height: 20),
+                            const SizedBox(height: 20),
 
                             // رصيد المحفظة
                             Text(
@@ -218,7 +219,7 @@ class _AccountScreenState extends State<AccountScreen> {
                                 'ج.م ${user?.walletBalance ?? 0.0}',
                                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey[600]),
                             ),
-                            SizedBox(height: 20),
+                            const SizedBox(height: 20),
 
                             // زر حفظ التغييرات
                             Center(
@@ -237,42 +238,42 @@ class _AccountScreenState extends State<AccountScreen> {
                                                 _isEditingLastName = false;
                                                 _isEditingPhone = false;
                                             });
-                                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('تم حفظ التغييرات بنجاح!')));
+                                            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('تم حفظ التغييرات بنجاح!')));
                                         }
                                     }
                                         : null,
                                     style: ElevatedButton.styleFrom(
-                                        backgroundColor: Color(0xFFF78B00),
-                                        padding: EdgeInsets.symmetric(horizontal: 40, vertical: 12),
+                                        backgroundColor: const Color(0xFFF78B00),
+                                        padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 12),
                                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                                     ),
-                                    child: Text(
+                                    child: const Text(
                                         'حفظ التغييرات',
                                         style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                                     ),
                                 ),
                             ),
-                            SizedBox(height: 20),
+                            const SizedBox(height: 20),
 
                             // زر تسجيل الخروج
                             Center(
                                 child: ElevatedButton(
-                                    onPressed: () async {
-                                        await Provider.of<UserProvider>(context, listen: false).logout();
+                                    onPressed: ()  {
+                                        Provider.of<UserProvider>(context, listen: false).logout();
                                         Navigator.pushReplacementNamed(context, '/login');  // تأكد من تحديد المسار الصحيح لواجهة تسجيل الدخول
                                     },
                                     style: ElevatedButton.styleFrom(
                                         backgroundColor: Colors.red,
-                                        padding: EdgeInsets.symmetric(horizontal: 40, vertical: 12),
+                                        padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 12),
                                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                                     ),
-                                    child: Text(
+                                    child: const Text(
                                         'تسجيل الخروج',
                                         style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                                     ),
                                 ),
                             ),
-                            SizedBox(height: 20),
+                            const SizedBox(height: 20),
                         ],
                     ),
                 ),
@@ -280,6 +281,7 @@ class _AccountScreenState extends State<AccountScreen> {
             bottomNavigationBar: BottomNavigationBarWidget(
                 selectedIndex: _selectedIndex,
                 onItemTapped: (index) {
+                    print("index : $index");
                     setState(() {
                         _selectedIndex = index;
                     });

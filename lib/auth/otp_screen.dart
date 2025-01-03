@@ -41,10 +41,10 @@ class _OTPScreenState extends State<OTPScreen> {
         await _handleUserRole(widget.phoneNumber);
       }
     } catch (e) {
-      print(e);
-      print("***************************");
+      print("Error: ");
+      print(e.toString());
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("رمز التحقق غير صحيح")),
+        const SnackBar(content: Text("رمز التحقق غير صحيح")),
       );
     }
   }
@@ -78,20 +78,20 @@ class _OTPScreenState extends State<OTPScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("التحقق من OTP")),
+      appBar: AppBar(title: const Text("التحقق من OTP")),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
             TextField(
               controller: _otpController,
-              decoration: InputDecoration(labelText: "أدخل رمز OTP"),
+              decoration: const InputDecoration(labelText: "أدخل رمز OTP"),
               keyboardType: TextInputType.number,
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: _verifyOTP,
-              child: Text("تحقق"),
+              child: const Text("تحقق"),
             ),
           ],
         ),

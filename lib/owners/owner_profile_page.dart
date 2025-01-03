@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
+// import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 
@@ -33,14 +33,14 @@ class _OwnerProfilePageState extends State<OwnerProfilePage> {
   // رفع الصورة إلى Firebase Storage
   Future<void> _uploadImage() async {
     if (_image == null) return;
-    final storageRef =
-    FirebaseStorage.instance.ref().child('owner_images/${user?.uid}.jpg');
+    // TODO: Migrate to Supabase
+    // final storageRef = FirebaseStorage.instance.ref().child('owner_images/${user?.uid}.jpg');
 
-    await storageRef.putFile(_image!);
-    final url = await storageRef.getDownloadURL();
-    setState(() {
-      imageUrl = url;
-    });
+    // await storageRef.putFile(_image!);
+    // final url = await storageRef.getDownloadURL();
+    // setState(() {
+    //   imageUrl = url;
+    // });
   }
 
   // تغيير الرقم السري

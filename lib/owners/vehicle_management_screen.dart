@@ -34,7 +34,7 @@ class _ManageCarPageState extends State<ManageCarPage> {
     // التحقق مما إذا كانت الصفحة تحتوي على بيانات لتعديلها
     _nameController = TextEditingController(text: widget.car?.name ?? '');
     _fuelController = TextEditingController(text: widget.car?.category ?? '');
-    _ownerController = TextEditingController(text: widget.car?.ownerName ?? '');
+    _ownerController = TextEditingController(text: widget.car?.owner ?? '');
     _priceController =
         TextEditingController(text: widget.car?.pricePerDay.toString() ?? '');
     _seatsController = TextEditingController();
@@ -62,10 +62,10 @@ class _ManageCarPageState extends State<ManageCarPage> {
         id: widget.car?.id ?? '',
         name: _nameController.text,
         category: _fuelController.text,
-        ownerName: _ownerController.text,
-        image: _imageFile != null
-            ? [_imageFile!] // تمثيل الصور في شكل نصوص
-            : widget.car?.image ?? [],
+        owner: _ownerController.text,
+        images: _imageFile != null
+            ? [_imageFile!.path] // تمثيل الصور في شكل نصوص
+            : widget.car?.images ?? [],
         isBooking: _isAvailable,
         pricePerDay: double.parse(_priceController.text),
       );
@@ -107,37 +107,37 @@ class _ManageCarPageState extends State<ManageCarPage> {
               children: [
                 TextFormField(
                   controller: _nameController,
-                  decoration: InputDecoration(labelText: 'اسم المركبة'),
+                  decoration: const InputDecoration(labelText: 'اسم المركبة'),
                   validator: (value) =>
                   value!.isEmpty ? 'يرجى إدخال اسم المركبة' : null,
                 ),
                 TextFormField(
                   controller: _fuelController,
-                  decoration: InputDecoration(labelText: 'نوع الوقود'),
+                  decoration: const InputDecoration(labelText: 'نوع الوقود'),
                   validator: (value) =>
                   value!.isEmpty ? 'يرجى إدخال نوع الوقود' : null,
                 ),
                 TextFormField(
                   controller: _ownerController,
-                  decoration: InputDecoration(labelText: 'الشركة المالكة'),
+                  decoration: const InputDecoration(labelText: 'الشركة المالكة'),
                   validator: (value) =>
                   value!.isEmpty ? 'يرجى إدخال اسم الشركة المالكة' : null,
                 ),
                 TextFormField(
                   controller: _priceController,
-                  decoration: InputDecoration(labelText: 'السعر اليومي'),
+                  decoration: const InputDecoration(labelText: 'السعر اليومي'),
                   keyboardType: TextInputType.number,
                   validator: (value) =>
                   value!.isEmpty ? 'يرجى إدخال السعر اليومي' : null,
                 ),
                 TextFormField(
                   controller: _seatsController,
-                  decoration: InputDecoration(labelText: 'عدد المقاعد'),
+                  decoration: const InputDecoration(labelText: 'عدد المقاعد'),
                   keyboardType: TextInputType.number,
                 ),
                 Row(
                   children: [
-                    Text('حالة المركبة: '),
+                    const Text('حالة المركبة: '),
                     Switch(
                       value: _isAvailable,
                       onChanged: (value) {
@@ -148,16 +148,16 @@ class _ManageCarPageState extends State<ManageCarPage> {
                     ),
                   ],
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 // زر اختيار الصورة
                 Row(
                   children: [
                     ElevatedButton.icon(
                       onPressed: _pickImage,
-                      icon: Icon(Icons.image),
-                      label: Text('إدراج صورة'),
+                      icon: const Icon(Icons.image),
+                      label: const Text('إدراج صورة'),
                     ),
-                    SizedBox(width: 10),
+                    const SizedBox(width: 10),
                     _imageFile != null
                         ? Image.file(
                       _imageFile!,
@@ -165,22 +165,22 @@ class _ManageCarPageState extends State<ManageCarPage> {
                       height: 100,
                       fit: BoxFit.cover,
                     )
-                        : SizedBox(),
+                        : const SizedBox(),
                   ],
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 // زر الحفظ
                 ElevatedButton(
                   onPressed: _saveCar,
                   child: Text(widget.car == null ? 'إضافة' : 'تحديث'),
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 // زر الحذف
                 if (widget.car != null)
                   ElevatedButton(
                     onPressed: _deleteCar,
                     style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                    child: Text('حذف المركبة'),
+                    child: const Text('حذف المركبة'),
                   ),
               ],
             ),

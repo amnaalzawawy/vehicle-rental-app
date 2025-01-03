@@ -3,162 +3,118 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:image_picker/image_picker.dart';
-import '../models/user.dart';  // تأكد من استيراد النموذج الخاص بك
+import 'package:flutter/cupertino.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../models/user.dart';
 
 class UserProvider with ChangeNotifier {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
   List<UserModel> _users = [];
-  String verificationId = '';
-  bool isOtpSent = false;
+  UserModel? _currentUser;
 
-  // Getter لإرجاع قائمة المستخدمين
+  // Getters
+  UserModel? get currentUser => _currentUser;
   List<UserModel> get users => _users;
 
-  // جلب جميع المستخدمين من Firestore
+  // تحميل بيانات المستخدم من Firestore
+  Future<void> loadUserData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? userId = prefs.getString('userId');
+    if (userId != null) {
+      try {
+        final snapshot = await _firestore.collection('users').doc(userId).get();
+        if (snapshot.exists) {
+          _currentUser = UserModel.fromMap(snapshot.data() as Map<String, dynamic>);
+          notifyListeners();
+        }
+      } catch (e) {
+        debugPrint('Error loading user data: $e');
+      }
+    }
+  }
+
+  // حفظ بيانات المستخدم في SharedPreferences
+  Future<void> _saveUserLocally(UserModel user) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('userId', user.userId);
+  }
+
+  // تسجيل الدخول
+  Future<void> login(String email, String password) async {
+    try {
+      UserCredential userCredential = await _auth.signInWithEmailAndPassword(email: email, password: password);
+      if (userCredential.user != null) {
+        final snapshot = await _firestore.collection('users').doc(userCredential.user!.uid).get();
+        if (snapshot.exists) {
+          UserModel user = UserModel.fromMap(snapshot.data() as Map<String, dynamic>);
+          _currentUser = user;
+          await _saveUserLocally(user);
+          notifyListeners();
+        }
+      }
+    } catch (e) {
+      debugPrint('Login error: $e');
+    }
+  }
+
+  // تسجيل مستخدم جديد
+  Future<void> signUp(String email, String password, String firstName, String lastName, String phoneNumber) async {
+    try {
+      UserCredential userCredential = await _auth.createUserWithEmailAndPassword(email: email, password: password);
+      if (userCredential.user != null) {
+        UserModel newUser = UserModel(
+          userId: userCredential.user!.uid,
+          firstName: firstName,
+          lastName: lastName,
+          email: email,
+          role: 'مستخدم',
+          walletBalance: 0.0,
+          profileImageBase64: null,
+          phoneNumber: phoneNumber,
+          passwordHash: '',
+        );
+        await _firestore.collection('users').doc(newUser.userId).set(newUser.toMap());
+        _currentUser = newUser;
+        await _saveUserLocally(newUser);
+        notifyListeners();
+      }
+    } catch (e) {
+      debugPrint('Sign Up error: $e');
+    }
+  }
+
+  // تسجيل الخروج
+  Future<void> logout() async {
+    await _auth.signOut();
+    _currentUser = null;
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
+    notifyListeners();
+  }
+
+  // تحديث بيانات المستخدم
+  Future<void> updateUser(UserModel updatedUser) async {
+    try {
+      await _firestore.collection('users').doc(updatedUser.userId).update(updatedUser.toMap());
+      if (_currentUser != null && _currentUser!.userId == updatedUser.userId) {
+        _currentUser = updatedUser;
+        await _saveUserLocally(updatedUser);
+        notifyListeners();
+      }
+    } catch (e) {
+      debugPrint('Error updating user: $e');
+    }
+  }
+
+  // جلب جميع المستخدمين
   Future<void> fetchUsers() async {
     try {
       final snapshot = await _firestore.collection('users').get();
-      _users = snapshot.docs
-          .map((doc) => UserModel.fromMap(doc.data() as Map<String, dynamic>))
-          .toList();
+      _users = snapshot.docs.map((doc) => UserModel.fromMap(doc.data() as Map<String, dynamic>)).toList();
       notifyListeners();
     } catch (e) {
       debugPrint('Error fetching users: $e');
-    }
-  }
-
-  // إضافة مستخدم جديد إلى Firestore
-  Future<void> addUser(UserModel user) async {
-    try {
-      await _firestore.collection('users').doc(user.userId).set(user.toMap());
-      _users.add(user);
-      notifyListeners();
-    } catch (e) {
-      debugPrint('Error adding user: $e');
-    }
-  }
-
-  // دالة لإرسال OTP إلى رقم الهاتف
-  Future<void> sendOtp(String phoneNumber) async {
-    try {
-      await _auth.verifyPhoneNumber(
-        phoneNumber: '+218$phoneNumber', // إضافة رمز الدولة
-        verificationCompleted: (PhoneAuthCredential credential) async {
-          // تسجيل الدخول التلقائي إذا تم التحقق بنجاح
-          UserCredential userCredential = await _auth.signInWithCredential(credential);
-          if (userCredential.user != null) {
-            await _addUserToFirestore(userCredential.user!);
-            notifyListeners();
-          }
-        },
-        verificationFailed: (FirebaseAuthException e) {
-          debugPrint('Verification failed: ${e.message}');
-        },
-        codeSent: (String verificationId, int? resendToken) {
-          this.verificationId = verificationId;
-          isOtpSent = true;
-          notifyListeners();
-        },
-        codeAutoRetrievalTimeout: (String verificationId) {
-          debugPrint('Code auto-retrieval timed out');
-        },
-      );
-    } catch (e) {
-      debugPrint('Error sending OTP: $e');
-    }
-  }
-
-  // دالة للتحقق من OTP المدخل
-  Future<void> verifyOtp(String otp, BuildContext context) async {
-    try {
-      PhoneAuthCredential credential = PhoneAuthProvider.credential(
-        verificationId: verificationId,
-        smsCode: otp,
-      );
-
-      UserCredential userCredential = await _auth.signInWithCredential(credential);
-      if (userCredential.user != null) {
-        await _addUserToFirestore(userCredential.user!);
-        notifyListeners();
-      }
-    } catch (e) {
-      debugPrint('Error verifying OTP: $e');
-    }
-  }
-
-  // دالة لإضافة المستخدم إلى قاعدة بيانات Firestore
-  Future<void> _addUserToFirestore(User user) async {
-    try {
-      UserModel newUser = UserModel(
-        firstName: 'Default First Name', // تأكد من أن لديك اسم للمستخدم
-        lastName: 'Default Last Name',
-        phoneNumber: user.phoneNumber ?? '', // تأكد من وجود رقم الهاتف
-        userId: user.uid, // معرّف المستخدم
-        walletBalance: 0.0, // رصيد المحفظة الافتراضي
-        profileImageBase64: null, // في البداية لا يوجد صورة
-      );
-
-      await _firestore.collection('users').doc(user.uid).set(newUser.toMap());
-      _users.add(newUser);
-      notifyListeners();
-    } catch (e) {
-      debugPrint('Error adding user to Firestore: $e');
-    }
-  }
-
-  // دالة لرفع صورة المستخدم وتخزينها كـ Base64 في Firestore
-  Future<void> uploadProfileImage(String userId) async {
-    try {
-      // اختيار صورة من المعرض أو الكاميرا
-      final ImagePicker picker = ImagePicker();
-      final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-
-      if (pickedFile != null) {
-        final file = File(pickedFile.path);
-
-        // تحويل الصورة إلى Base64
-        final bytes = await file.readAsBytes();
-        final base64String = base64Encode(bytes);
-
-        // تحديث الرابط في Firestore
-        await _firestore.collection('users').doc(userId).update({
-          'profileImageBase64': base64String,
-        });
-
-        // تحديث الصورة في النموذج
-        final updatedUser = _users.firstWhere((user) => user.userId == userId);
-        final updatedUserWithNewImage = updatedUser.copyWith(profileImageBase64: base64String);
-
-        // تحديث القائمة
-        int index = _users.indexOf(updatedUser);
-        _users[index] = updatedUserWithNewImage;
-        notifyListeners();
-      }
-    } catch (e) {
-      debugPrint('Error uploading profile image: $e');
-    }
-  }
-
-  // دالة لحذف الصورة من Firestore
-  Future<void> deleteProfileImage(String userId) async {
-    try {
-      // إزالة الصورة من Firestore
-      await _firestore.collection('users').doc(userId).update({
-        'profileImageBase64': FieldValue.delete(), // حذف الصورة
-      });
-
-      // تحديث الصورة في النموذج
-      final updatedUser = _users.firstWhere((user) => user.userId == userId);
-      final updatedUserWithoutImage = updatedUser.copyWith(profileImageBase64: null);
-
-      // تحديث القائمة
-      int index = _users.indexOf(updatedUser);
-      _users[index] = updatedUserWithoutImage;
-      notifyListeners();
-    } catch (e) {
-      debugPrint('Error deleting profile image: $e');
     }
   }
 }

@@ -1,165 +1,197 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../models/user.dart';
-import 'otp_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../providers/user_provider.dart';
 
-class LoginScreen extends StatefulWidget {
+class SignUpScreen extends StatefulWidget {
   @override
-  _LoginScreenState createState() => _LoginScreenState();
+  _SignUpScreenState createState() => _SignUpScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _SignUpScreenState extends State<SignUpScreen> {
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
   final _firstNameController = TextEditingController();
   final _lastNameController = TextEditingController();
   final _phoneController = TextEditingController();
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  String _verificationId = '';
+  final _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
 
-  // التحقق من دور المستخدم وتسجيل الدخول
-  void _checkUserRole() async {
-    setState(() => _isLoading = true);
-    final phoneNumber = _phoneController.text.trim();
-    final firstName = _firstNameController.text.trim();
-    final lastName = _lastNameController.text.trim();
+  // دالة لتخزين الجلسة باستخدام SharedPreferences
+  Future<void> _saveUserSession(String userId) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('userId', userId);
+  }
 
-    try {
-      // التحقق إذا كان المستخدم موجودًا في Firestore
-      final userDoc = await _firestore
-          .collection('users')
-          .doc(phoneNumber)
-          .get();
+  // دالة لتسجيل المستخدم
+  void _signUp() async {
+    if (_formKey.currentState!.validate()) {
+      setState(() {
+        _isLoading = true;
+      });
 
-      if (userDoc.exists) {
-        final userData = userDoc.data();
-        if (userData != null && userData['role'] == 'admin') {
-          // إذا كان المستخدم أدمن، الانتقال إلى واجهة الأدمن
-          Navigator.pushReplacementNamed(context, '/admin_dashboard');
+      final email = _emailController.text;
+      final password = _passwordController.text;
+      final firstName = _firstNameController.text;
+      final lastName = _lastNameController.text;
+      final phone = _phoneController.text;
+
+      try {
+        // فحص إذا كان البريد الإلكتروني موجود في قاعدة البيانات
+        DocumentSnapshot userDoc =
+        await FirebaseFirestore.instance.collection('users').doc(email).get();
+
+        if (userDoc.exists) {
+          // إذا كان البريد موجودًا، تحقق من الدور واحفظ الجلسة
+          String userId = userDoc['userId'];
+          await _saveUserSession(userId);
+          String role = userDoc['role'];
+          _navigateToRoleScreen(role);
         } else {
-          // إذا كان مستخدمًا عاديًا، إرسال رمز التحقق
-          _sendOtp(phoneNumber);
+          // إذا لم يكن البريد موجودًا، قم بإضافة المستخدم الجديد
+          await _addNewUser(email, password, firstName, lastName, phone);
         }
-      } else {
-        // إذا لم يكن المستخدم موجودًا، إرسال رمز التحقق
-        _sendOtp(phoneNumber);
+      } catch (error) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text('حدث خطأ أثناء التسجيل. حاول مرة أخرى!'),
+        ));
+      } finally {
+        setState(() {
+          _isLoading = false;
+        });
       }
-    } catch (e) {
-      // التعامل مع الأخطاء
-      print("خطأ: $e");
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('حدث خطأ أثناء التحقق من المستخدم.')),
-      );
-    } finally {
-      setState(() => _isLoading = false);
     }
   }
 
-  // إرسال رمز التحقق OTP
-  void _sendOtp(String phoneNumber) async {
-    try {
-      await _auth.verifyPhoneNumber(
-        phoneNumber: '+218$phoneNumber',
-        verificationCompleted: (PhoneAuthCredential credential) async {
-          // التحقق التلقائي وتسجيل الدخول
-          await _auth.signInWithCredential(credential);
-          _saveUserData();
-          Navigator.pushReplacementNamed(context, '/user_dashboard');
-        },
-        verificationFailed: (FirebaseAuthException e) {
-          // التعامل مع أخطاء التحقق
-          print('فشل التحقق: ${e.message}');
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('فشل التحقق: ${e.message}')),
-          );
-        },
-        codeSent: (String verificationId, int? resendToken) {
-          // حفظ معرف التحقق وإظهار شاشة OTP
-          setState(() => _verificationId = verificationId);
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => OtpScreen(
-                verificationId: verificationId,
-                phoneNumber: phoneNumber,
-                onVerified: _saveUserData,
-              ),
-            ),
-          );
-        },
-        codeAutoRetrievalTimeout: (String verificationId) {
-          // انتهاء صلاحية الرمز
-          setState(() => _verificationId = verificationId);
-        },
-      );
-    } catch (e) {
-      // التعامل مع أخطاء الإرسال
-      print('خطأ في إرسال OTP: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('خطأ في إرسال رمز التحقق.')),
-      );
+  // دالة لتوجيه المستخدم بناءً على الدور
+  void _navigateToRoleScreen(String role) {
+    if (role == 'admin') {
+      Navigator.pushReplacementNamed(context, '/CarScreen');
+    } else if (role == 'owner') {
+      Navigator.pushReplacementNamed(context, '/ownerDashboard');
+    } else {
+      Navigator.pushReplacementNamed(context, '/myAccount');
     }
   }
 
-  // حفظ بيانات المستخدم الجديد في Firestore
-  void _saveUserData() async {
-    final phoneNumber = _phoneController.text.trim();
-    final firstName = _firstNameController.text.trim();
-    final lastName = _lastNameController.text.trim();
-
+  // دالة لإضافة مستخدم جديد وحفظ بياناته في قاعدة البيانات
+  Future<void> _addNewUser(String email, String password, String firstName,
+      String lastName, String phone) async {
     try {
-      await _firestore.collection('users').doc(phoneNumber).set({
-        'userId': phoneNumber,
+      // إنشاء حساب مستخدم جديد باستخدام Firebase Authentication
+      UserCredential userCredential =
+      await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      String userId = userCredential.user!.uid;
+
+      // حفظ بيانات المستخدم في Firestore
+      await FirebaseFirestore.instance.collection('users').doc(email).set({
+        'userId': userId,
         'firstName': firstName,
         'lastName': lastName,
-        'phoneNumber': phoneNumber,
-        'walletBalance': 0.0,
-        'role': 'user',
+        'phone': phone,
+        'email': email,
+        'role': 'user', // تعيين الدور كمستخدم عادي
+        'createdAt': FieldValue.serverTimestamp(),
       });
-    } catch (e) {
-      print("خطأ في حفظ البيانات: $e");
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('خطأ في حفظ بيانات المستخدم.')),
-      );
+
+      // حفظ الجلسة
+      await _saveUserSession(userId);
+
+      // التوجيه إلى واجهة المستخدم العادي
+      Navigator.pushReplacementNamed(context, '/myAccount');
+    } catch (error) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('حدث خطأ أثناء إضافة المستخدم. حاول مرة أخرى!'),
+      ));
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: SingleChildScrollView(
-          padding: EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+      appBar: AppBar(
+        title: const Text('التسجيل'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Form(
+          key: _formKey,
+          child: ListView(
             children: [
-              Text(
-                'أهلًا بك!',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              TextFormField(
+                controller: _emailController,
+                decoration: const InputDecoration(labelText: 'البريد الإلكتروني'),
+                keyboardType: TextInputType.emailAddress,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'يرجى إدخال البريد الإلكتروني';
+                  }
+                  if (!RegExp(r'^[a-zA-Z0-9]+@gmail\.com$').hasMatch(value)) {
+                    return 'يرجى إدخال بريد إلكتروني صالح';
+                  }
+                  return null;
+                },
               ),
-              SizedBox(height: 20),
-              TextField(
+              TextFormField(
+                controller: _passwordController,
+                decoration: const InputDecoration(labelText: 'كلمة المرور'),
+                obscureText: true,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'يرجى إدخال كلمة المرور';
+                  }
+                  if (value.length < 6) {
+                    return 'يجب أن تحتوي كلمة المرور على 6 أحرف على الأقل';
+                  }
+                  return null;
+                },
+              ),
+              TextFormField(
                 controller: _firstNameController,
-                decoration: InputDecoration(labelText: 'الاسم الأول'),
+                decoration: const InputDecoration(labelText: 'الاسم الأول'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'يرجى إدخال الاسم الأول';
+                  }
+                  return null;
+                },
               ),
-              TextField(
+              TextFormField(
                 controller: _lastNameController,
-                decoration: InputDecoration(labelText: 'الاسم الأخير'),
+                decoration: const InputDecoration(labelText: 'الاسم الأخير'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'يرجى إدخال الاسم الأخير';
+                  }
+                  return null;
+                },
               ),
-              TextField(
+              TextFormField(
                 controller: _phoneController,
+                decoration: const InputDecoration(labelText: 'رقم الهاتف'),
                 keyboardType: TextInputType.phone,
-                decoration: InputDecoration(labelText: 'رقم الهاتف الليبي'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'يرجى إدخال رقم الهاتف';
+                  }
+                  return null;
+                },
               ),
-              SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: _isLoading ? null : _checkUserRole,
-                child: _isLoading
-                    ? CircularProgressIndicator(color: Colors.white)
-                    : Text('تسجيل الدخول'),
-              ),
+              const SizedBox(height: 20),
+              if (_isLoading)
+                const Center(child: CircularProgressIndicator())
+              else
+                ElevatedButton(
+                  onPressed: _signUp,
+                  child: const Text('التسجيل'),
+                ),
             ],
           ),
         ),

@@ -37,7 +37,7 @@ class CustomDrawer extends StatelessWidget {
           ),
           ListTile(
             leading: Icon(AppIcons.owners, color: Colors.black),
-            title: Text('Owners', style: AppStyles.drawerText),
+            title: Text('owners', style: AppStyles.drawerText),
             onTap: () {
               Navigator.pushNamed(context, '/owners');
             },
