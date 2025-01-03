@@ -23,11 +23,11 @@ class CarDetailScreen extends StatelessWidget {
               height: 200,
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
-                itemCount: car.image?.length,
+                itemCount: car.images.length,
                 itemBuilder: (context, index) {
                   return Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Image.network(car.image![index].path),
+                    child: Image.network(car.images[index]),
                   );
                 },
               ),
@@ -44,7 +44,7 @@ class CarDetailScreen extends StatelessWidget {
                   ),
                   SizedBox(height: 10),
                   Text(
-                    'اسم المالك: ${car.ownerName}',
+                    'اسم المالك: ${car.owner}',
                     style: TextStyle(fontSize: 18),
                   ),
                   SizedBox(height: 10),

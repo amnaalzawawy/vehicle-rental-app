@@ -1,70 +1,105 @@
-/*import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:untitled2/services/auth_service.dart';
 
 class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
   @override
-  _LoginScreenState createState() => _LoginScreenState();
+  LoginScreenState createState() => LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
-  final TextEditingController _phoneController = TextEditingController();
-  final TextEditingController _otpController = TextEditingController();
-  String verificationId = "";
+class LoginScreenState extends State<LoginScreen> {
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
-  bool isOtpSent = false;
+  // Function to handle sign-in with email and password
+  void _loginWithEmailAndPassword() async {
+    try {
+      final email = _emailController.text.trim();
+      final password = _passwordController.text;
 
-  // إرسال OTP عند الضغط على "التالي"
-  void _sendOtp() {
-    final phoneNumber = _phoneController.text;
-    AuthService().sendOTP(phoneNumber, (PhoneAuthCredential credential) {
-      setState(() {
-        verificationId = credential.verificationId ?? "";
-        isOtpSent = true;
-      });
-    });
+      UserCredential userCredential = await FirebaseAuth.instance
+          .signInWithEmailAndPassword(email: email, password: password);
+      if(userCredential.user != null){
+        // Navigate to the home page after successful login
+        Navigator.pushNamedAndRemoveUntil(context, "/", (route) => false);
+        // Navigator.pushReplacementNamed(context, '/');
+      }else{
+
+      }
+
+
+    } catch (e) {
+      _showErrorDialog(e.toString());
+    }
   }
 
-  // التحقق من OTP عند الضغط على "تأكيد"
-  void _verifyOtp() async {
-    final otp = _otpController.text;
-    User? user = await AuthService().signInWithOTP(otp, verificationId);
-    if (user != null) {
-      // إذا تم التحقق بنجاح، يمكنك الانتقال إلى الشاشة الرئيسية
-      Navigator.pushReplacementNamed(context, '/home');
-    } else {
-      print('Invalid OTP');
-    }
+  // Function to display an error dialog
+  void _showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Error"),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("OK"),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Login")),
+      appBar: AppBar(title: const Text("Login")),
       body: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (!isOtpSent)
-              TextField(
-                controller: _phoneController,
-                decoration: InputDecoration(hintText: 'Enter phone number'),
-                keyboardType: TextInputType.phone,
+            TextField(
+              controller: _emailController,
+              decoration: const InputDecoration(
+                hintText: 'Enter email',
+                labelText: 'Email',
               ),
-            if (isOtpSent)
-              TextField(
-                controller: _otpController,
-                decoration: InputDecoration(hintText: 'Enter OTP'),
-                keyboardType: TextInputType.number,
-              ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: isOtpSent ? _verifyOtp : _sendOtp,
-              child: Text(isOtpSent ? 'Verify OTP' : 'Send OTP'),
+              keyboardType: TextInputType.emailAddress,
             ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: _passwordController,
+              decoration: const InputDecoration(
+                hintText: 'Enter password',
+                labelText: 'Password',
+              ),
+              obscureText: true,
+            ),
+            const SizedBox(height: 20),
+            Row(
+              children: [
+                Center(
+                  child: ElevatedButton(
+                    onPressed: _loginWithEmailAndPassword,
+                    child: const Text("Login"),
+                  ),
+                ),
+                Container(width: 50,),
+                Center(
+                  child: ElevatedButton(
+                    onPressed: (){
+                      Navigator.pushNamed(context, "/signup");
+                    },
+                    child: const Text("Register"),
+                  ),
+                ),
+              ],
+            )
           ],
         ),
       ),
     );
   }
-}*/
+}

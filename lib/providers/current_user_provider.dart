@@ -10,21 +10,24 @@ class UserProvider with ChangeNotifier {
 
   // Getter للمستخدم الحالي
   UserModel? get currentUser => _currentUser;
+  User? get firebaseUser => _auth.currentUser;
 
   // جلب المستخدم الحالي من Firestore بناءً على UID
-  Future<void> getCurrentUser() async {
+  Future<UserModel?> getCurrentUser() async {
     final user = _auth.currentUser;
     if (user != null) {
-      try {
-        final snapshot = await _firestore.collection('users').doc(user.uid).get();
+      // try {
+        final snapshot = await _firestore.collection('users').doc(user.email).get();
         if (snapshot.exists) {
           _currentUser = UserModel.fromMap(snapshot.data() as Map<String, dynamic>);
+          return _currentUser;
           notifyListeners();
         }
-      } catch (e) {
-        debugPrint('Error fetching current user: $e');
-      }
+      // } catch (e) {
+      //   debugPrint('Error fetching current user: $e');
+      // }
     }
+    return null;
   }
 
   // تحديث بيانات المستخدم في Firestore والمزود

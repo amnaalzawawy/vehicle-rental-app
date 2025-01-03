@@ -87,7 +87,7 @@ class _CarScreenState extends State<CarScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text('فئة: ${car.category}'),
-                            Text('مالك: ${car.ownerName}'),
+                            Text('مالك: ${car.owner}'),
                           ],
                         ),
                         trailing: IconButton(
