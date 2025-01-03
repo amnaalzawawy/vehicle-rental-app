@@ -1,11 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
-
 import '../providers/user_provider.dart';
 import '../widgets/bottom_navigation_bar.dart';
 import '../widgets/custom_user_drawer.dart';

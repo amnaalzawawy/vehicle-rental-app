@@ -24,7 +24,8 @@ class UserProvider with ChangeNotifier {
           .map((doc) => UserModel.fromMap(doc.data() as Map<String, dynamic>))
           .toList();
       notifyListeners();
-    } catch (e) {
+    }
+    catch (e) {
       debugPrint('Error fetching users: $e');
     }
   }
