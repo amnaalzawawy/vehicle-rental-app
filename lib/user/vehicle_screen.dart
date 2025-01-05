@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:untitled2/models/user.dart';
 import 'package:untitled2/providers/current_user_provider.dart';
 import 'package:untitled2/widgets/custom_user_drawer.dart';
 
@@ -22,11 +23,19 @@ class CarDisplayScreenState extends State<CarDisplayScreen> {
   List<CarModel> _cars = [];
   List<CarModel> _filteredCars = [];
   int _selectedIndex = 0;
+  UserModel? user;
 
   @override
   void initState() {
     super.initState();
     _fetchCars();
+    var userProvider = UserProvider();
+
+    userProvider.getCurrentUser().then((value) {
+      setState(() {
+        user = value;
+      });
+    },);
   }
 
   // جلب المركبات من قاعدة البيانات
@@ -116,7 +125,7 @@ class CarDisplayScreenState extends State<CarDisplayScreen> {
               break;
             case 2:
               if (user.role == "owner") {
-                Navigator.pushNamed(context, "/owner/manage");
+                Navigator.pushNamed(context, "/owner/account");
               }
               if (user.role == "user") {
                 Navigator.pushNamed(context, "/myAccount");
@@ -159,26 +168,24 @@ class CarDisplayScreenState extends State<CarDisplayScreen> {
           Expanded(
             child: _filteredCars.isEmpty
                 ? Center(child: Text('لا توجد مركبات لعرضها'))
-                : CarCard(car: _cars[0], onPressed: () {
-                  print("On card action");
-                },)
-            // ListView.builder(
-            //         itemCount: _filteredCars.length,
-            //         itemBuilder: (context, index) {
-            //           return CarCard(
-            //             car: _filteredCars[index],
-            //             onPressed: () {
-            //               Navigator.push(
-            //                 context,
-            //                 MaterialPageRoute(
-            //                   builder: (context) =>
-            //                       CarDetailScreen(car: _filteredCars[index]),
-            //                 ),
-            //               );
-            //             },
-            //           );
-            //         },
-            //       ),
+                : 
+            ListView.builder(
+                    itemCount: _filteredCars.length,
+                    itemBuilder: (context, index) {
+                      return CarCard(
+                        car: _filteredCars[index],
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  CarDetailScreen(car: _filteredCars[index]),
+                            ),
+                          );
+                        },
+                      );
+                    },
+                  ),
           ),
         ],
       ),
@@ -186,6 +193,9 @@ class CarDisplayScreenState extends State<CarDisplayScreen> {
         selectedIndex: _selectedIndex,
         onItemTapped: _onItemTapped,
       ),
+      floatingActionButton: user?.role == "owner" ? FloatingActionButton(onPressed: (){
+                Navigator.pushNamed(context, "/owner/manage");
+      }, child: const Icon(Icons.add),) : null,
     );
   }
 }

@@ -20,18 +20,23 @@ class CarCardState extends State<CarCard> {
 
   void getImageURL() async {
     if (widget.car.images.isNotEmpty) {
-      var url = await Supabase.instance.client.storage
+      try{
+        var url = await Supabase.instance.client.storage
           .from("cars")
-          .createSignedUrl(widget.car.images[0], 60000);
+          .createSignedUrl(widget.car.images[0].replaceAll("cars/", ""), 60000);
       setState(() {
         imageURL = url;
       });
+      }catch(e){
+
+      }
     }
   }
 
   @override
   void initState() {
     super.initState();
+    getImageURL();
   }
 
   @override

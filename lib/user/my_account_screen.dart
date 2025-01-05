@@ -1,12 +1,11 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
-
+import 'package:untitled2/models/user.dart';
 import '../providers/user_provider.dart';
+import '../providers/current_user_provider.dart' as CurrentUserProvider;
 import '../widgets/bottom_navigation_bar.dart';
 import '../widgets/custom_user_drawer.dart';
 
@@ -24,11 +23,21 @@ class _AccountScreenState extends State<AccountScreen> {
     bool _isEditingFirstName = false;
     bool _isEditingLastName = false;
     bool _isEditingPhone = false;
+    UserModel? user;
+
 
     @override
     void initState() {
         super.initState();
         _loadCurrentUser();
+
+        var userProvider = CurrentUserProvider.UserProvider();
+
+    userProvider.getCurrentUser().then((value) {
+      setState(() {
+        user = value;
+      });
+    },);
     }
 
     Future<void> _loadCurrentUser() async {
@@ -58,9 +67,11 @@ class _AccountScreenState extends State<AccountScreen> {
         return base64Encode(bytes);
     }
 
+
+
     @override
     Widget build(BuildContext context) {
-        final user = Provider.of<UserProvider>(context).currentUser;
+        
 
         return Scaffold(
             appBar: AppBar(
@@ -133,7 +144,7 @@ class _AccountScreenState extends State<AccountScreen> {
                                 ),
                             )
                                 : Text(
-                                user?.firstName ?? '',
+                                user?.firstName ?? 'None',
                                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.grey[600]),
                             ),
                             const SizedBox(height: 20),
@@ -169,7 +180,7 @@ class _AccountScreenState extends State<AccountScreen> {
                                 ),
                             )
                                 : Text(
-                                user?.lastName ?? '',
+                                user?.lastName ?? 'None',
                                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.grey[600]),
                             ),
                             const SizedBox(height: 20),
@@ -227,12 +238,14 @@ class _AccountScreenState extends State<AccountScreen> {
                                     onPressed: _hasChanges()
                                         ? () async {
                                         if (user != null) {
-                                            final updatedUser = user.copyWith(
-                                                firstName: _firstNameController.text.isNotEmpty ? _firstNameController.text : user.firstName,
-                                                lastName: _lastNameController.text.isNotEmpty ? _lastNameController.text : user.lastName,
-                                                phoneNumber: _phoneController.text.isNotEmpty ? _phoneController.text : user.phoneNumber,
+                                            final updatedUser = user?.copyWith(
+                                                firstName: _firstNameController.text.isNotEmpty ? _firstNameController.text : user?.firstName,
+                                                lastName: _lastNameController.text.isNotEmpty ? _lastNameController.text : user?.lastName,
+                                                phoneNumber: _phoneController.text.isNotEmpty ? _phoneController.text : user?.phoneNumber,
                                             );
-                                            await Provider.of<UserProvider>(context, listen: false).updateUser(updatedUser);
+                                            if(updatedUser != null) {
+                                              await Provider.of<UserProvider>(context, listen: false).updateUser(updatedUser);
+                                            }
                                             setState(() {
                                                 _isEditingFirstName = false;
                                                 _isEditingLastName = false;

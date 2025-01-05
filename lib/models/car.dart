@@ -27,7 +27,7 @@ class CarModel {
       owner: map['owner'] ?? '',
       images: List<String>.from(map['imageUrls'] ?? []),
       isBooking: map['isBooking'] ?? false,
-      pricePerDay: (map['pricePerDay'] as num?)?.toDouble() ?? 0.toDouble(),
+      pricePerDay: (map['price'] as num?)?.toDouble() ?? 0.toDouble(),
     );
   }
 
