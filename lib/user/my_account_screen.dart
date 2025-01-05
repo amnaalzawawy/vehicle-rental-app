@@ -1,10 +1,12 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:flutter/cupertino.dart';
+
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:untitled2/models/user.dart';
 import '../providers/user_provider.dart';
+import '../providers/current_user_provider.dart' as CurrentUserProvider;
 import '../widgets/bottom_navigation_bar.dart';
 import '../widgets/custom_user_drawer.dart';
 
@@ -22,11 +24,21 @@ class _AccountScreenState extends State<AccountScreen> {
     bool _isEditingFirstName = false;
     bool _isEditingLastName = false;
     bool _isEditingPhone = false;
+    UserModel? user;
+
 
     @override
     void initState() {
         super.initState();
         _loadCurrentUser();
+
+        var userProvider = CurrentUserProvider.UserProvider();
+
+    userProvider.getCurrentUser().then((value) {
+      setState(() {
+        user = value;
+      });
+    },);
     }
 
     Future<void> _loadCurrentUser() async {
@@ -56,9 +68,11 @@ class _AccountScreenState extends State<AccountScreen> {
         return base64Encode(bytes);
     }
 
+
+
     @override
     Widget build(BuildContext context) {
-        final user = Provider.of<UserProvider>(context).currentUser;
+
 
         return Scaffold(
             appBar: AppBar(

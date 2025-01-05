@@ -1,19 +1,60 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:provider/provider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:untitled2/models/user.dart';
+import 'package:untitled2/providers/current_user_provider.dart';
 import 'package:untitled2/user/booking_details_screen.dart';
 import '../models/car.dart';
 
-
-class CarDetailScreen extends StatelessWidget {
+class CarDetailScreen extends StatefulWidget {
   final CarModel car;
 
   CarDetailScreen({required this.car});
 
   @override
+  State<StatefulWidget> createState() => CarDetailScreenState();
+}
+
+class CarDetailScreenState extends State<CarDetailScreen> {
+  List<String> imageURLs = [];
+  UserModel? owner = null;
+
+  void getImageURL() async {
+    if (widget.car.images.isNotEmpty) {
+      try {
+        for (var img in widget.car.images) {
+          var url = await Supabase.instance.client.storage
+              .from("cars")
+              .createSignedUrl(img.replaceAll("cars/", ""), 60000);
+          setState(() {
+            imageURLs.add(url);
+          });
+        }
+      } catch (_e) {}
+    }
+  }
+
+
+  void getUserDetails() async {
+    final user = await UserProvider().getUser(widget.car.owner);
+    setState(() {
+      owner = user;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getImageURL();
+    getUserDetails();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(car.name),
+        title: Text(widget.car.name),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -23,11 +64,13 @@ class CarDetailScreen extends StatelessWidget {
               height: 200,
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
-                itemCount: car.images.length,
+                itemCount: imageURLs.length,
                 itemBuilder: (context, index) {
                   return Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Image.network(car.images[index]),
+                    child: Image.network(
+                      imageURLs[index],
+                    ),
                   );
                 },
               ),
@@ -39,18 +82,18 @@ class CarDetailScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'الفئة: ${car.category}',
+                    'الفئة: ${widget.car.category}',
                     style: TextStyle(fontSize: 18),
                   ),
                   SizedBox(height: 10),
                   Text(
-                    'اسم المالك: ${car.owner}',
+                    'اسم المالك: ${owner?.firstName}',
                     style: TextStyle(fontSize: 18),
                   ),
                   SizedBox(height: 10),
                   // عرض السعر اليومي من قاعدة البيانات
                   Text(
-                    'السعر اليومي: ${car.pricePerDay} د.ل',
+                    'السعر اليومي: ${widget.car.pricePerDay} د.ل',
                     style: TextStyle(fontSize: 18),
                   ),
                   SizedBox(height: 20),
@@ -61,8 +104,8 @@ class CarDetailScreen extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => BookingScreen(car: car)
-                        ),
+                            builder: (context) =>
+                                BookingScreen(car: widget.car)),
                       );
                     },
                     child: Text('احجز الآن'),

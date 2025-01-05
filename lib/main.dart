@@ -113,6 +113,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:untitled2/owners/owner_profile_page.dart';
 import 'package:untitled2/providers/booking_provider.dart';
 import 'package:untitled2/providers/car_provider.dart';
 import 'package:untitled2/providers/user_provider.dart';
@@ -163,6 +164,7 @@ class MyApp extends StatelessWidget {
           '/myBooking' :(context) => MyBookingsScreen(),
           '/vehicalScreen' :(context) => const CarDisplayScreen(),
           '/owner/manage' :(context) => const ManageCarPage(),
+          '/owner/account' :(context) => const OwnerProfilePage(),
           '/' :(context) => const CarDisplayScreen(), // Home replacement
         },
       ),
