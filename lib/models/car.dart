@@ -1,19 +1,21 @@
+import 'dart:io';
+
 class CarModel {
   String id;
   String name; // اسم المركبة
   String category;
-  String ownerName;
-  List<String> imageUrls;
+  String owner;
+  List<String> images = [];
   bool isBooking; // حالة الحجز (للعرض فقط)
   double pricePerDay;
   CarModel({
     required this.id,
     required this.name,
     required this.category,
-    required this.ownerName,
-    required this.imageUrls,
-    this.isBooking = false,
+    required this.owner,
     required  this.pricePerDay,
+    this.images = const [],
+    this.isBooking = false,
   });
 
   // تحويل من Map إلى CarModel
@@ -22,10 +24,10 @@ class CarModel {
       id: id,
       name: map['name'] ?? '', // تأكد من إضافة الحقل name
       category: map['category'] ?? '',
-      ownerName: map['ownerName'] ?? '',
-      imageUrls: List<String>.from(map['imageUrls'] ?? []),
+      owner: map['owner'] ?? '',
+      images: List<String>.from(map['imageUrls'] ?? []),
       isBooking: map['isBooking'] ?? false,
-      pricePerDay: map['pricePerDay'] ?? 0.0,
+      pricePerDay: (map['price'] as num?)?.toDouble() ?? 0.toDouble(),
     );
   }
 
@@ -34,10 +36,11 @@ class CarModel {
     return {
       'name': name, // تأكد من إضافة الحقل name
       'category': category,
-      'ownerName': ownerName,
-      'imageUrls': imageUrls,
+      'ownerName': owner,
+      'imageUrls': images,
       'isBooking': isBooking,
       'price':  pricePerDay,
+      "owner": owner
     };
   }
 }
