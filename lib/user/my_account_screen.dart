@@ -215,10 +215,7 @@ class _AccountScreenState extends State<AccountScreen> {
                                 'رصيد المحفظة',
                                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.grey[700]),
                             ),
-                            Text(
-                                'ج.م ${user?.walletBalance ?? 0.0}',
-                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey[600]),
-                            ),
+
                             const SizedBox(height: 20),
 
                             // زر حفظ التغييرات

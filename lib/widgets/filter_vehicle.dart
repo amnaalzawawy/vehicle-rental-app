@@ -22,37 +22,45 @@ class _FilterWidgetState extends State<FilterWidget> {
   Future<void> _fetchCategories() async {
     try {
       final querySnapshot = await FirebaseFirestore.instance.collection('cars').get();
-      final List<String> fetchedCategories = [];
-      querySnapshot.docs.forEach((doc) {
-        final category = doc['category']; // التأكد من وجود هذا الحقل في قاعدة البيانات
-        if (category != null && !fetchedCategories.contains(category)) {
-          fetchedCategories.add(category);
+      final Set<String> fetchedCategories = {}; // استخدام Set لتجنب التكرار
+      for (var doc in querySnapshot.docs) {
+        // التأكد من وجود الحقل category
+        if (doc.data().containsKey('category')) {
+          final category = doc['category'];
+          if (category != null && category.isNotEmpty) {
+            fetchedCategories.add(category);
+          }
         }
-      });
+      }
       setState(() {
-        categories = fetchedCategories;
+        categories = fetchedCategories.toList();
       });
     } catch (e) {
       print('فشل في جلب الفئات: $e');
     }
   }
 
-  // استرجاع المالكون من Firestore
+
+  // استرجاع أسماء المالكين من Firestore (مجموعة users)
   Future<void> _fetchOwners() async {
     try {
-      final querySnapshot = await FirebaseFirestore.instance.collection('cars').get();
-      final List<String> fetchedOwners = [];
-      querySnapshot.docs.forEach((doc) {
-        final owner = doc['ownerName']; // التأكد من وجود هذا الحقل في قاعدة البيانات
-        if (owner != null && !fetchedOwners.contains(owner)) {
-          fetchedOwners.add(owner);
+      final querySnapshot = await FirebaseFirestore.instance.collection('users').get();
+      final Set<String> fetchedOwners = {}; // استخدام Set لتجنب التكرار
+      for (var doc in querySnapshot.docs) {
+        final role = doc['role']; // قراءة الحقل role
+        if (role == 'owner') {
+          final firstName = doc['firstName'];
+          final lastName = doc['lastName'];
+          if (firstName != null && lastName != null && firstName.isNotEmpty && lastName.isNotEmpty) {
+            fetchedOwners.add('$firstName $lastName'); // دمج الاسم الأول والأخير
+          }
         }
-      });
+      }
       setState(() {
-        owners = fetchedOwners;
+        owners = fetchedOwners.toList(); // تحويل Set إلى List
       });
     } catch (e) {
-      print('فشل في جلب المالكون: $e');
+      print('فشل في جلب أسماء المالكين: $e');
     }
   }
 

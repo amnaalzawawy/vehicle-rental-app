@@ -1,24 +1,44 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:provider/provider.dart';
 
-class EditUserScreen extends StatelessWidget {
-  final String userId;
-  final dynamic userData;
+import '../../models/user.dart';
+import '../../providers/user_provider.dart';
 
-  EditUserScreen({super.key, required this.userId, required this.userData});
+class EditUserScreen extends StatefulWidget {
+  final UserModel user;
 
+  EditUserScreen({required this.user});
+
+  @override
+  _EditUserScreenState createState() => _EditUserScreenState();
+}
+
+class _EditUserScreenState extends State<EditUserScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController();
-  final _phoneController = TextEditingController();
+  late String firstName;
+  late String lastName;
+  late String email;
+  late String phoneNumber;
+  late String role;
+
+  @override
+  void initState() {
+    super.initState();
+    firstName = widget.user.firstName;
+    lastName = widget.user.lastName;
+    email = widget.user.email;
+    phoneNumber = widget.user.phoneNumber;
+    role = widget.user.role;
+  }
 
   @override
   Widget build(BuildContext context) {
-    _nameController.text = userData['name'];
-    _phoneController.text = userData['phone'];
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('تعديل بيانات المستخدم'),
+        title: Text('تعديل بيانات المستخدم/المالك'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -27,41 +47,60 @@ class EditUserScreen extends StatelessWidget {
           child: Column(
             children: [
               TextFormField(
-                controller: _nameController,
-                decoration: InputDecoration(labelText: 'الاسم'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'الرجاء إدخال الاسم';
-                  }
-                  return null;
-                },
+                initialValue: firstName,
+                decoration: InputDecoration(labelText: 'الاسم الأول'),
+                onSaved: (value) => firstName = value!,
+                validator: (value) => value!.isEmpty ? 'الحقل مطلوب' : null,
               ),
               TextFormField(
-                controller: _phoneController,
+                initialValue: lastName,
+                decoration: InputDecoration(labelText: 'الاسم الأخير'),
+                onSaved: (value) => lastName = value!,
+                validator: (value) => value!.isEmpty ? 'الحقل مطلوب' : null,
+              ),
+              TextFormField(
+                initialValue: email,
+                decoration: InputDecoration(labelText: 'البريد الإلكتروني'),
+                onSaved: (value) => email = value!,
+                validator: (value) => value!.isEmpty ? 'الحقل مطلوب' : null,
+              ),
+              TextFormField(
+                initialValue: phoneNumber,
                 decoration: InputDecoration(labelText: 'رقم الهاتف'),
-                keyboardType: TextInputType.phone,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'الرجاء إدخال رقم الهاتف';
-                  }
-                  if (!RegExp(r'^(?:\+218|0)(91|92|93|94|95|96|97|98|99)[0-9]{6,7}$').hasMatch(value)) {
-                    return 'رقم الهاتف غير صالح';
-                  }
-                  return null;
-                },
+                onSaved: (value) => phoneNumber = value!,
+                validator: (value) => value!.isEmpty ? 'الحقل مطلوب' : null,
+              ),
+              DropdownButtonFormField<String>(
+                value: role,
+                decoration: InputDecoration(labelText: 'الدور'),
+                items: [
+                  DropdownMenuItem(value: 'مستخدم', child: Text('مستخدم')),
+                  DropdownMenuItem(value: 'مالك', child: Text('مالك')),
+                  DropdownMenuItem(value: 'أدمن', child: Text('أدمن')),
+                ],
+                onChanged: (value) => setState(() => role = value!),
               ),
               SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
-                    FirebaseFirestore.instance.collection('users').doc(userId).update({
-                      'name': _nameController.text,
-                      'phone': _phoneController.text,
-                    });
+                    _formKey.currentState!.save();
+                    userProvider.updateUser(
+                      UserModel(
+                        userId: widget.user.userId,  // لا حاجة لتمرير userId مرة أخرى إذا كانت موجودة في UserModel
+                        firstName: firstName,
+                        lastName: lastName,
+                        phoneNumber: phoneNumber,
+                        profileImageBase64: widget.user.profileImageBase64,
+                        role: role,
+                        email: email,
+                        passwordHash: '', // يمكن تعديل البريد الإلكتروني الآن
+                      ),
+                    );
                     Navigator.pop(context);
                   }
                 },
-                child: Text('تحديث'),
+                child: Text('حفظ التعديلات'),
               ),
             ],
           ),

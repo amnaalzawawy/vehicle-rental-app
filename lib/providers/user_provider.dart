@@ -12,10 +12,12 @@ class UserProvider with ChangeNotifier {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   List<UserModel> _users = [];
   UserModel? _currentUser;
+  List<UserModel> _filteredUsers = [];
 
   // Getters
   UserModel? get currentUser => _currentUser;
   List<UserModel> get users => _users;
+  List<UserModel> get filteredUsers => _filteredUsers; // لتوفير الوصول إلى _filteredUsers
 
   // تحميل بيانات المستخدم من Firestore
   Future<void> loadUserData() async {
@@ -33,6 +35,8 @@ class UserProvider with ChangeNotifier {
       }
     }
   }
+
+
 
   // حفظ بيانات المستخدم في SharedPreferences
   Future<void> _saveUserLocally(UserModel user) async {
@@ -69,7 +73,6 @@ class UserProvider with ChangeNotifier {
           lastName: lastName,
           email: email,
           role: 'مستخدم',
-          walletBalance: 0.0,
           profileImageBase64: null,
           phoneNumber: phoneNumber,
           passwordHash: '',
@@ -111,10 +114,64 @@ class UserProvider with ChangeNotifier {
   Future<void> fetchUsers() async {
     try {
       final snapshot = await _firestore.collection('users').get();
-      _users = snapshot.docs.map((doc) => UserModel.fromMap(doc.data() as Map<String, dynamic>)).toList();
+      _users = snapshot.docs.map((doc) =>
+          UserModel.fromMap(doc.data() as Map<String, dynamic>)).toList();
       notifyListeners();
     } catch (e) {
       debugPrint('Error fetching users: $e');
+    }}
+
+    // وظيفة لجلب قائمة المستخدمين والمالكين
+    Future<void> fetchUsersAndOwners() async {
+      try {
+        QuerySnapshot snapshot = await _firestore.collection('users').get();
+
+        // تصنيف المستخدمين إلى "مستخدمين" و "مالكين" بناءً على الدور
+        _users = snapshot.docs.map((doc) {
+          return UserModel.fromMap(doc.data() as Map<String, dynamic>);
+        }).toList();
+
+        // تصنيف المستخدمين إلى "مستخدمين"، "مالكين" و "أدمن"
+        _filteredUsers = _users.where((user) {
+          return ['مستخدم', 'مالك', 'أدمن'].contains(user.role);
+        }).toList();
+
+        notifyListeners();
+      } catch (e) {
+        print("Error fetching users and owners: $e");
+      }
+    }
+
+    // وظيفة لإضافة مستخدم جديد
+    Future<void> addUser(UserModel user) async {
+      try {
+        // استخدم add() لإضافة المستخدم مع توليد الـ userId تلقائيًا
+        DocumentReference docRef = await _firestore.collection('users').add(
+            user.toMap());
+
+        // قم بتعيين الـ userId الذي تم توليده تلقائيًا
+        String generatedUserId = docRef.id;
+        // user.userId = generatedUserId; // تعيين الـ userId للمستخدم
+
+        // بعد إضافة المستخدم إلى Firestore، قم بتحديث البيانات المحلية
+        await fetchUsersAndOwners(); // إعادة تحميل قائمة المستخدمين والمالكين
+        notifyListeners();
+      } catch (e) {
+        print("Error adding user: $e");
+      }
+    }
+
+
+    // حذف مستخدم
+    Future<void> deleteUser(String userId) async {
+      try {
+        await _firestore.collection('users').doc(userId).delete();
+        await fetchUsersAndOwners(); // إعادة تحميل البيانات بعد الحذف
+        notifyListeners();
+      } catch (e) {
+        debugPrint('Error deleting user: $e');
+      }
     }
   }
-}
+
+
