@@ -57,7 +57,7 @@ class CarCardState extends State<CarCard> {
                   height: 150,
                   width: double.infinity,
                 )
-              : Container(height: 150, color: Colors.grey),
+              : Container(height: 150, decoration: BoxDecoration(color: Colors.grey, borderRadius: BorderRadius.only(topLeft: Radius.circular(12), topRight: Radius.circular(12)),  )),
 
           Padding(
             padding: const EdgeInsets.all(8.0),

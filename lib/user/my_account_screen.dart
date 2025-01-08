@@ -38,6 +38,13 @@ class _AccountScreenState extends State<AccountScreen> {
       setState(() {
         user = value;
       });
+
+      setState(() {
+                _firstNameController.text = value?.firstName ?? '';
+                _lastNameController.text = value?.lastName ?? '';
+                _phoneController.text = value?.phoneNumber ?? '';
+                _profileImageBase64 = user?.profileImageBase64;
+            });
     },);
     }
 
@@ -112,6 +119,15 @@ class _AccountScreenState extends State<AccountScreen> {
                             //         ),
                             //     ),
                             // ),
+
+                            Text(
+                                        'الاسم الأول',
+                                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.grey[700]),
+                                    ),
+                                    Text(
+                                      user?.email ?? " -- ",
+                                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.grey[700]),
+                                    ),
                             const SizedBox(height: 20),
 
                             // الاسم الأول
@@ -140,12 +156,12 @@ class _AccountScreenState extends State<AccountScreen> {
                                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                                     focusedBorder: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(12),
-                                        borderSide: const BorderSide(color: Color(0xFFF78B00)),
+
                                     ),
                                 ),
                             )
                                 : Text(
-                                user?.firstName ?? '',
+                                _firstNameController.text,
                                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.grey[600]),
                             ),
                             const SizedBox(height: 20),
@@ -181,7 +197,7 @@ class _AccountScreenState extends State<AccountScreen> {
                                 ),
                             )
                                 : Text(
-                                user?.lastName ?? '',
+                                _lastNameController.text,
                                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.grey[600]),
                             ),
                             const SizedBox(height: 20),
@@ -198,7 +214,7 @@ class _AccountScreenState extends State<AccountScreen> {
                                         icon: const Icon(Icons.edit, color: Color(0xFFF78B00)),
                                         onPressed: () {
                                             setState(() {
-                                                _isEditingPhone = true;
+                                                _isEditingPhone = !_isEditingPhone;
                                             });
                                         },
                                     ),
@@ -217,30 +233,29 @@ class _AccountScreenState extends State<AccountScreen> {
                                 ),
                             )
                                 : Text(
-                                user?.phoneNumber ?? '',
+                                _phoneController.text ,
                                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.grey[600]),
                             ),
                             const SizedBox(height: 20),
 
                             // رصيد المحفظة
-                            Text(
-                                'رصيد المحفظة',
-                                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.grey[700]),
-                            ),
-                            Text(
-                                'ج.م ${user?.walletBalance ?? 0.0}',
-                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey[600]),
-                            ),
+                            // Text(
+                            //     'رصيد المحفظة',
+                            //     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.grey[700]),
+                            // ),
+                            // Text(
+                            //     'ج.م ${user?.walletBalance ?? 0.0}',
+                            //     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey[600]),
+                            // ),
                             const SizedBox(height: 20),
 
                             // زر حفظ التغييرات
                             Center(
                                 child: ElevatedButton(
-                                    onPressed: _hasChanges()
-                                        ? () async {
+                                    onPressed:  () async {
                                         if (user != null) {
                                             final updatedUser = user?.copyWith(
-                                                firstName: _firstNameController.text.isNotEmpty ? _firstNameController.text : user?.firstName,
+                                                firstName : _firstNameController.text.isNotEmpty ? _firstNameController.text : user?.firstName,
                                                 lastName: _lastNameController.text.isNotEmpty ? _lastNameController.text : user?.lastName,
                                                 phoneNumber: _phoneController.text.isNotEmpty ? _phoneController.text : user?.phoneNumber,
                                             );
@@ -254,8 +269,7 @@ class _AccountScreenState extends State<AccountScreen> {
                                             });
                                             ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('تم حفظ التغييرات بنجاح!')));
                                         }
-                                    }
-                                        : null,
+                                    },
                                     style: ElevatedButton.styleFrom(
                                         backgroundColor: const Color(0xFFF78B00),
                                         padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 12),
@@ -292,15 +306,15 @@ class _AccountScreenState extends State<AccountScreen> {
                     ),
                 ),
             ),
-            bottomNavigationBar: BottomNavigationBarWidget(
-                selectedIndex: _selectedIndex,
-                onItemTapped: (index) {
-                    print("index : $index");
-                    setState(() {
-                        _selectedIndex = index;
-                    });
-                },
-            ),
+            // bottomNavigationBar: BottomNavigationBarWidget(
+            //     selectedIndex: _selectedIndex,
+            //     onItemTapped: (index) {
+            //         print("index : $index");
+            //         setState(() {
+            //             _selectedIndex = index;
+            //         });
+            //     },
+            // ),
         );
     }
 }

@@ -96,7 +96,7 @@ class UserProvider with ChangeNotifier {
   // تحديث بيانات المستخدم
   Future<void> updateUser(UserModel updatedUser) async {
     try {
-      await _firestore.collection('users').doc(updatedUser.userId).update(updatedUser.toMap());
+      await _firestore.collection('users').doc(updatedUser.email).update(updatedUser.toMap());
       if (_currentUser != null && _currentUser!.userId == updatedUser.userId) {
         _currentUser = updatedUser;
         await _saveUserLocally(updatedUser);
