@@ -124,6 +124,8 @@ import 'package:untitled2/providers/auth_provider.dart';
 import 'package:untitled2/user/my_booking.dart';
 import 'package:untitled2/user/vehicle_screen.dart';
 
+import 'admin/vehicle/vechicle_management_screen.dart';
+import 'admin/vehicle/vechicle_management_screen.dart';
 import 'auth/login_screen.dart';
 import 'owners/vehicle_management_screen.dart'; // شاشة عرض المركبات
 
@@ -166,6 +168,7 @@ class MyApp extends StatelessWidget {
           '/owner/manage' :(context) => const ManageCarPage(),
           '/owner/account' :(context) => const OwnerProfilePage(),
           '/' :(context) => const CarDisplayScreen(), // Home replacement
+          '/CarScreen' :(context) => CarScreen(),
         },
       ),
     );

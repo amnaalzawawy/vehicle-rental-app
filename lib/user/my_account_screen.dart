@@ -239,12 +239,14 @@ class _AccountScreenState extends State<AccountScreen> {
                                     onPressed: _hasChanges()
                                         ? () async {
                                         if (user != null) {
-                                            final updatedUser = user.copyWith(
-                                                firstName: _firstNameController.text.isNotEmpty ? _firstNameController.text : user.firstName,
-                                                lastName: _lastNameController.text.isNotEmpty ? _lastNameController.text : user.lastName,
-                                                phoneNumber: _phoneController.text.isNotEmpty ? _phoneController.text : user.phoneNumber,
+                                            final updatedUser = user?.copyWith(
+                                                firstName: _firstNameController.text.isNotEmpty ? _firstNameController.text : user?.firstName,
+                                                lastName: _lastNameController.text.isNotEmpty ? _lastNameController.text : user?.lastName,
+                                                phoneNumber: _phoneController.text.isNotEmpty ? _phoneController.text : user?.phoneNumber,
                                             );
-                                            await Provider.of<UserProvider>(context, listen: false).updateUser(updatedUser);
+                                            if(updatedUser != null) {
+                                              await Provider.of<UserProvider>(context, listen: false).updateUser(updatedUser);
+                                            }
                                             setState(() {
                                                 _isEditingFirstName = false;
                                                 _isEditingLastName = false;

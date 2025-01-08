@@ -24,6 +24,10 @@ class _ManageCarPageState extends State<ManageCarPage> {
   late TextEditingController _ownerController;
   late TextEditingController _priceController;
   late TextEditingController _seatsController;
+  late TextEditingController _distanceMeterController;
+  late TextEditingController _fuelTypeController;
+  late TextEditingController _plateNumberController;
+  late TextEditingController _transmissionTypeController;
   bool _isAvailable = true;
   File? _imageFile; // لحفظ الصورة
 
@@ -37,7 +41,14 @@ class _ManageCarPageState extends State<ManageCarPage> {
     _ownerController = TextEditingController(text: widget.car?.owner ?? '');
     _priceController =
         TextEditingController(text: widget.car?.pricePerDay.toString() ?? '');
-    _seatsController = TextEditingController();
+    _seatsController = TextEditingController(text: widget.car?.seatsNumber ?? '');
+    _distanceMeterController =
+        TextEditingController(text: widget.car?.distanceMeter ?? '');
+    _fuelTypeController = TextEditingController(text: widget.car?.fuelType ?? '');
+    _plateNumberController =
+        TextEditingController(text: widget.car?.plateNumber ?? '');
+    _transmissionTypeController =
+        TextEditingController(text: widget.car?.transmissionType ?? '');
     _isAvailable = widget.car?.isBooking ?? true;
   }
 
@@ -57,7 +68,6 @@ class _ManageCarPageState extends State<ManageCarPage> {
     if (_formKey.currentState!.validate()) {
       final carProvider = Provider.of<CarProvider>(context, listen: false);
 
-
       final newCar = CarModel(
         id: widget.car?.id ?? '',
         name: _nameController.text,
@@ -68,6 +78,11 @@ class _ManageCarPageState extends State<ManageCarPage> {
             : widget.car?.images ?? [],
         isBooking: _isAvailable,
         pricePerDay: double.parse(_priceController.text),
+        distanceMeter: _distanceMeterController.text,
+        fuelType: _fuelTypeController.text,
+        plateNumber: _plateNumberController.text,
+        seatsNumber: _seatsController.text,
+        transmissionType: _transmissionTypeController.text,
       );
 
       if (widget.car == null) {
@@ -135,6 +150,27 @@ class _ManageCarPageState extends State<ManageCarPage> {
                   decoration: const InputDecoration(labelText: 'عدد المقاعد'),
                   keyboardType: TextInputType.number,
                 ),
+                TextFormField(
+                  controller: _distanceMeterController,
+                  decoration:
+                  const InputDecoration(labelText: 'المسافة المقطوعة'),
+                  validator: (value) =>
+                  value!.isEmpty ? 'يرجى إدخال المسافة المقطوعة' : null,
+                ),
+                TextFormField(
+                  controller: _plateNumberController,
+                  decoration: const InputDecoration(labelText: 'رقم اللوحة'),
+                  validator: (value) =>
+                  value!.isEmpty ? 'يرجى إدخال رقم اللوحة' : null,
+                ),
+                TextFormField(
+                  controller: _fuelTypeController,
+                  decoration: const InputDecoration(labelText: 'نوع الوقود'),
+                ),
+                TextFormField(
+                  controller: _transmissionTypeController,
+                  decoration: const InputDecoration(labelText: 'ناقل الحركة'),
+                ),
                 Row(
                   children: [
                     const Text('حالة المركبة: '),
@@ -149,7 +185,6 @@ class _ManageCarPageState extends State<ManageCarPage> {
                   ],
                 ),
                 const SizedBox(height: 10),
-                // زر اختيار الصورة
                 Row(
                   children: [
                     ElevatedButton.icon(
@@ -169,13 +204,11 @@ class _ManageCarPageState extends State<ManageCarPage> {
                   ],
                 ),
                 const SizedBox(height: 20),
-                // زر الحفظ
                 ElevatedButton(
                   onPressed: _saveCar,
                   child: Text(widget.car == null ? 'إضافة' : 'تحديث'),
                 ),
                 const SizedBox(height: 10),
-                // زر الحذف
                 if (widget.car != null)
                   ElevatedButton(
                     onPressed: _deleteCar,

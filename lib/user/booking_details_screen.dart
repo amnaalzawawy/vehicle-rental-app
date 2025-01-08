@@ -98,7 +98,7 @@ class _BookingScreenState extends State<BookingScreen> {
 
     await _firestore.collection('bookings').add({
       'carId': widget.car.id,
-      'userId':  FirebaseAuth.instance.currentUser!.uid,
+      'userId':  FirebaseAuth.instance.currentUser?.uid ?? "nouse r",
       'startDate': Timestamp.fromDate(_startDate!),
       'endDate': Timestamp.fromDate(_endDate!),
       'status': 'مؤكد',
