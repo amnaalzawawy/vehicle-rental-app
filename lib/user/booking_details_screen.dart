@@ -105,7 +105,7 @@ class _BookingScreenState extends State<BookingScreen> {
     });
 
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
+      const SnackBar(
         content: Text('تم الحجز بنجاح'),
         backgroundColor: Colors.green,
       ),
@@ -118,8 +118,8 @@ class _BookingScreenState extends State<BookingScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('تفاصيل الحجز'),
-        backgroundColor: Colors.orange.shade700,
+        title: const Text('تفاصيل الحجز'),
+        // backgroundColor: Colors.orange.shade700,
         elevation: 0,
       ),
       body: SingleChildScrollView(
@@ -135,8 +135,8 @@ class _BookingScreenState extends State<BookingScreen> {
                 child: Column(
                   children: [
                     ListTile(
-                      leading: Icon(Icons.date_range, color: Colors.orange),
-                      title: Text(
+                      leading: const Icon(Icons.date_range, ),
+                      title: const Text(
                         'تاريخ البداية:',
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
@@ -147,19 +147,18 @@ class _BookingScreenState extends State<BookingScreen> {
                       ),
                       trailing: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.orange.shade700,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
                           ),
                         ),
                         onPressed: () => _selectStartDate(context),
-                        child: Text('اختيار'),
+                        child: const Text('اختيار'),
                       ),
                     ),
-                    Divider(),
+                    const Divider(),
                     ListTile(
-                      leading: Icon(Icons.event, color: Colors.orange),
-                      title: Text(
+                      leading: const Icon(Icons.event),
+                      title: const Text(
                         'تاريخ النهاية:',
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
@@ -170,37 +169,37 @@ class _BookingScreenState extends State<BookingScreen> {
                       ),
                       trailing: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.orange.shade700,
+                          
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
                           ),
                         ),
                         onPressed: () => _selectEndDate(context),
-                        child: Text('اختيار'),
+                        child: const Text('اختيار'),
                       ),
                     ),
                   ],
                 ),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               if (_errorMessage != null)
                 Text(
                   _errorMessage!,
-                  style: TextStyle(color: Colors.red, fontSize: 16),
+                  style: const TextStyle(color: Colors.red, fontSize: 16),
                 ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.orange.shade700,
-                  padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                  
+                  padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-                icon: Icon(Icons.check_circle, color: Colors.white),
-                label: Text(
+                icon: const Icon(Icons.check_circle),
+                label: const Text(
                   'تأكيد الحجز',
-                  style: TextStyle(fontSize: 18, color: Colors.white),
+                  style: TextStyle(fontSize: 18),
                 ),
                 onPressed: _saveBooking,
               ),

@@ -38,6 +38,9 @@ class CarDetailScreenState extends State<CarDetailScreen> {
 
   void getUserDetails() async {
     final user = await UserProvider().getUser(widget.car.owner);
+    print("Getting owner details");
+    print(widget.car.owner);
+    print(user);
     setState(() {
       owner = user;
     });
@@ -58,9 +61,10 @@ class CarDetailScreenState extends State<CarDetailScreen> {
       ),
       body: SingleChildScrollView(
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             // عرض الصور المتعددة للمركبة في شريط أفقي متحرك
-            SizedBox(
+            imageURLs.isNotEmpty ? SizedBox(
               height: 200,
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
@@ -74,31 +78,38 @@ class CarDetailScreenState extends State<CarDetailScreen> {
                   );
                 },
               ),
+            ): Container(
+              height: 200,
+              color: Colors.grey[200],
+              alignment: Alignment.center,
+              child: const Text("لاتوجد صور لهذه المركبة"),
             ),
             // تفاصيل المركبة
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
+
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     'الفئة: ${widget.car.category}',
-                    style: TextStyle(fontSize: 18),
+                    style: const TextStyle(fontSize: 18),
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   Text(
                     'اسم المالك: ${owner?.firstName}',
-                    style: TextStyle(fontSize: 18),
+                    style: const TextStyle(fontSize: 18),
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   // عرض السعر اليومي من قاعدة البيانات
                   Text(
                     'السعر اليومي: ${widget.car.pricePerDay} د.ل',
-                    style: TextStyle(fontSize: 18),
+                    style: const TextStyle(fontSize: 18),
                   ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   // زر الحجز
-                  ElevatedButton(
+                  Center(
+                    child: ElevatedButton(
                     onPressed: () {
                       // الانتقال إلى شاشة الحجز
                       Navigator.push(
@@ -108,7 +119,8 @@ class CarDetailScreenState extends State<CarDetailScreen> {
                                 BookingScreen(car: widget.car)),
                       );
                     },
-                    child: Text('احجز الآن'),
+                    child: const Text('احجز الآن'),
+                  ),
                   ),
                 ],
               ),

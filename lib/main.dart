@@ -113,6 +113,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:untitled2/owners/booking_management_screen.dart';
 import 'package:untitled2/owners/owner_profile_page.dart';
 import 'package:untitled2/providers/booking_provider.dart';
 import 'package:untitled2/providers/car_provider.dart';
@@ -152,10 +153,11 @@ class MyApp extends StatelessWidget {
       ],
       child: MaterialApp(
         title: 'تطبيق تأجير المركبات',
-        theme: ThemeData(
-          primarySwatch: Colors.orange,
-          visualDensity: VisualDensity.adaptivePlatformDensity,
-        ),
+        theme: ThemeData.from(colorScheme: ColorScheme.fromSeed(seedColor: Colors.orange)),
+        // (
+        //   primarySwatch: Colors.orange,
+        //   visualDensity: VisualDensity.adaptivePlatformDensity,
+        // ),
         // home: CarDisplayScreen(), // شاشة عرض المركبات مباشرة كواجهة رئيسية
         routes: {
           '/login': (context) => const LoginScreen(),
@@ -164,6 +166,7 @@ class MyApp extends StatelessWidget {
           '/myBooking' :(context) => MyBookingsScreen(),
           '/vehicalScreen' :(context) => const CarDisplayScreen(),
           '/owner/manage' :(context) => const ManageCarPage(),
+          '/owner/bookings' :(context) => const BookingManagementPage(),
           '/owner/account' :(context) => const OwnerProfilePage(),
           '/' :(context) => const CarDisplayScreen(), // Home replacement
         },

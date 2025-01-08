@@ -120,7 +120,12 @@ class CarDisplayScreenState extends State<CarDisplayScreen> {
         if (user != null) {
           switch (index) {
             case 1:
+            if (user.role == "owner") {
+              Navigator.pushNamed(context, "/owner/bookings");
+            }
+            if(user.role == "user") {
               Navigator.pushNamed(context, "/myBooking");
+            }
 
               break;
             case 2:
@@ -144,10 +149,10 @@ class CarDisplayScreenState extends State<CarDisplayScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('عرض المركبات'),
+        title: const Text('عرض المركبات'),
         actions: [
           IconButton(
-            icon: Icon(Icons.filter_alt),
+            icon: const Icon(Icons.filter_alt),
             onPressed: () {
               // عند الضغط على الأيقونة، يظهر الفلاتر
               showDialog(
@@ -167,7 +172,7 @@ class CarDisplayScreenState extends State<CarDisplayScreen> {
         children: [
           Expanded(
             child: _filteredCars.isEmpty
-                ? Center(child: Text('لا توجد مركبات لعرضها'))
+                ? const Center(child: Text('لا توجد مركبات لعرضها'))
                 : 
             ListView.builder(
                     itemCount: _filteredCars.length,
