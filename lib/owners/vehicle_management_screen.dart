@@ -163,10 +163,7 @@ class _ManageCarPageState extends State<ManageCarPage> {
                   validator: (value) =>
                   value!.isEmpty ? 'يرجى إدخال رقم اللوحة' : null,
                 ),
-                TextFormField(
-                  controller: _fuelTypeController,
-                  decoration: const InputDecoration(labelText: 'نوع الوقود'),
-                ),
+
                 TextFormField(
                   controller: _transmissionTypeController,
                   decoration: const InputDecoration(labelText: 'ناقل الحركة'),

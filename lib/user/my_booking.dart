@@ -21,9 +21,9 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback(
-      (timeStamp) {
+          (timeStamp) {
         UserProvider().getCurrentUser().then(
-          (user) {
+              (user) {
             print("Getting bookings for user....");
             print(user?.userId ?? "NONE");
             if (user != null) {
@@ -42,94 +42,86 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
     var bookings = provider.bookings;
 
     return Scaffold(
-        appBar: AppBar(
-          title: const Text('حجوزاتي'),
-        ),
-        drawer: CustomDrawer2(),
-        body: ListView.builder(
-          itemCount: bookings.length,
-          itemBuilder: (context, index) {
-            final booking = bookings[index];
-            return Card(
-              margin: const EdgeInsets.all(10),
-              elevation: 5,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(15),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(15),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'اسم العميل: ${booking.userName}',
-                      style: const TextStyle(
-                          fontSize: 16, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 8),
-                    Text('تفاصيل المركبة: ${booking.vehicleDetails}'),
-                    const SizedBox(height: 8),
-                    Text(
-                        'تاريخ الحجز: ${booking.startDate?.toLocal().toString().split(' ')[0]}'),
-                    Text(
-                        'تاريخ النهاية: ${booking.endDate?.toLocal().toString().split(' ')[0]}'),
-                    const SizedBox(height: 8),
-                    Text('الحالة: ${booking.status}'),
-                    const SizedBox(height: 12),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        ElevatedButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    BookingEditScreen(booking: booking),
-                              ),
-                            );
-                          },
-                          child: const Text('تعديل الحجز'),
+      appBar: AppBar(
+        title: const Text('حجوزاتي'),
+      ),
+      drawer: CustomDrawer2(),
+      body: ListView.builder(
+        itemCount: bookings.length,
+        itemBuilder: (context, index) {
+          final booking = bookings[index];
+          return Card(
+            margin: const EdgeInsets.all(10),
+            elevation: 5,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(15),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(15),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    'اسم العميل: ${booking.userName}',
+                    style: const TextStyle(
+                        fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 8),
+                  Text('تفاصيل المركبة: ${booking.vehicleDetails}'),
+                  const SizedBox(height: 8),
+                  Text(
+                      'تاريخ الحجز: ${booking.startDate?.toLocal().toString().split(' ')[0]}'),
+                  Text(
+                      'تاريخ النهاية: ${booking.endDate?.toLocal().toString().split(' ')[0]}'),
+                  const SizedBox(height: 8),
+                  Text('الحالة: ${booking.status}'),
+                  const SizedBox(height: 12),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  BookingEditScreen(booking: booking),
+                            ),
+                          );
+                        },
+                        child: const Text('تعديل الحجز'),
+                      ),
+                      ElevatedButton(
+                        onPressed: () async {
+                          await provider.deleteBooking(booking.id!);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content: Text('تم حذف الحجز بنجاح')),
+                          );
+                        },
+                        child: const Text(
+                          'حذف الحجز',
+                          style: TextStyle(color: Colors.white), // تغيير لون النص إلى الأبيض
                         ),
-                        ElevatedButton(
-                          onPressed: () async {
-                            await provider.deleteBooking(booking.id!);
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                  content: Text('تم حذف الحجز بنجاح')),
-                            );
-                          },
-                          child: const Text('حذف الحجز'),
-                          style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.red),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.red, // تغيير لون الخلفية إلى الأحمر
                         ),
-                      ],
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        _showCarDetails(context, booking);
-                      },
-                      child: const Text('المزيد من التفاصيل'),
-                    ),
-                  ],
-                ),
+                      ),
+                    ],
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      _showCarDetails(context, booking);
+                    },
+                    child: const Text('المزيد من التفاصيل'),
+                  ),
+                ],
               ),
-            );
-          },
-        )
-        // Consumer<BookingProvider>(builder: (context, bookingProvider, child) {
-        //     if (bookingProvider.isLoading) {
-        //       return const Center(child: CircularProgressIndicator());
-        //     }
-        //
-        //     if (bookingProvider.bookings.isEmpty) {
-        //       return const Center(child: Text('لا يوجد لديك حجوزات حالياً.'));
-        //     }
-        //
-        //
-        //   },
-        // ),
-        );
+            ),
+          );
+        },
+      ),
+    );
   }
 
   void _showCarDetails(BuildContext context, Booking booking) {
@@ -138,18 +130,18 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
       builder: (context) => AlertDialog(
         title: const Text('تفاصيل المركبة'),
         content: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text('تفاصيل المركبة: ${booking.vehicleDetails}'),
-          const SizedBox(height: 8),
-          Text('النوع: ${booking.carId}'),
-          // قم بتغيير هذا بناءً على بيانات المركبة المتوفرة
-          const SizedBox(height: 8),
-          Text('اسم الشركة المالكة: ${booking.userName}'),
-          // مثال على بيانات أخرى
-        ],
-                ),
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text('تفاصيل المركبة: ${booking.vehicleDetails}'),
+            const SizedBox(height: 8),
+            Text('النوع: ${booking.carId}'),
+            // قم بتغيير هذا بناءً على بيانات المركبة المتوفرة
+            const SizedBox(height: 8),
+            Text('اسم الشركة المالكة: ${booking.userName}'),
+            // مثال على بيانات أخرى
+          ],
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
