@@ -116,6 +116,60 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:untitled2/providers/booking_provider.dart';
 import 'package:untitled2/providers/car_provider.dart';
 import 'package:untitled2/providers/user_provider.dart';
+import 'package:untitled2/user/vehicle_screen.dart';
+
+import 'admin/user/user_management_screen.dart';
+import 'admin/vehicle/vechicle_management_screen.dart';
+
+String SUPABASE_URL = "https://riusqflhjwuandiednfy.supabase.co";
+String SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJpdXNxZmxoand1YW5kaWVkbmZ5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzUwNTkzNjksImV4cCI6MjA1MDYzNTM2OX0.Ku02SqcaI26RjiG_5ImoO3f69p1lZttGE07lrUMzcVs";
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(); // تهيئة Firebase
+  await Supabase.initialize(
+    url: SUPABASE_URL,
+    anonKey: SUPABASE_ANON_KEY,
+  );
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => UserProvider()),
+        ChangeNotifierProvider(create: (_) => CarProvider()),
+        ChangeNotifierProvider(create: (_) => BookingProvider()),
+      ],
+      child: MaterialApp(
+        title: 'تطبيق تأجير المركبات',
+        theme: ThemeData(
+          primarySwatch: Colors.orange,
+          visualDensity: VisualDensity.adaptivePlatformDensity,
+        ),
+        initialRoute: '/CarScreen',
+        routes: {
+          '/CarScreen': (context) =>  CarScreen(),
+          '/users' : (context) => ManageUsersOwnersScreen()
+        },
+      ),
+    );
+  }
+}
+/*
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:provider/provider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:untitled2/admin/vehicle/vechicle_management_screen.dart';
+import 'package:untitled2/providers/booking_provider.dart';
+import 'package:untitled2/providers/car_provider.dart';
+import 'package:untitled2/providers/user_provider.dart';
 import 'package:untitled2/screens/login_screen.dart';
 // import 'package:untitled2/screens/login_screen.dart'; // شاشة تسجيل الدخول
 import 'package:untitled2/user/my_account_screen.dart'; // شاشة حسابي
@@ -164,8 +218,10 @@ class MyApp extends StatelessWidget {
           '/vehicalScreen' :(context) => const CarDisplayScreen(),
           '/owner/manage' :(context) => const ManageCarPage(),
           '/' :(context) => const CarDisplayScreen(), // Home replacement
+          '/CarScreen' : (context) => CarScreen(),
         },
       ),
     );
   }
 }
+*/

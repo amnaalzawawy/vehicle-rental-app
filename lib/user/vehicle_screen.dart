@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:untitled2/providers/current_user_provider.dart';
 import 'package:untitled2/widgets/custom_user_drawer.dart';
-
 import '../models/car.dart';
 import '../widgets/bottom_navigation_bar.dart';
 import '../widgets/filter_vehicle.dart';
+
 import '../widgets/vehicle_card.dart';
 import 'vehicle_detalis_screen.dart';
 

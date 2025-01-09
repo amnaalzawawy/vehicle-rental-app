@@ -16,18 +16,21 @@ class _ManageUsersOwnersScreenState extends State<ManageUsersOwnersScreen> {
   @override
   void initState() {
     super.initState();
-    _loadUser();
+    _loadUsers();
   }
 
-  Future<void> _loadUser() async {
+  Future<void> _loadUsers() async {
     try {
       await Provider.of<UserProvider>(context, listen: false).fetchUsers();
     } catch (e) {
+      // عرض رسالة خطأ في حال فشل تحميل البيانات
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('فشل تحميل المركبات: ${e.toString()}')),
+        SnackBar(content: Text('فشل تحميل البيانات: ${e.toString()}')),
       );
     }
   }
+
+  @override
   Widget build(BuildContext context) {
     final userProvider = Provider.of<UserProvider>(context);
 
@@ -98,7 +101,16 @@ class _ManageUsersOwnersScreenState extends State<ManageUsersOwnersScreen> {
                           );
 
                           if (confirm == true) {
-                            await userProvider.deleteUser(user.userId);
+                            try {
+                              await userProvider.deleteUser(user.userId);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('تم حذف المستخدم بنجاح')),
+                              );
+                            } catch (e) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('فشل حذف المستخدم: ${e.toString()}')),
+                              );
+                            }
                           }
                         },
                       ),
@@ -119,7 +131,7 @@ class _ManageUsersOwnersScreenState extends State<ManageUsersOwnersScreen> {
             ),
           );
         },
-        child: Icon(Icons.add),
+        child: Icon(Icons.add), // يمكنك إعادة const هنا
       ),
     );
   }

@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -12,7 +13,6 @@ class CarCard extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
     return CarCardState();
-
   }
 }
 
@@ -21,18 +21,23 @@ class CarCardState extends State<CarCard> {
 
   void getImageURL() async {
     if (widget.car.images.isNotEmpty) {
-      var url = await Supabase.instance.client.storage
-          .from("cars")
-          .createSignedUrl(widget.car.images[0], 60000);
-      setState(() {
-        imageURL = url;
-      });
+      try {
+        var url = await Supabase.instance.client.storage
+            .from("cars")
+            .createSignedUrl(widget.car.images[0].replaceAll("cars/", ""), 60000);
+        setState(() {
+          imageURL = url;
+        });
+      } catch (e) {
+        // handle error here if necessary
+      }
     }
   }
 
   @override
   void initState() {
     super.initState();
+    getImageURL();
   }
 
   @override
@@ -41,18 +46,22 @@ class CarCardState extends State<CarCard> {
 
     return Card(
       margin: const EdgeInsets.all(8.0),
-      elevation: 5.0,
+      elevation: 3.0,
+      shape: RoundedRectangleBorder(
+        side: BorderSide(color: Colors.orange, width: 2), // تغيير لون الإطار إلى البرتقالي
+        borderRadius: BorderRadius.circular(10), // إضافة زاوية منحنية للإطار
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // عرض الصورة الأولى من الصور
           imageURL != null
               ? Image.network(
-                  imageURL!, // عرض أول صورة
-                  fit: BoxFit.cover,
-                  height: 150,
-                  width: double.infinity,
-                )
+            imageURL!, // عرض أول صورة
+            fit: BoxFit.cover,
+            height: 150,
+            width: double.infinity,
+          )
               : Container(height: 150, color: Colors.grey),
 
           Padding(
