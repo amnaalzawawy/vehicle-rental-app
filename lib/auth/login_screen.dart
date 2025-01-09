@@ -120,7 +120,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Image.asset(
-                    'assets/R.jpg', // قم بتغيير المسار حسب مكان الشعار
+                    'assets/icon.jpg', // قم بتغيير المسار حسب مكان الشعار
                     height: 100,
                   ),
                   const SizedBox(height: 30),
