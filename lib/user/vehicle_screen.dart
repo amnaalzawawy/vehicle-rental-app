@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:provider/provider.dart';
+import 'package:untitled2/models/user.dart';
 import 'package:untitled2/providers/current_user_provider.dart';
 import 'package:untitled2/widgets/custom_user_drawer.dart';
 import '../models/car.dart';
@@ -22,11 +24,22 @@ class CarDisplayScreenState extends State<CarDisplayScreen> {
   List<CarModel> _cars = [];
   List<CarModel> _filteredCars = [];
   int _selectedIndex = 0;
+  UserModel? user;
 
   @override
   void initState() {
     super.initState();
     _fetchCars();
+    var userProvider = UserProvider();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      Provider.of<UserProvider>(context, listen: false).getCurrentUser();
+    });
+
+    userProvider.getCurrentUser().then((value) {
+      setState(() {
+        user = value;
+      });
+    },);
   }
 
   // جلب المركبات من قاعدة البيانات
@@ -111,12 +124,17 @@ class CarDisplayScreenState extends State<CarDisplayScreen> {
         if (user != null) {
           switch (index) {
             case 1:
+            if (user.role == "owner") {
+              Navigator.pushNamed(context, "/owner/bookings");
+            }
+            if(user.role == "user") {
               Navigator.pushNamed(context, "/myBooking");
+            }
 
               break;
             case 2:
               if (user.role == "owner") {
-                Navigator.pushNamed(context, "/owner/manage");
+                Navigator.pushNamed(context, "/owner/account");
               }
               if (user.role == "user") {
                 Navigator.pushNamed(context, "/myAccount");
@@ -135,10 +153,10 @@ class CarDisplayScreenState extends State<CarDisplayScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('عرض المركبات'),
+        title: const Text('عرض المركبات'),
         actions: [
           IconButton(
-            icon: Icon(Icons.filter_alt),
+            icon: const Icon(Icons.filter_alt),
             onPressed: () {
               // عند الضغط على الأيقونة، يظهر الفلاتر
               showDialog(
@@ -158,27 +176,25 @@ class CarDisplayScreenState extends State<CarDisplayScreen> {
         children: [
           Expanded(
             child: _filteredCars.isEmpty
-                ? Center(child: Text('لا توجد مركبات لعرضها'))
-                : CarCard(car: _cars[0], onPressed: () {
-                  print("On card action");
-                },)
-            // ListView.builder(
-            //         itemCount: _filteredCars.length,
-            //         itemBuilder: (context, index) {
-            //           return CarCard(
-            //             car: _filteredCars[index],
-            //             onPressed: () {
-            //               Navigator.push(
-            //                 context,
-            //                 MaterialPageRoute(
-            //                   builder: (context) =>
-            //                       CarDetailScreen(car: _filteredCars[index]),
-            //                 ),
-            //               );
-            //             },
-            //           );
-            //         },
-            //       ),
+                ? const Center(child: Text('لا توجد مركبات لعرضها'))
+                : 
+            ListView.builder(
+                    itemCount: _filteredCars.length,
+                    itemBuilder: (context, index) {
+                      return CarCard(
+                        car: _filteredCars[index],
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  CarDetailScreen(car: _filteredCars[index]),
+                            ),
+                          );
+                        },
+                      );
+                    },
+                  ),
           ),
         ],
       ),
@@ -186,6 +202,9 @@ class CarDisplayScreenState extends State<CarDisplayScreen> {
         selectedIndex: _selectedIndex,
         onItemTapped: _onItemTapped,
       ),
+      floatingActionButton: user?.role == "owner" ? FloatingActionButton(onPressed: (){
+                Navigator.pushNamed(context, "/owner/manage");
+      }, child: const Icon(Icons.add),) : null,
     );
   }
 }

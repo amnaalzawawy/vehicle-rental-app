@@ -4,6 +4,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 
+import 'package:untitled2/providers/current_user_provider.dart';
+
 class OwnerProfilePage extends StatefulWidget {
   const OwnerProfilePage({Key? key}) : super(key: key);
 
@@ -17,7 +19,9 @@ class _OwnerProfilePageState extends State<OwnerProfilePage> {
   final picker = ImagePicker();
   String? imageUrl;
 
-  final _passwordController = TextEditingController(); // حقل الرقم السري الجديد
+  final _fristNameController = TextEditingController();
+  final _lastNameController = TextEditingController();
+  final _passwordController = TextEditingController();
 
   // اختيار صورة من المعرض
   Future<void> _pickImage() async {
@@ -50,21 +54,31 @@ class _OwnerProfilePageState extends State<OwnerProfilePage> {
     try {
       await user?.updatePassword(_passwordController.text);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('تم تغيير الرقم السري بنجاح')),
+        const SnackBar(content: Text('تم تغيير الرقم السري بنجاح')),
       );
     } catch (e) {
-      print(e);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('فشل تغيير الرقم السري')),
+        const SnackBar(content: Text('فشل تغيير الرقم السري')),
       );
     }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    UserProvider().getCurrentUser().then((value) {
+    _fristNameController.text = value?.firstName ?? '';
+    _lastNameController.text = value?.lastName ?? '';  
+
+    });
+    
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('معلومات المالك'),
+        title: const Text('معلومات المالك'),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -73,17 +87,17 @@ class _OwnerProfilePageState extends State<OwnerProfilePage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               // صورة المالك
-              GestureDetector(
-                onTap: _pickImage,
-                child: CircleAvatar(
-                  radius: 60,
-                  backgroundImage: imageUrl != null
-                      ? NetworkImage(imageUrl!)
-                      : AssetImage('assets/default_avatar.png') as ImageProvider,
-                  child: _image == null ? Icon(Icons.camera_alt) : null,
-                ),
-              ),
-              SizedBox(height: 20),
+              // GestureDetector(
+              //   onTap: _pickImage,
+              //   child: CircleAvatar(
+              //     radius: 60,
+              //     backgroundImage: imageUrl != null
+              //         ? NetworkImage(imageUrl!)
+              //         : AssetImage('assets/default_avatar.png') as ImageProvider,
+              //     child: _image == null ? Icon(Icons.camera_alt) : null,
+              //   ),
+              // ),
+              const SizedBox(height: 20),
 
               // تفاصيل المالك
               Card(
@@ -91,20 +105,43 @@ class _OwnerProfilePageState extends State<OwnerProfilePage> {
                 child: Column(
                   children: [
                     ListTile(
-                      leading: Icon(Icons.email, color: Colors.blue),
-                      title: Text('البريد الإلكتروني'),
+                      leading: const Icon(Icons.email, color: Colors.blue),
+                      title: const Text('البريد الإلكتروني'),
                       subtitle: Text(
                         user?.email ?? 'لا يوجد بريد مسجل',
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                        style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
                     ),
-                    Divider(),
+                    const Divider(),
                     ListTile(
-                      leading: Icon(Icons.lock, color: Colors.orange),
-                      title: Text('تغيير الرقم السري'),
+                      // title: const Text('الاسم الاول'),
+                      subtitle: TextField(
+                        controller: _fristNameController,
+                        decoration: const InputDecoration(
+                          labelText: 'الاسم الاول',
+                          border: OutlineInputBorder(),
+                          contentPadding: EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 5),
+                        ),
+                      ),
+                    ),
+                    ListTile(
+                      // title: const Text('الاسم الثاني'),
+                      subtitle: TextField(
+                        controller: _lastNameController,
+                        decoration: const InputDecoration(
+                          labelText: 'الاسم الثاني',
+                          border: OutlineInputBorder(),
+                          contentPadding: EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 5),
+                        ),
+                      ),
+                    ),
+                    ListTile(
+                      title: const Text('تغيير الرقم السري'),
                       subtitle: TextField(
                         controller: _passwordController,
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           labelText: 'كلمة المرور الجديدة',
                           border: OutlineInputBorder(),
                           contentPadding: EdgeInsets.symmetric(
@@ -117,15 +154,15 @@ class _OwnerProfilePageState extends State<OwnerProfilePage> {
                 ),
               ),
 
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
 
               // زر تغيير الرقم السري
               ElevatedButton.icon(
                 onPressed: _changePassword,
-                icon: Icon(Icons.save),
-                label: Text('تغيير الرقم السري'),
+                icon: const Icon(Icons.save),
+                label: const Text('تغيير الرقم السري'),
                 style: ElevatedButton.styleFrom(
-                  minimumSize: Size(double.infinity, 50),
+                  minimumSize: const Size(double.infinity, 50),
                 ),
               ),
             ],

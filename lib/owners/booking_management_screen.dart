@@ -1,10 +1,46 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:untitled2/models/car.dart';
+import 'package:untitled2/owners/booking_managment_card.dart';
+import 'package:untitled2/providers/car_provider.dart';
+import 'package:untitled2/providers/current_user_provider.dart';
 import '../models/booking.dart';
 import '../providers/booking_provider.dart';
 
-class BookingManagementPage extends StatelessWidget {
-  const BookingManagementPage({Key? key}) : super(key: key);
+class BookingManagementPage extends StatefulWidget {
+  const BookingManagementPage({super.key});
+
+  @override
+  State<BookingManagementPage> createState() => _BookingManagementPageState();
+}
+
+class _BookingManagementPageState extends State<BookingManagementPage> {
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+      UserProvider().getCurrentUser().then((user) {
+        var querySnapshot = _firestore.collection('cars');
+          querySnapshot.where("owner", isEqualTo: user!.userId).get().then(
+            (value) {
+              var _cars = value.docs
+                  .map((doc) => CarModel.fromMap(doc.data(), doc.id))
+                  .toList();
+
+              final bookingProvider = Provider.of<BookingProvider>(context, listen: false);
+              var carsIDs = _cars.map((e) => e.id).toList();
+              if (carsIDs.isNotEmpty) {
+                bookingProvider.fetchBookingsForCars(carsIDs);
+              }
+            },
+          );
+        
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -12,52 +48,20 @@ class BookingManagementPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("إدارة الحجوزات"),
+        title: const Text("إدارة الحجوزات"),
       ),
       body: bookingProvider.isLoading
-          ? Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator())
           : bookingProvider.bookings.isEmpty
-          ? Center(child: Text("لا توجد حجوزات حاليًا"))
-          : ListView.builder(
-        itemCount: bookingProvider.bookings.length,
-        itemBuilder: (context, index) {
-          final booking = bookingProvider.bookings[index];
-          return Card(
-            margin: EdgeInsets.all(8.0),
-            child: ListTile(
-              title: Text(booking.vehicleDetails ?? "تفاصيل المركبة غير متوفرة"),
-              subtitle: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text("العميل: ${booking.userName ?? "غير معروف"}"),
-                  Text("من: ${booking.startDate?.toLocal() ?? "غير محدد"}"),
-                  Text("إلى: ${booking.endDate?.toLocal() ?? "غير محدد"}"),
-                  Text("الحالة: ${booking.status ?? "غير معروف"}"),
-                ],
-              ),
-              trailing: PopupMenuButton<String>(
-                onSelected: (value) async {
-                  if (value == 'confirm') {
-                    await bookingProvider.updateBooking(booking.id!, {'status': 'Confirmed'});
-                  } else if (value == 'complete') {
-                    await bookingProvider.updateBooking(booking.id!, {'status': 'Completed'});
-                  } else if (value == 'cancel') {
-                    await bookingProvider.updateBooking(booking.id!, {'status': 'Cancelled'});
-                  } else if (value == 'delete') {
-                    await bookingProvider.deleteBooking(booking.id!);
-                  }
-                },
-                itemBuilder: (context) => [
-                  PopupMenuItem(value: 'confirm', child: Text('تأكيد الحجز')),
-                  PopupMenuItem(value: 'complete', child: Text('إكمال الحجز')),
-                  PopupMenuItem(value: 'cancel', child: Text('إلغاء الحجز')),
-                  PopupMenuItem(value: 'delete', child: Text('حذف الحجز')),
-                ],
-              ),
-            ),
-          );
-        },
-      ),
+              ? const Center(child: Text("لا توجد حجوزات حاليًا"))
+              : ListView.builder(
+                  itemCount: bookingProvider.bookings.length,
+                  itemBuilder: (context, index) {
+                    final booking = bookingProvider.bookings[index];
+
+                    return BookingManagmentCard(booking: booking);
+                  },
+                ),
     );
   }
 }

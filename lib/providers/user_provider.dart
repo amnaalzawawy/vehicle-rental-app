@@ -37,6 +37,16 @@ class UserProvider with ChangeNotifier {
   }
 
 
+  Future<void> remove(String userid) async {
+    try {
+      await _firestore.collection('users').doc(userid).delete();
+        notifyListeners();
+    } catch (e) {
+      debugPrint('Error updating user: $e');
+    }
+  }
+
+
 
   // حفظ بيانات المستخدم في SharedPreferences
   Future<void> _saveUserLocally(UserModel user) async {
@@ -99,7 +109,7 @@ class UserProvider with ChangeNotifier {
   // تحديث بيانات المستخدم
   Future<void> updateUser(UserModel updatedUser) async {
     try {
-      await _firestore.collection('users').doc(updatedUser.userId).update(updatedUser.toMap());
+      await _firestore.collection('users').doc(updatedUser.email).update(updatedUser.toMap());
       if (_currentUser != null && _currentUser!.userId == updatedUser.userId) {
         _currentUser = updatedUser;
         await _saveUserLocally(updatedUser);
@@ -116,8 +126,10 @@ class UserProvider with ChangeNotifier {
       final snapshot = await _firestore.collection('users').get();
       _users = snapshot.docs.map((doc) =>
           UserModel.fromMap(doc.data() as Map<String, dynamic>)).toList();
+      _users = snapshot.docs.map((doc) => UserModel.fromMap(doc.data())).toList();
       notifyListeners();
-    } catch (e) {
+    }
+    catch (e) {
       debugPrint('Error fetching users: $e');
     }}
 
@@ -160,6 +172,35 @@ class UserProvider with ChangeNotifier {
         print("Error adding user: $e");
       }
     }
+  }
+
+  Future<List<UserModel>?> search(String query) async {
+    print("Getting users");
+    // try {
+      final snapshot = await _firestore.collection('users')
+      .where(
+          Filter.or(
+            Filter("firstName", isGreaterThanOrEqualTo: query),
+          Filter("lastName", isGreaterThanOrEqualTo: query),
+          Filter("phone", isGreaterThanOrEqualTo: query),
+          Filter("email", isGreaterThanOrEqualTo: query),
+          )
+    )
+          .get();
+
+      print(snapshot.size);
+
+      var users = snapshot.docs.map((doc) => UserModel.fromMap(doc.data())).toList();
+      notifyListeners();
+      return users;
+    // }
+    // catch (e) {
+    //   debugPrint('Error fetching users: $e');
+    // }
+
+    return null;
+  }
+}
 
 
     // حذف مستخدم

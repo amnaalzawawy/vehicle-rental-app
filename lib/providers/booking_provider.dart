@@ -34,7 +34,7 @@ class BookingProvider with ChangeNotifier {
     _isLoading = true;
     notifyListeners();
     try {
-      final userId = FirebaseAuth.instance.currentUser!.uid;
+      // final userId = FirebaseAuth.instance.currentUser!.uid;
 
       final snapshot = await FirebaseFirestore.instance
           .collection('bookings')
@@ -43,6 +43,7 @@ class BookingProvider with ChangeNotifier {
       _bookings = snapshot.docs
           .map((doc) => Booking.fromMap(doc.data(), doc.id))
           .toList();
+      print("Bookings found ${_bookings.length}");
       _isLoading = false;
       notifyListeners();
     } catch (error) {
@@ -51,48 +52,68 @@ class BookingProvider with ChangeNotifier {
     }
   }
 
+  Future<void> fetchBookingsForCars(List<String> carsids) async {
+    _isLoading = true;
+    notifyListeners();
+    try {
+      // final userId = FirebaseAuth.instance.currentUser!.uid;
+
+      final snapshot = await FirebaseFirestore.instance
+          .collection('bookings')
+          .where('carId', whereIn: carsids) // فلترة باستخدام userId
+          .get();
+      _bookings = snapshot.docs
+          .map((doc) => Booking.fromMap(doc.data(), doc.id))
+          .toList();
+      
+      _isLoading = false;
+      notifyListeners();
+    } catch (error) {
+      _isLoading = false;
+      throw error;
+    }
+  }
 
   // دالة لإضافة حجز جديد إلى قاعدة البيانات مع إنشاء معرف فريد للحجز
   Future<void> addBooking(Booking booking, String userId) async {
-  _isLoading = true;
-  notifyListeners();
+    _isLoading = true;
+    notifyListeners();
 
-  try {
-  // إنشاء معرف فريد باستخدام UUID
-  String bookingId = Uuid().v4();
+    try {
+      // إنشاء معرف فريد باستخدام UUID
+      String bookingId = Uuid().v4();
 
-  final docRef = await FirebaseFirestore.instance.collection('bookings').doc(bookingId).set({
-  'userId': userId, // إضافة userId
-  'userName': booking.userName,
-  'vehicleDetails': booking.vehicleDetails,
-  'startDate': booking.startDate,
-  'endDate': booking.endDate,
-  'status': booking.status,
-  'createdAt': booking.createdAt,
-  });
+      final docRef = await FirebaseFirestore.instance
+          .collection('bookings')
+          .doc(bookingId)
+          .set({
+        'userId': userId, // إضافة userId
+        'userName': booking.userName,
+        'vehicleDetails': booking.vehicleDetails,
+        'startDate': booking.startDate,
+        'endDate': booking.endDate,
+        'status': booking.status,
+        'createdAt': booking.createdAt,
+      });
 
-  // إضافة الحجز إلى القائمة المحلية بعد إضافته إلى قاعدة البيانات
-  _bookings.add(Booking(
-  id: bookingId, // استخدام المعرّف الفريد
-  userName: booking.userName,
-  vehicleDetails: booking.vehicleDetails,
-  startDate: booking.startDate,
-  endDate: booking.endDate,
-  status: booking.status,
-  createdAt: booking.createdAt,
-  ));
+      // إضافة الحجز إلى القائمة المحلية بعد إضافته إلى قاعدة البيانات
+      _bookings.add(Booking(
+        id: bookingId, // استخدام المعرّف الفريد
+        userName: booking.userName,
+        vehicleDetails: booking.vehicleDetails,
+        startDate: booking.startDate,
+        endDate: booking.endDate,
+        status: booking.status,
+        createdAt: booking.createdAt,
+      ));
 
-  _isLoading = false;
-  notifyListeners();
-  } catch (error) {
-  _isLoading = false;
-  throw error;
+      _isLoading = false;
+      notifyListeners();
+    } catch (error) {
+      _isLoading = false;
+      throw error;
+    }
   }
-  }
-
-
-
-
 
   /*Future<void> addBooking(Booking booking) async {
     _isLoading = true;
@@ -141,11 +162,15 @@ class BookingProvider with ChangeNotifier {
   }
 
   // دالة لتحديث بيانات حجز في قاعدة البيانات
-  Future<void> updateBooking(String id, Map<String, dynamic> updatedData) async {
+  Future<void> updateBooking(
+      String id, Map<String, dynamic> updatedData) async {
     _isLoading = true;
     notifyListeners();
     try {
-      await FirebaseFirestore.instance.collection('bookings').doc(id).update(updatedData);
+      await FirebaseFirestore.instance
+          .collection('bookings')
+          .doc(id)
+          .update(updatedData);
       final index = _bookings.indexWhere((booking) => booking.id == id);
       if (index != -1) {
         _bookings[index] = Booking.fromMap(updatedData, id);
@@ -158,4 +183,3 @@ class BookingProvider with ChangeNotifier {
     }
   }
 }
-

@@ -16,16 +16,28 @@ class UserProvider with ChangeNotifier {
   Future<UserModel?> getCurrentUser() async {
     final user = _auth.currentUser;
     if (user != null) {
-      // try {
         final snapshot = await _firestore.collection('users').doc(user.email).get();
         if (snapshot.exists) {
           _currentUser = UserModel.fromMap(snapshot.data() as Map<String, dynamic>);
-          return _currentUser;
           notifyListeners();
+          return _currentUser;
         }
-      // } catch (e) {
-      //   debugPrint('Error fetching current user: $e');
-      // }
+    }
+    return null;
+  }
+
+
+  Future<UserModel?> getUser(String userid) async {
+    try {
+      debugPrint(userid);
+      var user =await _firestore.collection("users").where("userId", isEqualTo: userid).get();
+      // var user = await _firestore.collection("users").doc(userid).get();
+      if(user.size > 0) {
+        return UserModel.fromMap(user.docs[0].data());
+      }
+      // return UserModel.fromMap(user.size);
+    } catch (e) {
+      debugPrint('Error saving user: $e');
     }
     return null;
   }
@@ -33,7 +45,7 @@ class UserProvider with ChangeNotifier {
   // تحديث بيانات المستخدم في Firestore والمزود
   Future<void> updateUser(UserModel updatedUser) async {
     try {
-      await _firestore.collection('users').doc(updatedUser.userId).update(updatedUser.toMap());
+      await _firestore.collection('users').doc(updatedUser.email).update(updatedUser.toMap());
       _currentUser = updatedUser;
       notifyListeners();
     } catch (e) {
