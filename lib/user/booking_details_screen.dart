@@ -1,4 +1,3 @@
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -98,7 +97,7 @@ class _BookingScreenState extends State<BookingScreen> {
 
     await _firestore.collection('bookings').add({
       'carId': widget.car.id,
-      'userId':  FirebaseAuth.instance.currentUser!.uid,
+      'userId':  FirebaseAuth.instance.currentUser?.uid ?? "nouse r",
       'startDate': Timestamp.fromDate(_startDate!),
       'endDate': Timestamp.fromDate(_endDate!),
       'status': 'مؤكد',
@@ -119,106 +118,99 @@ class _BookingScreenState extends State<BookingScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('تفاصيل الحجز'),
-        // backgroundColor: Colors.orange.shade700,
         elevation: 0,
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              Card(
-                elevation: 5,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                child: Column(
-                  children: [
-                    ListTile(
-                      leading: const Icon(Icons.date_range, ),
-                      title: const Text(
-                        'تاريخ البداية:',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      subtitle: Text(
-                        _startDate != null
-                            ? DateFormat('yyyy-MM-dd').format(_startDate!)
-                            : 'لم يتم تحديده',
-                      ),
-                      trailing: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                        onPressed: () => _selectStartDate(context),
-                        child: const Text('اختيار'),
-                      ),
-                    ),
-                    const Divider(),
-                    ListTile(
-                      leading: const Icon(Icons.event),
-                      title: const Text(
-                        'تاريخ النهاية:',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      subtitle: Text(
-                        _endDate != null
-                            ? DateFormat('yyyy-MM-dd').format(_endDate!)
-                            : 'لم يتم تحديده',
-                      ),
-                      trailing: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                        onPressed: () => _selectEndDate(context),
-                        child: const Text('اختيار'),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 20),
-              if (_errorMessage != null)
-                Text(
-                  _errorMessage!,
-                  style: const TextStyle(color: Colors.red, fontSize: 16),
-                ),
-              const SizedBox(height: 20),
-              ElevatedButton.icon(
-                style: ElevatedButton.styleFrom(
-                  
-                  padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+      body: Center(  // استخدام Center لتوسيط المحتوى
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,  // توسيط العناصر داخل الـ Column
+              crossAxisAlignment: CrossAxisAlignment.center, // توسيط العناصر داخل الـ Column
+              children: [
+                Card(
+                  elevation: 5,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  child: Column(
+                    children: [
+                      const SizedBox(height: 10,),
+                      ListTile(
+                        leading: const Icon(Icons.date_range),
+                        title: const Text(
+                          'تاريخ البداية:',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        subtitle: Text(
+                          _startDate != null
+                              ? DateFormat('yyyy-MM-dd').format(_startDate!)
+                              : 'لم يتم تحديده',
+                        ),
+                        trailing: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                          onPressed: () => _selectStartDate(context),
+                          child: const Text('اختيار'),
+                        ),
+                      ),
+                      const SizedBox(height: 10,),
+                      const Divider(),
+                      const SizedBox(height: 10,),
+                      ListTile(
+                        leading: const Icon(Icons.event),
+                        title: const Text(
+                          'تاريخ النهاية:',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        subtitle: Text(
+                          _endDate != null
+                              ? DateFormat('yyyy-MM-dd').format(_endDate!)
+                              : 'لم يتم تحديده',
+                        ),
+                        trailing: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                          onPressed: () => _selectEndDate(context),
+                          child: const Text('اختيار'),
+                        ),
+                      ),
+                      const SizedBox(height: 10,),
+                    ],
                   ),
                 ),
-                icon: const Icon(Icons.check_circle),
-                label: const Text(
-                  'تأكيد الحجز',
-                  style: TextStyle(fontSize: 18),
+                const SizedBox(height: 20),
+                if (_errorMessage != null)
+                  Text(
+                    _errorMessage!,
+                    style: const TextStyle(color: Colors.red, fontSize: 16),
+                  ),
+                const SizedBox(height: 20),
+                ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  icon: const Icon(Icons.check_circle),
+                  label: const Text(
+                    'تأكيد الحجز',
+                    style: TextStyle(fontSize: 18),
+                  ),
+                  onPressed: _saveBooking,
                 ),
-                onPressed: _saveBooking,
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-

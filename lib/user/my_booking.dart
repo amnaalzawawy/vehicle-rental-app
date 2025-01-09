@@ -99,8 +99,9 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
                                   content: Text('تم حذف الحجز بنجاح')),
                             );
                           },
-                          style: ElevatedButton.styleFrom( backgroundColor: Colors.red),
                           child: const Text('حذف الحجز'),
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.red),
                         ),
                       ],
                     ),

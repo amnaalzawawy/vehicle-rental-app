@@ -8,6 +8,12 @@ class CarModel {
   List<String> images = [];
   bool isBooking; // حالة الحجز (للعرض فقط)
   double pricePerDay;
+  String distanceMeter;
+  String fuelType;
+  String plateNumber;
+  String seatsNumber;
+  String transmissionType;
+
   CarModel({
     required this.id,
     required this.name,
@@ -16,6 +22,11 @@ class CarModel {
     required  this.pricePerDay,
     this.images = const [],
     this.isBooking = false,
+    required  this.distanceMeter,
+  required  this.fuelType,
+  required  this.plateNumber,
+  required  this.seatsNumber,
+  required  this.transmissionType,
   });
 
   // تحويل من Map إلى CarModel
@@ -28,6 +39,12 @@ class CarModel {
       images: List<String>.from(map['imageUrls'] ?? []),
       isBooking: map['isBooking'] ?? false,
       pricePerDay: (map['price'] as num?)?.toDouble() ?? 0.toDouble(),
+      distanceMeter: map['distanceMeter'] ?? '',
+      fuelType: map['fuelType'] ?? '',
+      plateNumber: map['plateNumber'] ?? '',
+      seatsNumber: map['seatsNumber'] ?? '',
+      transmissionType: map['transmissionType'] ?? '',
+
     );
   }
 
@@ -40,7 +57,12 @@ class CarModel {
       'imageUrls': images,
       'isBooking': isBooking,
       'price':  pricePerDay,
-      "owner": owner
+      "owner": owner,
+      "distanceMeter":distanceMeter,
+      "fuelType":fuelType,
+      "plateNumber":plateNumber,
+      "seatsNumber":seatsNumber,
+      "transmissionType":transmissionType,
     };
   }
 }

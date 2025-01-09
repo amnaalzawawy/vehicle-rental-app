@@ -11,28 +11,27 @@ import '../widgets/bottom_navigation_bar.dart';
 import '../widgets/custom_user_drawer.dart';
 
 class AccountScreen extends StatefulWidget {
-    @override
-    _AccountScreenState createState() => _AccountScreenState();
+  @override
+  _AccountScreenState createState() => _AccountScreenState();
 }
 
 class _AccountScreenState extends State<AccountScreen> {
-    final TextEditingController _firstNameController = TextEditingController();
-    final TextEditingController _lastNameController = TextEditingController();
-    final TextEditingController _phoneController = TextEditingController();
-    String? _profileImageBase64;
-    int _selectedIndex = 0;
-    bool _isEditingFirstName = false;
-    bool _isEditingLastName = false;
-    bool _isEditingPhone = false;
-    UserModel? user;
+  final TextEditingController _firstNameController = TextEditingController();
+  final TextEditingController _lastNameController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
+  String? _profileImageBase64;
+  int _selectedIndex = 0;
+  bool _isEditingFirstName = false;
+  bool _isEditingLastName = false;
+  bool _isEditingPhone = false;
+  UserModel? user;
 
+  @override
+  void initState() {
+    super.initState();
+    _loadCurrentUser();
 
-    @override
-    void initState() {
-        super.initState();
-        _loadCurrentUser();
-
-        var userProvider = CurrentUserProvider.UserProvider();
+    var userProvider = CurrentUserProvider.UserProvider();
 
     userProvider.getCurrentUser().then((value) {
       setState(() {
@@ -40,279 +39,243 @@ class _AccountScreenState extends State<AccountScreen> {
       });
 
       setState(() {
-                _firstNameController.text = value?.firstName ?? '';
-                _lastNameController.text = value?.lastName ?? '';
-                _phoneController.text = value?.phoneNumber ?? '';
-                _profileImageBase64 = user?.profileImageBase64;
-            });
-    },);
+        _firstNameController.text = value?.firstName ?? '';
+        _lastNameController.text = value?.lastName ?? '';
+        _phoneController.text = value?.phoneNumber ?? '';
+        _profileImageBase64 = user?.profileImageBase64;
+      });
+    });
+  }
+
+  Future<void> _loadCurrentUser() async {
+    final user = Provider.of<UserProvider>(context, listen: false).currentUser;
+    if (user != null) {
+      setState(() {
+        _firstNameController.text = user.firstName ?? '';
+        _lastNameController.text = user.lastName ?? '';
+        _phoneController.text = user.phoneNumber ?? '';
+        _profileImageBase64 = user.profileImageBase64;
+      });
     }
+  }
 
-    Future<void> _loadCurrentUser() async {
+  bool _hasChanges() {
+    final user = Provider.of<UserProvider>(context, listen: false).currentUser;
+    if (user == null) return false;
+    return _firstNameController.text != user.firstName ||
+        _lastNameController.text != user.lastName ||
+        _phoneController.text != user.phoneNumber ||
+        _profileImageBase64 != user.profileImageBase64;
+  }
 
-        final user = Provider.of<UserProvider>(context, listen: false).currentUser;
-        if (user != null) {
-            setState(() {
-                _firstNameController.text = user.firstName ?? '';
-                _lastNameController.text = user.lastName ?? '';
-                _phoneController.text = user.phoneNumber ?? '';
-                _profileImageBase64 = user.profileImageBase64;
-            });
-        }
-    }
+  Future<String> _convertImageToBase64(String filePath) async {
+    final bytes = await File(filePath).readAsBytes();
+    return base64Encode(bytes);
+  }
 
-    bool _hasChanges() {
-        final user = Provider.of<UserProvider>(context, listen: false).currentUser;
-        if (user == null) return false;
-        return _firstNameController.text != user.firstName ||
-            _lastNameController.text != user.lastName ||
-            _phoneController.text != user.phoneNumber ||
-            _profileImageBase64 != user.profileImageBase64;
-    }
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('حسابي'),
+        backgroundColor: const Color(0xFFF78B00),
+        elevation: 0,
+      ),
+      drawer: CustomDrawer2(),
+      body: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.end,  // محاذاة العناصر إلى اليمين
+            children: [
+              const SizedBox(height: 100,),
+              Text(
+                'البريد الإلكتروني',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.grey[700]),
+              ),
+              Text(
+                user?.email ?? " -- ",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.grey[700]),
+              ),
+              const SizedBox(height: 20),
 
-    Future<String> _convertImageToBase64(String filePath) async {
-        final bytes = await File(filePath).readAsBytes();
-        return base64Encode(bytes);
-    }
-
-
-
-    @override
-    Widget build(BuildContext context) {
-
-
-        return Scaffold(
-            appBar: AppBar(
-                title: const Text('حسابي'),
-                elevation: 0,
-            ),
-            drawer: CustomDrawer2(),
-            body: Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: SingleChildScrollView(
-                    child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                            // تعليق عرض الصورة الشخصية
-                            // Center(
-                            //     child: GestureDetector(
-                            //         onTap: () async {
-                            //             final picker = ImagePicker();
-                            //             final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-                            //             if (pickedFile != null && user != null) {
-                            //                 final base64String = await _convertImageToBase64(pickedFile.path);
-                            //                 await Provider.of<UserProvider>(context, listen: false).uploadProfileImage(user.userId, base64String);
-                            //                 setState(() {
-                            //                     _profileImageBase64 = base64String;
-                            //                 });
-                            //             }
-                            //         },
-                            //         child: CircleAvatar(
-                            //             radius: 70,
-                            //             backgroundImage: _profileImageBase64 != null
-                            //                 ? MemoryImage(base64Decode(_profileImageBase64!))
-                            //                 : AssetImage('assets/images/default_profile.png') as ImageProvider,
-                            //             child: _profileImageBase64 == null
-                            //                 ? Icon(Icons.camera_alt, size: 40, color: Colors.white)
-                            //                 : null,
-                            //         ),
-                            //     ),
-                            // ),
-
-                            Text(
-                                        'الاسم الأول',
-                                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.grey[700]),
-                                    ),
-                                    Text(
-                                      user?.email ?? " -- ",
-                                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.grey[700]),
-                                    ),
-                            const SizedBox(height: 20),
-
-                            // الاسم الأول
-                            Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                    Text(
-                                        'الاسم الأول',
-                                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.grey[700]),
-                                    ),
-                                    IconButton(
-                                        icon: const Icon(Icons.edit, color: Color(0xFFF78B00)),
-                                        onPressed: () {
-                                            setState(() {
-                                                _isEditingFirstName = true;
-                                            });
-                                        },
-                                    ),
-                                ],
-                            ),
-                            _isEditingFirstName
-                                ? TextField(
-                                controller: _firstNameController,
-                                decoration: InputDecoration(
-                                    hintText: 'أدخل اسمك الأول',
-                                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                                    focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(12),
-
-                                    ),
-                                ),
-                            )
-                                : Text(
-                                _firstNameController.text,
-                                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.grey[600]),
-                            ),
-                            const SizedBox(height: 20),
-
-                            // الاسم الأخير
-                            Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                    Text(
-                                        'الاسم الأخير',
-                                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.grey[700]),
-                                    ),
-                                    IconButton(
-                                        icon: const Icon(Icons.edit, color: Color(0xFFF78B00)),
-                                        onPressed: () {
-                                            setState(() {
-                                                _isEditingLastName = true;
-                                            });
-                                        },
-                                    ),
-                                ],
-                            ),
-                            _isEditingLastName
-                                ? TextField(
-                                controller: _lastNameController,
-                                decoration: InputDecoration(
-                                    hintText: 'أدخل اسمك الأخير',
-                                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                                    focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(12),
-                                        borderSide: const BorderSide(color: Color(0xFFF78B00)),
-                                    ),
-                                ),
-                            )
-                                : Text(
-                                _lastNameController.text,
-                                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.grey[600]),
-                            ),
-                            const SizedBox(height: 20),
-
-                            // رقم الهاتف
-                            Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                    Text(
-                                        'رقم الهاتف',
-                                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.grey[700]),
-                                    ),
-                                    IconButton(
-                                        icon: const Icon(Icons.edit, color: Color(0xFFF78B00)),
-                                        onPressed: () {
-                                            setState(() {
-                                                _isEditingPhone = !_isEditingPhone;
-                                            });
-                                        },
-                                    ),
-                                ],
-                            ),
-                            _isEditingPhone
-                                ? TextField(
-                                controller: _phoneController,
-                                decoration: InputDecoration(
-                                    hintText: 'أدخل رقم هاتفك',
-                                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                                    focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(12),
-                                        borderSide: const BorderSide(color: Color(0xFFF78B00)),
-                                    ),
-                                ),
-                            )
-                                : Text(
-                                _phoneController.text ,
-                                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.grey[600]),
-                            ),
-                            const SizedBox(height: 20),
-
-                            // رصيد المحفظة
-                            // Text(
-                            //     'رصيد المحفظة',
-                            //     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.grey[700]),
-                            // ),
-                            // Text(
-                            //     'ج.م ${user?.walletBalance ?? 0.0}',
-                            //     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey[600]),
-                            // ),
-                            const SizedBox(height: 20),
-
-                            // زر حفظ التغييرات
-                            Center(
-                                child: ElevatedButton(
-                                    onPressed:  () async {
-                                        if (user != null) {
-                                            final updatedUser = user?.copyWith(
-                                                firstName : _firstNameController.text.isNotEmpty ? _firstNameController.text : user?.firstName,
-                                                lastName: _lastNameController.text.isNotEmpty ? _lastNameController.text : user?.lastName,
-                                                phoneNumber: _phoneController.text.isNotEmpty ? _phoneController.text : user?.phoneNumber,
-                                            );
-                                            if(updatedUser != null) {
-                                              await Provider.of<UserProvider>(context, listen: false).updateUser(updatedUser);
-                                            }
-                                            setState(() {
-                                                _isEditingFirstName = false;
-                                                _isEditingLastName = false;
-                                                _isEditingPhone = false;
-                                            });
-                                            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('تم حفظ التغييرات بنجاح!')));
-                                        }
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                        padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 12),
-                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                                    ),
-                                    child: const Text(
-                                        'حفظ التغييرات',
-                                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                                    ),
-                                ),
-                            ),
-                            const SizedBox(height: 20),
-
-                            // زر تسجيل الخروج
-                            Center(
-                                child: ElevatedButton(
-                                    onPressed: ()  {
-                                        Provider.of<UserProvider>(context, listen: false).logout();
-                                        Navigator.pushReplacementNamed(context, '/login');  // تأكد من تحديد المسار الصحيح لواجهة تسجيل الدخول
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                        backgroundColor: Colors.red,
-                                        padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 12),
-                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                                    ),
-                                    child: const Text(
-                                        'تسجيل الخروج',
-                                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                                    ),
-                                ),
-                            ),
-                            const SizedBox(height: 20),
-                        ],
+              // الاسم الأول
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,  // محاذاة الأيقونة إلى اليسار
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.edit, color: Color(0xFFF78B00)),
+                    onPressed: () {
+                      setState(() {
+                        _isEditingFirstName = true;
+                      });
+                    },
+                  ),
+                  Expanded(
+                    child: Text(
+                      'الاسم الأول',
+                      textAlign: TextAlign.right,  // محاذاة النص إلى اليمين
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.grey[700]),
                     ),
+                  ),
+                ],
+              ),
+              _isEditingFirstName
+                  ? TextField(
+                controller: _firstNameController,
+                textAlign: TextAlign.right, // محاذاة النص إلى اليمين
+                decoration: InputDecoration(
+                  hintText: 'أدخل اسمك الأول',
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
-            ),
-            // bottomNavigationBar: BottomNavigationBarWidget(
-            //     selectedIndex: _selectedIndex,
-            //     onItemTapped: (index) {
-            //         print("index : $index");
-            //         setState(() {
-            //             _selectedIndex = index;
-            //         });
-            //     },
-            // ),
-        );
-    }
+              )
+                  : Text(
+                _firstNameController.text,
+                textAlign: TextAlign.right,  // محاذاة النص إلى اليمين
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.grey[600]),
+              ),
+              const SizedBox(height: 20),
+
+              // الاسم الأخير
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,  // محاذاة الأيقونة إلى اليسار
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.edit, color: Color(0xFFF78B00)),
+                    onPressed: () {
+                      setState(() {
+                        _isEditingLastName = true;
+                      });
+                    },
+                  ),
+                  Expanded(
+                    child: Text(
+                      'الاسم الأخير',
+                      textAlign: TextAlign.right,  // محاذاة النص إلى اليمين
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.grey[700]),
+                    ),
+                  ),
+                ],
+              ),
+              _isEditingLastName
+                  ? TextField(
+                controller: _lastNameController,
+                textAlign: TextAlign.right, // محاذاة النص إلى اليمين
+                decoration: InputDecoration(
+                  hintText: 'أدخل اسمك الأخير',
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(color: Color(0xFFF78B00)),
+                  ),
+                ),
+              )
+                  : Text(
+                _lastNameController.text,
+                textAlign: TextAlign.right,  // محاذاة النص إلى اليمين
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.grey[600]),
+              ),
+              const SizedBox(height: 20),
+
+              // رقم الهاتف
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,  // محاذاة الأيقونة إلى اليسار
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.edit, color: Color(0xFFF78B00)),
+                    onPressed: () {
+                      setState(() {
+                        _isEditingPhone = !_isEditingPhone;
+                      });
+                    },
+                  ),
+                  Expanded(
+                    child: Text(
+                      'رقم الهاتف',
+                      textAlign: TextAlign.right,  // محاذاة النص إلى اليمين
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.grey[700]),
+                    ),
+                  ),
+                ],
+              ),
+              _isEditingPhone
+                  ? TextField(
+                controller: _phoneController,
+                textAlign: TextAlign.right, // محاذاة النص إلى اليمين
+                decoration: InputDecoration(
+                  hintText: 'أدخل رقم هاتفك',
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(color: Color(0xFFF78B00)),
+                  ),
+                ),
+              )
+                  : Text(
+                _phoneController.text,
+                textAlign: TextAlign.right,  // محاذاة النص إلى اليمين
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.grey[600]),
+              ),
+              const SizedBox(height: 20),
+
+              // زر حفظ التغييرات
+              Center(
+                child: ElevatedButton(
+                  onPressed: () async {
+                    if (user != null) {
+                      final updatedUser = user?.copyWith(
+                        firstName: _firstNameController.text.isNotEmpty ? _firstNameController.text : user?.firstName,
+                        lastName: _lastNameController.text.isNotEmpty ? _lastNameController.text : user?.lastName,
+                        phoneNumber: _phoneController.text.isNotEmpty ? _phoneController.text : user?.phoneNumber,
+                      );
+                      if (updatedUser != null) {
+                        await Provider.of<UserProvider>(context, listen: false).updateUser(updatedUser);
+                      }
+                      setState(() {
+                        _isEditingFirstName = false;
+                        _isEditingLastName = false;
+                        _isEditingPhone = false;
+                      });
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('تم حفظ التغييرات بنجاح!')));
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFF78B00),
+                    padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 12),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  ),
+                  child: const Text(
+                    'حفظ التغييرات',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+
+              // زر تسجيل الخروج
+              Center(
+                child: TextButton(
+                  onPressed: () {
+                    Provider.of<UserProvider>(context, listen: false).logout();
+                    Navigator.pushReplacementNamed(context, '/login');
+                  },
+                  child: const Text(
+                    'تسجيل الخروج',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.red,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }

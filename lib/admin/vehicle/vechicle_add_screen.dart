@@ -19,7 +19,12 @@ class _AddCarDialogState extends State<AddCarDialog> {
   final _nameController = TextEditingController();
   final _categoryController = TextEditingController();
   final _ownerNameController = TextEditingController();
-  final _priceController = TextEditingController(); // حقل السعر
+  final _priceController = TextEditingController();
+  final _distanceMeterController = TextEditingController();
+  final _fuelTypeController = TextEditingController();
+  final _plateNumberController = TextEditingController();
+  final _seatsNumberController = TextEditingController();
+  final _transmissionTypeController = TextEditingController();
   List<String> _imageUrls = [];
   final ImagePicker _picker = ImagePicker();
 
@@ -31,7 +36,11 @@ class _AddCarDialogState extends State<AddCarDialog> {
       _categoryController.text = widget.carToEdit!.category;
       _ownerNameController.text = widget.carToEdit!.owner;
       _priceController.text = widget.carToEdit!.pricePerDay.toString();
-      // _imageUrls = widget.carToEdit!.image;
+      _distanceMeterController.text = widget.carToEdit!.distanceMeter;
+      _fuelTypeController.text = widget.carToEdit!.fuelType;
+      _plateNumberController.text = widget.carToEdit!.plateNumber;
+      _seatsNumberController.text = widget.carToEdit!.seatsNumber;
+      _transmissionTypeController.text = widget.carToEdit!.transmissionType;
     }
   }
 
@@ -59,6 +68,26 @@ class _AddCarDialogState extends State<AddCarDialog> {
               controller: _priceController,
               decoration: InputDecoration(labelText: 'السعر اليومي (بالدينار)'),
               keyboardType: TextInputType.number,
+            ),
+            TextField(
+              controller: _distanceMeterController,
+              decoration: InputDecoration(labelText: 'المسافة المقطوعة (كم)'),
+            ),
+            TextField(
+              controller: _fuelTypeController,
+              decoration: InputDecoration(labelText: 'نوع الوقود'),
+            ),
+            TextField(
+              controller: _plateNumberController,
+              decoration: InputDecoration(labelText: 'رقم اللوحة'),
+            ),
+            TextField(
+              controller: _seatsNumberController,
+              decoration: InputDecoration(labelText: 'عدد المقاعد'),
+            ),
+            TextField(
+              controller: _transmissionTypeController,
+              decoration: InputDecoration(labelText: 'نوع ناقل الحركة'),
             ),
             SizedBox(height: 10),
             ElevatedButton(
@@ -103,9 +132,13 @@ class _AddCarDialogState extends State<AddCarDialog> {
                   name: _nameController.text,
                   category: _categoryController.text,
                   owner: _ownerNameController.text,
-                  // image: _imageUrls,
                   isBooking: false,
                   pricePerDay: double.parse(_priceController.text),
+                  distanceMeter: _distanceMeterController.text,
+                  fuelType: _fuelTypeController.text,
+                  plateNumber: _plateNumberController.text,
+                  seatsNumber: _seatsNumberController.text,
+                  transmissionType: _transmissionTypeController.text,
                 );
 
                 Provider.of<CarProvider>(context, listen: false).addCar(newCar);
@@ -127,9 +160,13 @@ class _AddCarDialogState extends State<AddCarDialog> {
                       name: _nameController.text,
                       category: _categoryController.text,
                       owner: _ownerNameController.text,
-                      // image: _imageUrls,
                       isBooking: widget.carToEdit!.isBooking,
                       pricePerDay: double.parse(_priceController.text),
+                      distanceMeter: _distanceMeterController.text,
+                      fuelType: _fuelTypeController.text,
+                      plateNumber: _plateNumberController.text,
+                      seatsNumber: _seatsNumberController.text,
+                      transmissionType: _transmissionTypeController.text,
                     );
 
                     Provider.of<CarProvider>(context, listen: false)
@@ -169,7 +206,12 @@ class _AddCarDialogState extends State<AddCarDialog> {
         _categoryController.text.isNotEmpty &&
         _ownerNameController.text.isNotEmpty &&
         _priceController.text.isNotEmpty &&
-        double.tryParse(_priceController.text) != null;
+        double.tryParse(_priceController.text) != null &&
+        _distanceMeterController.text.isNotEmpty &&
+        _fuelTypeController.text.isNotEmpty &&
+        _plateNumberController.text.isNotEmpty &&
+        _seatsNumberController.text.isNotEmpty &&
+        _transmissionTypeController.text.isNotEmpty;
   }
 
   void _showValidationError() {

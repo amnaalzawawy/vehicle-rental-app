@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:untitled2/models/user.dart';
-import 'package:untitled2/providers/current_user_provider.dart';
 import 'package:untitled2/user/booking_details_screen.dart';
 import '../models/car.dart';
+import '../providers/current_user_provider.dart';
 
 class CarDetailScreen extends StatefulWidget {
   final CarModel car;
@@ -35,12 +33,8 @@ class CarDetailScreenState extends State<CarDetailScreen> {
     }
   }
 
-
   void getUserDetails() async {
     final user = await UserProvider().getUser(widget.car.owner);
-    print("Getting owner details");
-    print(widget.car.owner);
-    print(user);
     setState(() {
       owner = user;
     });
@@ -61,7 +55,7 @@ class CarDetailScreenState extends State<CarDetailScreen> {
       ),
       body: SingleChildScrollView(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+          crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             // عرض الصور المتعددة للمركبة في شريط أفقي متحرك
             imageURLs.isNotEmpty ? SizedBox(
@@ -72,8 +66,12 @@ class CarDetailScreenState extends State<CarDetailScreen> {
                 itemBuilder: (context, index) {
                   return Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Image.network(
-                      imageURLs[index],
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: Image.network(
+                        imageURLs[index],
+                        fit: BoxFit.cover,
+                      ),
                     ),
                   );
                 },
@@ -88,44 +86,81 @@ class CarDetailScreenState extends State<CarDetailScreen> {
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
-
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Text(
-                    'الفئة: ${widget.car.category}',
-                    style: const TextStyle(fontSize: 18),
-                  ),
+                  const SizedBox(height: 30),
+                  // اسم المركبة
+                  _buildDetailText('اسم المركبة: ${widget.car.name}', isData: true, isBold: true),
                   const SizedBox(height: 10),
-                  Text(
-                    'اسم المالك: ${owner?.firstName}',
-                    style: const TextStyle(fontSize: 18),
-                  ),
+                  // الفئة
+                  _buildDetailText('الفئة: ${widget.car.category}', isData: true, isBold: true),
                   const SizedBox(height: 10),
-                  // عرض السعر اليومي من قاعدة البيانات
-                  Text(
-                    'السعر اليومي: ${widget.car.pricePerDay} د.ل',
-                    style: const TextStyle(fontSize: 18),
-                  ),
-                  const SizedBox(height: 20),
+                  // اسم المالك
+                  _buildDetailText('اسم المالك: ${owner?.firstName ?? "غير متوفر"}', isData: true , isBold: true),
+                  const SizedBox(height: 10),
+                  // المسافة
+                  _buildDetailText('المسافة المقطوعة: ${widget.car.distanceMeter}', isData: true , isBold: true),
+                  const SizedBox(height: 10),
+                  // نوع الوقود
+                  _buildDetailText('نوع الوقود: ${widget.car.fuelType}', isData: true, isBold: true),
+                  const SizedBox(height: 10),
+                  // رقم اللوحة
+                  _buildDetailText('رقم اللوحة: ${widget.car.plateNumber}', isData: true , isBold: true),
+                  const SizedBox(height: 10),
+                  // عدد المقاعد
+                  _buildDetailText('عدد المقاعد: ${widget.car.seatsNumber}', isData: true , isBold: true),
+                  const SizedBox(height: 10),
+                  // نوع النقل
+                  _buildDetailText('نوع الناقل: ${widget.car.transmissionType}', isData: true , isBold: true),
+                  const SizedBox(height: 10),
+                  // السعر اليومي
+                  _buildDetailText('السعر اليومي: ${widget.car.pricePerDay} د.ل', isData: true , isBold: true),
+                  const SizedBox(height: 50),
                   // زر الحجز
                   Center(
                     child: ElevatedButton(
-                    onPressed: () {
-                      // الانتقال إلى شاشة الحجز
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                BookingScreen(car: widget.car)),
-                      );
-                    },
-                    child: const Text('احجز الآن'),
-                  ),
+                      onPressed: () {
+                        // الانتقال إلى شاشة الحجز
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  BookingScreen(car: widget.car)),
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        elevation: 5,
+                        shadowColor: Colors.orangeAccent,
+                      ),
+                      child: const Text(
+                        'احجز الآن',
+                        style: TextStyle(fontSize: 18),
+                      ),
+                    ),
                   ),
                 ],
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  // Widget لبناء النصوص مع تغيير اللون والخط حسب ما إذا كانت ثابتة أو متغيرة
+  Widget _buildDetailText(String text, {required bool isData, bool isBold = false}) {
+    return Padding(
+      padding: const EdgeInsets.all(10.0),
+      child: Text(
+        text,
+        style: TextStyle(
+          fontSize: 18,
+          fontWeight: isBold ? FontWeight.bold : FontWeight.normal, // النص الثابت بالخط العريض
+          color: isData ? Colors.black : Colors.black87, // اللون الأسود القاتم للنص الثابت
         ),
       ),
     );
