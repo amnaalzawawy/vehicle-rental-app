@@ -113,6 +113,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:untitled2/admin/user/user_search.dart';
 import 'package:untitled2/owners/booking_management_screen.dart';
 import 'package:untitled2/owners/owner_profile_page.dart';
 import 'package:untitled2/providers/booking_provider.dart';
@@ -122,6 +123,7 @@ import 'package:untitled2/screens/login_screen.dart';
 // import 'package:untitled2/screens/login_screen.dart'; // شاشة تسجيل الدخول
 import 'package:untitled2/user/my_account_screen.dart'; // شاشة حسابي
 import 'package:untitled2/providers/auth_provider.dart';
+import 'package:untitled2/providers/current_user_provider.dart' as current_user_provider;
 import 'package:untitled2/user/my_booking.dart';
 import 'package:untitled2/user/vehicle_screen.dart';
 
@@ -150,6 +152,8 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => UserProvider()),
         ChangeNotifierProvider(create: (_) => CarProvider()),
         ChangeNotifierProvider(create: (_) => BookingProvider()),
+        ChangeNotifierProvider(create: (_) => current_user_provider.UserProvider()),
+        ChangeNotifierProvider(create: (_) => UserProvider()),
       ],
       child: MaterialApp(
         title: 'تطبيق تأجير المركبات',
@@ -168,6 +172,7 @@ class MyApp extends StatelessWidget {
           '/owner/manage' :(context) => const ManageCarPage(),
           '/owner/bookings' :(context) => const BookingManagementPage(),
           '/owner/account' :(context) => const OwnerProfilePage(),
+          '/users' :(context) => UserSearchScreen(),
           '/' :(context) => const CarDisplayScreen(), // Home replacement
         },
       ),

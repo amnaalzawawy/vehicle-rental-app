@@ -34,6 +34,16 @@ class UserProvider with ChangeNotifier {
     }
   }
 
+
+  Future<void> remove(String userid) async {
+    try {
+      await _firestore.collection('users').doc(userid).delete();
+        notifyListeners();
+    } catch (e) {
+      debugPrint('Error updating user: $e');
+    }
+  }
+
   // حفظ بيانات المستخدم في SharedPreferences
   Future<void> _saveUserLocally(UserModel user) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -111,11 +121,38 @@ class UserProvider with ChangeNotifier {
   Future<void> fetchUsers() async {
     try {
       final snapshot = await _firestore.collection('users').get();
-      _users = snapshot.docs.map((doc) => UserModel.fromMap(doc.data() as Map<String, dynamic>)).toList();
+      _users = snapshot.docs.map((doc) => UserModel.fromMap(doc.data())).toList();
       notifyListeners();
     }
     catch (e) {
       debugPrint('Error fetching users: $e');
     }
+  }
+
+  Future<List<UserModel>?> search(String query) async {
+    print("Getting users");
+    // try {
+      final snapshot = await _firestore.collection('users')
+      .where(
+          Filter.or(
+            Filter("firstName", isGreaterThanOrEqualTo: query),
+          Filter("lastName", isGreaterThanOrEqualTo: query),
+          Filter("phone", isGreaterThanOrEqualTo: query),
+          Filter("email", isGreaterThanOrEqualTo: query),
+          )
+    )
+          .get();
+
+      print(snapshot.size);
+
+      var users = snapshot.docs.map((doc) => UserModel.fromMap(doc.data())).toList();
+      notifyListeners();
+      return users;
+    // }
+    // catch (e) {
+    //   debugPrint('Error fetching users: $e');
+    // }
+
+    return null;
   }
 }

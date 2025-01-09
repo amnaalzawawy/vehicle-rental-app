@@ -45,7 +45,7 @@ class UserProvider with ChangeNotifier {
   // تحديث بيانات المستخدم في Firestore والمزود
   Future<void> updateUser(UserModel updatedUser) async {
     try {
-      await _firestore.collection('users').doc(updatedUser.userId).update(updatedUser.toMap());
+      await _firestore.collection('users').doc(updatedUser.email).update(updatedUser.toMap());
       _currentUser = updatedUser;
       notifyListeners();
     } catch (e) {

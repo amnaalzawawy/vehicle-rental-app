@@ -42,7 +42,7 @@ class UserModel {
   // تحويل خريطة (Map) إلى كائن من نوع UserModel
   factory UserModel.fromMap(Map<String, dynamic> map) {
     return UserModel(
-      userId: map['userId'],
+      userId: map['userId'] ?? "",
       firstName: map['firstName'] ?? "",
       lastName: map['lastName'] ?? "",
       phoneNumber: map['phoneNumber'] ?? "",
