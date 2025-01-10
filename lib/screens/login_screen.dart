@@ -20,15 +20,9 @@ class LoginScreenState extends State<LoginScreen> {
 
       UserCredential userCredential = await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: password);
-      if(userCredential.user != null){
-        // Navigate to the home page after successful login
+      if (userCredential.user != null) {
         Navigator.pushNamedAndRemoveUntil(context, "/", (route) => false);
-        // Navigator.pushReplacementNamed(context, '/');
-      }else{
-
       }
-
-
     } catch (e) {
       _showErrorDialog(e.toString());
     }
@@ -54,51 +48,89 @@ class LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Login")),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            TextField(
-              controller: _emailController,
-              decoration: const InputDecoration(
-                hintText: 'Enter email',
-                labelText: 'Email',
+      body: Stack(
+        children: [
+          // Background image
+          Container(
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/R2.jpg'), // Replace with your image path
+                fit: BoxFit.cover,
               ),
-              keyboardType: TextInputType.emailAddress,
             ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: _passwordController,
-              decoration: const InputDecoration(
-                hintText: 'Enter password',
-                labelText: 'Password',
-              ),
-              obscureText: true,
-            ),
-            const SizedBox(height: 20),
-            Row(
-              children: [
-                Center(
-                  child: ElevatedButton(
-                    onPressed: _loginWithEmailAndPassword,
-                    child: const Text("Login"),
+          ),
+          // Form content
+          Center(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text(
+                    "مرحباً بك! أتمني لك تجربة رائعة في تطبيقنا",
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                    textAlign: TextAlign.center,
                   ),
-                ),
-                Container(width: 50,),
-                Center(
-                  child: ElevatedButton(
-                    onPressed: (){
+                  const SizedBox(height: 20),
+                  TextField(
+                    controller: _emailController,
+                    decoration: InputDecoration(
+                      hintText: 'أدخل البريد الإلكتروني',
+                      labelText: 'البريد الإلكتروني',
+                      filled: true,
+                      fillColor: Colors.white70,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(20.0),
+                        borderSide: BorderSide.none,
+                      ),
+                    ),
+                    keyboardType: TextInputType.emailAddress,
+                  ),
+                  const SizedBox(height: 16),
+                  TextField(
+                    controller: _passwordController,
+                    decoration: InputDecoration(
+                      hintText: 'أدخل كلمة المرور',
+                      labelText: 'كلمة المرور',
+                      filled: true,
+                      fillColor: Colors.white70,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(20.0),
+                        borderSide: BorderSide.none,
+                      ),
+                    ),
+                    obscureText: true,
+                  ),
+                  const SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: _loginWithEmailAndPassword,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white, // White background
+                    ),
+                    child: const Text(
+                      "تسجيل دخول",
+                      style: TextStyle(color: Colors.black), // Black text
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  TextButton(
+                    onPressed: () {
                       Navigator.pushNamed(context, "/signup");
                     },
-                    child: const Text("Register"),
+                    child: const Text(
+                      "إنشاء حساب",
+                      style: TextStyle(color: Colors.white), // White text
+                    ),
                   ),
-                ),
-              ],
-            )
-          ],
-        ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

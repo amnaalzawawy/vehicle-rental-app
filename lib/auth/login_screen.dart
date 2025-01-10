@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../providers/user_provider.dart';
 
 class SignUpScreen extends StatefulWidget {
   @override
@@ -38,10 +36,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
       final phone = _phoneController.text;
 
       try {
-        DocumentSnapshot userDoc = await FirebaseFirestore.instance
-            .collection('users')
-            .doc(email)
-            .get();
+        DocumentSnapshot userDoc =
+        await FirebaseFirestore.instance.collection('users').doc(email).get();
 
         if (userDoc.exists) {
           String userId = userDoc['userId'];
@@ -106,54 +102,43 @@ class _SignUpScreenState extends State<SignUpScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,  // تعيين الخلفية للون الأبيض
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text('التسجيل'),
       ),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
           child: Center(
             child: SingleChildScrollView(
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Image.asset(
-                    'assets/icon.jpg', // قم بتغيير المسار حسب مكان الشعار
+                    'assets/icon.jpg',
                     height: 100,
                   ),
                   const SizedBox(height: 30),
-                  TextFormField(
+                  _buildTextField(
                     controller: _emailController,
-                    decoration: InputDecoration(
-                      labelText: 'البريد الإلكتروني',
-                      prefixIcon: Icon(Icons.email),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
+                    label: 'البريد الإلكتروني',
+                    icon: Icons.email,
                     keyboardType: TextInputType.emailAddress,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'يرجى إدخال البريد الإلكتروني';
                       }
-                      if (!RegExp(r'^[a-zA-Z0-9]+@gmail\.com\$').hasMatch(value)) {
+                      if (!RegExp(r'^[a-zA-Z0-9]+@gmail\.com$').hasMatch(value)) {
                         return 'يرجى إدخال بريد إلكتروني صالح';
                       }
                       return null;
                     },
                   ),
                   const SizedBox(height: 20),
-                  TextFormField(
+                  _buildTextField(
                     controller: _passwordController,
-                    decoration: InputDecoration(
-                      labelText: 'كلمة المرور',
-                      prefixIcon: Icon(Icons.lock),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
+                    label: 'كلمة المرور',
+                    icon: Icons.lock,
                     obscureText: true,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -166,56 +151,23 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     },
                   ),
                   const SizedBox(height: 20),
-                  TextFormField(
+                  _buildTextField(
                     controller: _firstNameController,
-                    decoration: InputDecoration(
-                      labelText: 'الاسم الأول',
-                      prefixIcon: Icon(Icons.person),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'يرجى إدخال الاسم الأول';
-                      }
-                      return null;
-                    },
+                    label: 'الاسم الأول',
+                    icon: Icons.person,
                   ),
                   const SizedBox(height: 20),
-                  TextFormField(
+                  _buildTextField(
                     controller: _lastNameController,
-                    decoration: InputDecoration(
-                      labelText: 'الاسم الأخير',
-                      prefixIcon: Icon(Icons.person),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'يرجى إدخال الاسم الأخير';
-                      }
-                      return null;
-                    },
+                    label: 'الاسم الأخير',
+                    icon: Icons.person,
                   ),
                   const SizedBox(height: 20),
-                  TextFormField(
+                  _buildTextField(
                     controller: _phoneController,
-                    decoration: InputDecoration(
-                      labelText: 'رقم الهاتف',
-                      prefixIcon: Icon(Icons.phone),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
+                    label: 'رقم الهاتف',
+                    icon: Icons.phone,
                     keyboardType: TextInputType.phone,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'يرجى إدخال رقم الهاتف';
-                      }
-                      return null;
-                    },
                   ),
                   const SizedBox(height: 30),
                   if (_isLoading)
@@ -228,7 +180,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
-                        padding: EdgeInsets.symmetric(vertical: 16.0 , horizontal: 100.0),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 16.0, horizontal: 100.0),
                       ),
                       child: const Text(
                         'التسجيل',
@@ -241,6 +194,29 @@ class _SignUpScreenState extends State<SignUpScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String label,
+    IconData? icon,
+    bool obscureText = false,
+    TextInputType keyboardType = TextInputType.text,
+    String? Function(String?)? validator,
+  }) {
+    return TextFormField(
+      controller: controller,
+      decoration: InputDecoration(
+        labelText: label,
+        prefixIcon: icon != null ? Icon(icon) : null,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+      ),
+      obscureText: obscureText,
+      keyboardType: keyboardType,
+      validator: validator,
     );
   }
 }
