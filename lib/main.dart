@@ -108,6 +108,8 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 }
 */
+
+/*
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -163,7 +165,7 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-/*
+*/
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -181,9 +183,12 @@ import 'package:untitled2/providers/current_user_provider.dart' as current_user_
 import 'package:untitled2/user/my_booking.dart';
 import 'package:untitled2/user/vehicle_screen.dart';
 
+import 'admin/user/user_search.dart';
 import 'admin/vehicle/vechicle_management_screen.dart';
 import 'admin/vehicle/vechicle_management_screen.dart';
 import 'auth/login_screen.dart';
+import 'owners/booking_management_screen.dart';
+import 'owners/owner_profile_page.dart';
 import 'owners/vehicle_management_screen.dart'; // شاشة عرض المركبات
 
 String SUPABASE_URL = "https://riusqflhjwuandiednfy.supabase.co";
@@ -237,4 +242,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-*/

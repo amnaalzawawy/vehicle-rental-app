@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import '../../models/booking.dart';
 import '../../providers/booking_provider.dart';
 
-
 class AddBookingScreen extends StatefulWidget {
   @override
   _AddBookingScreenState createState() => _AddBookingScreenState();
@@ -13,7 +12,10 @@ class AddBookingScreen extends StatefulWidget {
 class _AddBookingScreenState extends State<AddBookingScreen> {
   final _formKey = GlobalKey<FormState>();
   String userName = '';
-  String vehicleDetails = '';
+  String carName = '';
+  String carCategory = '';
+  String ownerName = '';
+  String plateNumber = '';
   DateTime startDate = DateTime.now();
   DateTime endDate = DateTime.now();
   String status = 'Pending'; // الوضع الافتراضي
@@ -46,26 +48,70 @@ class _AddBookingScreenState extends State<AddBookingScreen> {
                 },
               ),
               TextFormField(
-                decoration: InputDecoration(labelText: 'تفاصيل المركبة'),
+                decoration: InputDecoration(labelText: 'اسم السيارة'),
                 onSaved: (value) {
-                  vehicleDetails = value!;
+                  carName = value!;
                 },
                 validator: (value) {
                   if (value!.isEmpty) {
-                    return 'يرجى إدخال تفاصيل المركبة';
+                    return 'يرجى إدخال اسم السيارة';
+                  }
+                  return null;
+                },
+              ),
+              TextFormField(
+                decoration: InputDecoration(labelText: 'فئة السيارة'),
+                onSaved: (value) {
+                  carCategory = value!;
+                },
+                validator: (value) {
+                  if (value!.isEmpty) {
+                    return 'يرجى إدخال فئة السيارة';
+                  }
+                  return null;
+                },
+              ),
+              TextFormField(
+                decoration: InputDecoration(labelText: 'اسم المالك'),
+                onSaved: (value) {
+                  ownerName = value!;
+                },
+                validator: (value) {
+                  if (value!.isEmpty) {
+                    return 'يرجى إدخال اسم المالك';
+                  }
+                  return null;
+                },
+              ),
+              TextFormField(
+                decoration: InputDecoration(labelText: 'رقم اللوحة'),
+                onSaved: (value) {
+                  plateNumber = value!;
+                },
+                validator: (value) {
+                  if (value!.isEmpty) {
+                    return 'يرجى إدخال رقم اللوحة';
                   }
                   return null;
                 },
               ),
               // استخدم DatePicker لاختيار التواريخ
               // على سبيل المثال، استخدام `showDatePicker` لاختيار startDate و endDate
-              // ثم إضافة TextFormField لـ status أو استخدام Dropdown
-
               SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
                     _formKey.currentState!.save();
+
+                    // إنشاء تفاصيل المركبة كـ Map
+                    final vehicleDetails = {
+                      'carName': carName,
+                      'carCategory': carCategory,
+                      'ownerName': ownerName,
+                      'plateNumber': plateNumber,
+                    };
+
+                    // إنشاء الكائن الحجز مع بيانات المركبة
                     final booking = Booking(
                       id: '',
                       userName: userName,
@@ -73,7 +119,7 @@ class _AddBookingScreenState extends State<AddBookingScreen> {
                       startDate: startDate,
                       endDate: endDate,
                       status: status,
-                      createdAt: DateTime.now(),
+                      createdAt: DateTime.now(), ownerName: '',
                     );
 
                     // تم تمرير `userId` إلى الدالة

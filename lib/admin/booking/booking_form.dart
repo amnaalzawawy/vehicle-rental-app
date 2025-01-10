@@ -15,7 +15,10 @@ class BookingFormScreen extends StatefulWidget {
 class _BookingFormScreenState extends State<BookingFormScreen> {
   final _formKey = GlobalKey<FormState>();
   late String userName;
-  late String vehicleDetails;
+  late String carName;
+  late String carCategory;
+  late String ownerName;
+  late String plateNumber;
   late DateTime startDate;
   late DateTime endDate;
 
@@ -24,12 +27,18 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
     super.initState();
     if (widget.bookingToEdit != null) {
       userName = widget.bookingToEdit!.userName!;
-      vehicleDetails = widget.bookingToEdit!.vehicleDetails!;
+      carName = widget.bookingToEdit!.vehicleDetails!['carName']!;
+      carCategory = widget.bookingToEdit!.vehicleDetails!['carCategory']!;
+      ownerName = widget.bookingToEdit!.vehicleDetails!['ownerName']!;
+      plateNumber = widget.bookingToEdit!.vehicleDetails!['plateNumber']!;
       startDate = widget.bookingToEdit!.startDate!;
       endDate = widget.bookingToEdit!.endDate!;
     } else {
       userName = '';
-      vehicleDetails = '';
+      carName = '';
+      carCategory = '';
+      ownerName = '';
+      plateNumber = '';
       startDate = DateTime.now();
       endDate = DateTime.now().add(Duration(days: 1));
     }
@@ -80,12 +89,45 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                 },
               ),
               TextFormField(
-                initialValue: vehicleDetails,
-                decoration: InputDecoration(labelText: 'Vehicle Details'),
-                onSaved: (value) => vehicleDetails = value ?? '',
+                initialValue: carName,
+                decoration: InputDecoration(labelText: 'Car Name'),
+                onSaved: (value) => carName = value ?? '',
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter vehicle details';
+                    return 'Please enter the car name';
+                  }
+                  return null;
+                },
+              ),
+              TextFormField(
+                initialValue: carCategory,
+                decoration: InputDecoration(labelText: 'Car Category'),
+                onSaved: (value) => carCategory = value ?? '',
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter the car category';
+                  }
+                  return null;
+                },
+              ),
+              TextFormField(
+                initialValue: ownerName,
+                decoration: InputDecoration(labelText: 'Owner Name'),
+                onSaved: (value) => ownerName = value ?? '',
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter the owner name';
+                  }
+                  return null;
+                },
+              ),
+              TextFormField(
+                initialValue: plateNumber,
+                decoration: InputDecoration(labelText: 'Plate Number'),
+                onSaved: (value) => plateNumber = value ?? '',
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter the plate number';
                   }
                   return null;
                 },
@@ -115,6 +157,15 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
                     _formKey.currentState!.save();
+
+                    // إنشاء تفاصيل المركبة كـ Map
+                    final vehicleDetails = {
+                      'carName': carName,
+                      'carCategory': carCategory,
+                      'ownerName': ownerName,
+                      'plateNumber': plateNumber,
+                    };
+
                     final newBooking = Booking(
                       id: widget.bookingToEdit?.id ?? '',
                       userName: userName,
@@ -122,7 +173,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                       startDate: startDate,
                       endDate: endDate,
                       status: 'Pending',
-                      createdAt: DateTime.now(),
+                      createdAt: DateTime.now(), ownerName: '',
                     );
                     if (widget.bookingToEdit == null) {
                       Provider.of<BookingProvider>(context, listen: false)

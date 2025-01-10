@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:untitled2/providers/current_user_provider.dart';
@@ -21,9 +22,9 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback(
-      (timeStamp) {
+          (timeStamp) {
         UserProvider().getCurrentUser().then(
-          (user) {
+              (user) {
             print("Getting bookings for user....");
             print(user?.userId ?? "NONE");
             if (user != null) {
@@ -61,14 +62,14 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'اسم العميل: ${booking.userName}',
-                      style: const TextStyle(
-                          fontSize: 16, fontWeight: FontWeight.bold),
-                    ),
+                   // Text(
+                  //    'اسم العميل: ${booking.userName}',
+                   //   style: const TextStyle(
+                   //       fontSize: 16, fontWeight: FontWeight.bold),
+                   // ),
                     const SizedBox(height: 8),
-                    Text('تفاصيل المركبة: ${booking.vehicleDetails}'),
-                    const SizedBox(height: 8),
+                   // Text('تفاصيل المركبة: ${booking.vehicleDetails}'),
+                   // const SizedBox(height: 8),
                     Text(
                         'تاريخ الحجز: ${booking.startDate?.toLocal().toString().split(' ')[0]}'),
                     Text(
@@ -76,6 +77,9 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
                     const SizedBox(height: 8),
                     Text('الحالة: ${booking.status}'),
                     const SizedBox(height: 12),
+                    // عرض اسم الشركة المالكة
+                  //  Text('اسم الشركة المالكة: ${booking.ownerName}'),
+                   // const SizedBox(height: 12),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -101,7 +105,8 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
                           },
                           child: const Text('حذف الحجز'),
                           style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.red),
+                              backgroundColor: Colors.red ,
+                            foregroundColor: Colors.white,),
                         ),
                       ],
                     ),
@@ -117,46 +122,43 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
             );
           },
         )
-        // Consumer<BookingProvider>(builder: (context, bookingProvider, child) {
-        //     if (bookingProvider.isLoading) {
-        //       return const Center(child: CircularProgressIndicator());
-        //     }
-        //
-        //     if (bookingProvider.bookings.isEmpty) {
-        //       return const Center(child: Text('لا يوجد لديك حجوزات حالياً.'));
-        //     }
-        //
-        //
-        //   },
-        // ),
-        );
+    );
   }
 
-  void _showCarDetails(BuildContext context, Booking booking) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('تفاصيل المركبة'),
-        content: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text('تفاصيل المركبة: ${booking.vehicleDetails}'),
-          const SizedBox(height: 8),
-          Text('النوع: ${booking.carId}'),
-          // قم بتغيير هذا بناءً على بيانات المركبة المتوفرة
-          const SizedBox(height: 8),
-          Text('اسم الشركة المالكة: ${booking.userName}'),
-          // مثال على بيانات أخرى
-        ],
-                ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('إغلاق'),
+  void _showCarDetails(BuildContext context, Booking booking) async {
+    // جلب تفاصيل المركبة من Firestore باستخدام carId من الحجز
+    var carDetails = await FirebaseFirestore.instance
+        .collection('cars')
+        .doc(booking.carId) // استخدام carId من الحجز
+        .get();
+
+    if (carDetails.exists) {
+      var vehicleData = carDetails.data();
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('تفاصيل المركبة'),
+          content: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('اسم المركبة: ${vehicleData?['name'] ?? "غير متوفر"}'),
+              const SizedBox(height: 8),
+              Text('فئة المركبة: ${vehicleData?['category'] ?? "غير متوفرة"}'),
+              const SizedBox(height: 8),
+            //  Text('اسم الشركة المالكة: ${vehicleData?['owner'] ?? "غير متوفر"}'),
+             // const SizedBox(height: 8),
+              Text('رقم اللوحة: ${vehicleData?['plateNumber'] ?? "غير متوفر"}'),
+            ],
           ),
-        ],
-      ),
-    );
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('إغلاق'),
+            ),
+          ],
+        ),
+      );
+    }
   }
 }

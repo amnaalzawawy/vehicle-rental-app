@@ -104,7 +104,7 @@ class BookingProvider with ChangeNotifier {
         startDate: booking.startDate,
         endDate: booking.endDate,
         status: booking.status,
-        createdAt: booking.createdAt,
+        createdAt: booking.createdAt, ownerName: '',
       ));
 
       _isLoading = false;

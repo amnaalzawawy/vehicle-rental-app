@@ -16,12 +16,10 @@ class BookingScreen extends StatefulWidget {
 class _BookingScreenState extends State<BookingScreen> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  // المتغيرات المطلوبة للحجز
   DateTime? _startDate;
   DateTime? _endDate;
   String? _errorMessage;
 
-  // اختيار تاريخ البداية
   Future<void> _selectStartDate(BuildContext context) async {
     DateTime? pickedDate = await showDatePicker(
       context: context,
@@ -37,7 +35,6 @@ class _BookingScreenState extends State<BookingScreen> {
     }
   }
 
-  // اختيار تاريخ النهاية
   Future<void> _selectEndDate(BuildContext context) async {
     DateTime? pickedDate = await showDatePicker(
       context: context,
@@ -53,7 +50,6 @@ class _BookingScreenState extends State<BookingScreen> {
     }
   }
 
-  // التحقق من تداخل الحجز
   Future<bool> _checkBookingConflict(DateTime startDate, DateTime endDate) async {
     final querySnapshot = await _firestore
         .collection('bookings')
@@ -71,7 +67,6 @@ class _BookingScreenState extends State<BookingScreen> {
     return false;
   }
 
-  // حفظ الحجز
   Future<void> _saveBooking() async {
     if (_startDate == null || _endDate == null) {
       setState(() {
@@ -97,10 +92,11 @@ class _BookingScreenState extends State<BookingScreen> {
 
     await _firestore.collection('bookings').add({
       'carId': widget.car.id,
-      'userId':  FirebaseAuth.instance.currentUser?.uid ?? "nouse r",
+      'userId': FirebaseAuth.instance.currentUser?.uid ?? "no user",
       'startDate': Timestamp.fromDate(_startDate!),
       'endDate': Timestamp.fromDate(_endDate!),
       'status': 'مؤكد',
+      'ownerName': widget.car.owner,  // إضافة اسم المالك هنا
     });
 
     ScaffoldMessenger.of(context).showSnackBar(
@@ -120,13 +116,13 @@ class _BookingScreenState extends State<BookingScreen> {
         title: const Text('تفاصيل الحجز'),
         elevation: 0,
       ),
-      body: Center(  // استخدام Center لتوسيط المحتوى
+      body: Center(
         child: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,  // توسيط العناصر داخل الـ Column
-              crossAxisAlignment: CrossAxisAlignment.center, // توسيط العناصر داخل الـ Column
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Card(
                   elevation: 5,
@@ -135,7 +131,7 @@ class _BookingScreenState extends State<BookingScreen> {
                   ),
                   child: Column(
                     children: [
-                      const SizedBox(height: 10,),
+                      const SizedBox(height: 10),
                       ListTile(
                         leading: const Icon(Icons.date_range),
                         title: const Text(
@@ -157,9 +153,9 @@ class _BookingScreenState extends State<BookingScreen> {
                           child: const Text('اختيار'),
                         ),
                       ),
-                      const SizedBox(height: 10,),
+                      const SizedBox(height: 10),
                       const Divider(),
-                      const SizedBox(height: 10,),
+                      const SizedBox(height: 10),
                       ListTile(
                         leading: const Icon(Icons.event),
                         title: const Text(
@@ -181,7 +177,7 @@ class _BookingScreenState extends State<BookingScreen> {
                           child: const Text('اختيار'),
                         ),
                       ),
-                      const SizedBox(height: 10,),
+                      const SizedBox(height: 10),
                     ],
                   ),
                 ),

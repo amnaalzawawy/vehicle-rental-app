@@ -17,7 +17,7 @@ class CarCard extends StatefulWidget {
 }
 
 class CarCardState extends State<CarCard> {
-  String? imageURL = null;
+  String? imageURL;
 
   void getImageURL() async {
     if (widget.car.images.isNotEmpty) {
@@ -29,17 +29,10 @@ class CarCardState extends State<CarCard> {
           imageURL = url;
         });
       } catch (e) {
-        // Handle any errors here
-      }
-      try {
-        var url = await Supabase.instance.client.storage
-            .from("cars")
-            .createSignedUrl(widget.car.images[0].replaceAll("cars/", ""), 60000);
+        // Handle any errors here if necessary
         setState(() {
-          imageURL = url;
+          imageURL = null;
         });
-      } catch (e) {
-        // handle error here if necessary
       }
     }
   }
@@ -58,41 +51,33 @@ class CarCardState extends State<CarCard> {
       margin: const EdgeInsets.all(8.0),
       elevation: 5.0,
       shape: RoundedRectangleBorder(
-        side: BorderSide(color: Color(0xfff78B00), width: 2), // إطار برتقالي
+        side: const BorderSide(color: Color(0xfff78B00), width: 2), // إطار برتقالي
         borderRadius: BorderRadius.circular(12), // إضافة زاوية مدورة
-      ),
-      elevation: 3.0,
-      shape: RoundedRectangleBorder(
-        side: BorderSide(color: Colors.orange, width: 2), // تغيير لون الإطار إلى البرتقالي
-        borderRadius: BorderRadius.circular(10), // إضافة زاوية منحنية للإطار
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           // عرض الصورة الأولى من الصور
           imageURL != null
-              ? Image.network(
-            imageURL!, // عرض أول صورة
-            fit: BoxFit.cover,
-            height: 150,
-            width: double.infinity,
+              ? ClipRRect(
+            borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(12), topRight: Radius.circular(12)),
+            child: Image.network(
+              imageURL!,
+              fit: BoxFit.cover,
+              height: 150,
+              width: double.infinity,
+            ),
           )
               : Container(
             height: 150,
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               color: Colors.grey,
               borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(12),
                   topRight: Radius.circular(12)),
             ),
           ),
-            imageURL!, // عرض أول صورة
-            fit: BoxFit.cover,
-            height: 150,
-            width: double.infinity,
-          )
-              : Container(height: 150, color: Colors.grey),
-
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Column(
@@ -103,32 +88,33 @@ class CarCardState extends State<CarCard> {
                   car.name,
                   style: const TextStyle(
                       fontSize: 18, fontWeight: FontWeight.bold),
-                 textAlign: TextAlign.right,
+                  textAlign: TextAlign.right,
                 ),
                 const SizedBox(height: 5),
                 // فئة المركبة
                 Text(
                   'الفئة: ${car.category}',
                   style: const TextStyle(fontSize: 14, color: Colors.black87),
-                  textAlign: TextAlign.right,),
+                  textAlign: TextAlign.right,
+                ),
                 const SizedBox(height: 5),
                 // السعر
                 Text(
                   'السعر: ${car.pricePerDay.toStringAsFixed(2)} د.ل',
                   style: const TextStyle(fontSize: 16, color: Colors.black87),
-                  textAlign: TextAlign.right,),
+                  textAlign: TextAlign.right,
+                ),
                 const SizedBox(height: 10),
                 // زر الحجز
                 ElevatedButton(
                   onPressed: widget.onPressed, // تمرير الحدث
                   style: ElevatedButton.styleFrom(
-                   // backgroundColor: Color(0xfff78B00), // خلفية البرتقالي
-                    //onPrimary: Colors.white, // نص أبيض
-                    minimumSize: Size(double.minPositive, 20), // حجم الزر
+                    backgroundColor: const Color(0xfff78B00), // خلفية البرتقالي
+                    foregroundColor: Colors.white, // نص أبيض
+                    minimumSize: const Size(double.infinity, 40), // حجم الزر
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8), // زاوية مدورة
                     ),
-                    shadowColor: Colors.orangeAccent, // لون الظل
                     elevation: 8, // تأثير الظل
                   ),
                   child: const Text('احجز الآن', style: TextStyle(fontSize: 18)),

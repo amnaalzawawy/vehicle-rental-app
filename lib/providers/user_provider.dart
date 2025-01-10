@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/user.dart';
 
@@ -17,7 +16,7 @@ class UserProvider with ChangeNotifier {
   // Getters
   UserModel? get currentUser => _currentUser;
   List<UserModel> get users => _users;
-  List<UserModel> get filteredUsers => _filteredUsers; // لتوفير الوصول إلى _filteredUsers
+  List<UserModel> get filteredUsers => _filteredUsers;
 
   // تحميل بيانات المستخدم من Firestore
   Future<void> loadUserData() async {
@@ -36,17 +35,16 @@ class UserProvider with ChangeNotifier {
     }
   }
 
-
-  Future<void> remove(String userid) async {
+  // إزالة مستخدم
+  Future<void> remove(String userId) async {
     try {
-      await _firestore.collection('users').doc(userid).delete();
-        notifyListeners();
+      await _firestore.collection('users').doc(userId).delete();
+      await fetchUsersAndOwners(); // تحديث قائمة المستخدمين بعد الحذف
+      notifyListeners();
     } catch (e) {
-      debugPrint('Error updating user: $e');
+      debugPrint('Error removing user: $e');
     }
   }
-
-
 
   // حفظ بيانات المستخدم في SharedPreferences
   Future<void> _saveUserLocally(UserModel user) async {
@@ -57,7 +55,8 @@ class UserProvider with ChangeNotifier {
   // تسجيل الدخول
   Future<void> login(String email, String password) async {
     try {
-      UserCredential userCredential = await _auth.signInWithEmailAndPassword(email: email, password: password);
+      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+          email: email, password: password);
       if (userCredential.user != null) {
         final snapshot = await _firestore.collection('users').doc(userCredential.user!.uid).get();
         if (snapshot.exists) {
@@ -75,7 +74,8 @@ class UserProvider with ChangeNotifier {
   // تسجيل مستخدم جديد
   Future<void> signUp(String email, String password, String firstName, String lastName, String phoneNumber) async {
     try {
-      UserCredential userCredential = await _auth.createUserWithEmailAndPassword(email: email, password: password);
+      UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
+          email: email, password: password);
       if (userCredential.user != null) {
         UserModel newUser = UserModel(
           userId: userCredential.user!.uid,
@@ -85,7 +85,7 @@ class UserProvider with ChangeNotifier {
           role: 'مستخدم',
           profileImageBase64: null,
           phoneNumber: phoneNumber,
-          passwordHash: '',
+         passwordHash: '',
         );
         await _firestore.collection('users').doc(newUser.userId).set(newUser.toMap());
         _currentUser = newUser;
@@ -109,7 +109,7 @@ class UserProvider with ChangeNotifier {
   // تحديث بيانات المستخدم
   Future<void> updateUser(UserModel updatedUser) async {
     try {
-      await _firestore.collection('users').doc(updatedUser.email).update(updatedUser.toMap());
+      await _firestore.collection('users').doc(updatedUser.userId).update(updatedUser.toMap());
       if (_currentUser != null && _currentUser!.userId == updatedUser.userId) {
         _currentUser = updatedUser;
         await _saveUserLocally(updatedUser);
@@ -126,93 +126,65 @@ class UserProvider with ChangeNotifier {
       final snapshot = await _firestore.collection('users').get();
       _users = snapshot.docs.map((doc) =>
           UserModel.fromMap(doc.data() as Map<String, dynamic>)).toList();
-      _users = snapshot.docs.map((doc) => UserModel.fromMap(doc.data())).toList();
       notifyListeners();
-    }
-    catch (e) {
+    } catch (e) {
       debugPrint('Error fetching users: $e');
-    }}
-
-    // وظيفة لجلب قائمة المستخدمين والمالكين
-    Future<void> fetchUsersAndOwners() async {
-      try {
-        QuerySnapshot snapshot = await _firestore.collection('users').get();
-
-        // تصنيف المستخدمين إلى "مستخدمين" و "مالكين" بناءً على الدور
-        _users = snapshot.docs.map((doc) {
-          return UserModel.fromMap(doc.data() as Map<String, dynamic>);
-        }).toList();
-
-        // تصنيف المستخدمين إلى "مستخدمين"، "مالكين" و "أدمن"
-        _filteredUsers = _users.where((user) {
-          return ['مستخدم', 'مالك', 'أدمن'].contains(user.role);
-        }).toList();
-
-        notifyListeners();
-      } catch (e) {
-        print("Error fetching users and owners: $e");
-      }
-    }
-
-    // وظيفة لإضافة مستخدم جديد
-    Future<void> addUser(UserModel user) async {
-      try {
-        // استخدم add() لإضافة المستخدم مع توليد الـ userId تلقائيًا
-        DocumentReference docRef = await _firestore.collection('users').add(
-            user.toMap());
-
-        // قم بتعيين الـ userId الذي تم توليده تلقائيًا
-        String generatedUserId = docRef.id;
-        // user.userId = generatedUserId; // تعيين الـ userId للمستخدم
-
-        // بعد إضافة المستخدم إلى Firestore، قم بتحديث البيانات المحلية
-        await fetchUsersAndOwners(); // إعادة تحميل قائمة المستخدمين والمالكين
-        notifyListeners();
-      } catch (e) {
-        print("Error adding user: $e");
-      }
     }
   }
 
-  Future<List<UserModel>?> search(String query) async {
-    print("Getting users");
-    // try {
+  // وظيفة لجلب قائمة المستخدمين والمالكين
+  Future<void> fetchUsersAndOwners() async {
+    try {
+      QuerySnapshot snapshot = await _firestore.collection('users').get();
+      _users = snapshot.docs.map((doc) {
+        return UserModel.fromMap(doc.data() as Map<String, dynamic>);
+      }).toList();
+
+      _filteredUsers = _users.where((user) {
+        return ['مستخدم', 'مالك', 'أدمن'].contains(user.role);
+      }).toList();
+
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Error fetching users and owners: $e');
+    }
+  }
+
+  // وظيفة لإضافة مستخدم جديد
+  Future<void> addUser(UserModel user) async {
+    try {
+      DocumentReference docRef = await _firestore.collection('users').add(user.toMap());
+      await fetchUsersAndOwners();
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Error adding user: $e');
+    }
+  }
+
+  // البحث عن المستخدمين
+  Future<List<UserModel>> search(String query) async {
+    try {
       final snapshot = await _firestore.collection('users')
-      .where(
-          Filter.or(
-            Filter("firstName", isGreaterThanOrEqualTo: query),
-          Filter("lastName", isGreaterThanOrEqualTo: query),
-          Filter("phone", isGreaterThanOrEqualTo: query),
-          Filter("email", isGreaterThanOrEqualTo: query),
-          )
-    )
+          .where('firstName', isGreaterThanOrEqualTo: query)
           .get();
 
-      print(snapshot.size);
-
-      var users = snapshot.docs.map((doc) => UserModel.fromMap(doc.data())).toList();
-      notifyListeners();
+      List<UserModel> users = snapshot.docs.map((doc) =>
+          UserModel.fromMap(doc.data() as Map<String, dynamic>)).toList();
       return users;
-    // }
-    // catch (e) {
-    //   debugPrint('Error fetching users: $e');
-    // }
-
-    return null;
-  }
-}
-
-
-    // حذف مستخدم
-    Future<void> deleteUser(String userId) async {
-      try {
-        await _firestore.collection('users').doc(userId).delete();
-        await fetchUsersAndOwners(); // إعادة تحميل البيانات بعد الحذف
-        notifyListeners();
-      } catch (e) {
-        debugPrint('Error deleting user: $e');
-      }
+    } catch (e) {
+      debugPrint('Error searching users: $e');
+      return [];
     }
   }
 
-
+  // حذف مستخدم
+  Future<void> deleteUser(String userId) async {
+    try {
+      await _firestore.collection('users').doc(userId).delete();
+      await fetchUsersAndOwners();
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Error deleting user: $e');
+    }
+  }
+}

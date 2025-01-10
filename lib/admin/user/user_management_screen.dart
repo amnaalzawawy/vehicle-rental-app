@@ -2,11 +2,10 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:untitled2/widgets/custom_drawer.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../models/user.dart';
 import '../../providers/user_provider.dart';
 import 'add_user_screen.dart';
-import 'package:untitled2/models/user.dart';
-import '../../widgets/custom_drawer.dart';
 import 'edit_user_screen.dart';
 
 class ManageUsersOwnersScreen extends StatefulWidget {
@@ -25,7 +24,6 @@ class _ManageUsersOwnersScreenState extends State<ManageUsersOwnersScreen> {
     try {
       await Provider.of<UserProvider>(context, listen: false).fetchUsers();
     } catch (e) {
-      // عرض رسالة خطأ في حال فشل تحميل البيانات
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('فشل تحميل البيانات: ${e.toString()}')),
       );
@@ -38,69 +36,30 @@ class _ManageUsersOwnersScreenState extends State<ManageUsersOwnersScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('إدارة المستخدمين'),
-        title: Text('إدارة المستخدمين والمالكين'),
+        title: const Text('إدارة المستخدمين والمالكين'),
       ),
       drawer: CustomDrawer(),
-      body: FutureBuilder(
-        future: FirebaseFirestore.instance.collection('users').get(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
       body: Consumer<UserProvider>(
         builder: (context, provider, child) {
-          final users = provider.filteredUsers; // الحصول على المستخدمين المصفاة
+          final users = provider.filteredUsers;
 
           if (users.isEmpty) {
-            return Center(child: Text('لا يوجد بيانات متوفرة'));
+            return const Center(child: Text('لا يوجد بيانات متوفرة'));
           }
 
-          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return const Center(child: Text('لا يوجد مستخدمون'));
-          }
-          final users = snapshot.data!.docs;
           return ListView.builder(
             itemCount: users.length,
             itemBuilder: (context, index) {
-              var user = UserModel.fromMap(users[index] as Map<String, dynamic>);
-              return ListTile(
-                title: Text("${user.firstName} ${user.lastName}"),
-                subtitle: Text(user.email),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.edit),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => EditUserScreen(userId: user.email, userData: user),
-                          ),
-                        );
-                      },
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.delete),
-                      onPressed: () {
-                        FirebaseFirestore.instance
-                            .collection('users')
-                            .doc(user.email)
-                            .delete();
-                      },
-                    ),
-                  ],
               final user = users[index];
-
               return Card(
-                margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                 child: ListTile(
                   leading: CircleAvatar(
                     backgroundImage: user.profileImageBase64 != null
                         ? MemoryImage(base64Decode(user.profileImageBase64!))
                         : null,
                     child: user.profileImageBase64 == null
-                        ? Icon(Icons.person)
+                        ? const Icon(Icons.person)
                         : null,
                   ),
                   title: Text('${user.firstName} ${user.lastName}'),
@@ -109,7 +68,7 @@ class _ManageUsersOwnersScreenState extends State<ManageUsersOwnersScreen> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       IconButton(
-                        icon: Icon(Icons.edit, color: Colors.blue),
+                        icon: const Icon(Icons.edit, color: Colors.blue),
                         onPressed: () {
                           Navigator.push(
                             context,
@@ -120,21 +79,21 @@ class _ManageUsersOwnersScreenState extends State<ManageUsersOwnersScreen> {
                         },
                       ),
                       IconButton(
-                        icon: Icon(Icons.delete, color: Colors.red),
+                        icon: const Icon(Icons.delete, color: Colors.red),
                         onPressed: () async {
                           final confirm = await showDialog(
                             context: context,
                             builder: (ctx) => AlertDialog(
-                              title: Text('تأكيد الحذف'),
-                              content: Text('هل أنت متأكد من حذف هذا المستخدم؟'),
+                              title: const Text('تأكيد الحذف'),
+                              content: const Text('هل أنت متأكد من حذف هذا المستخدم؟'),
                               actions: [
                                 TextButton(
                                   onPressed: () => Navigator.of(ctx).pop(false),
-                                  child: Text('إلغاء'),
+                                  child: const Text('إلغاء'),
                                 ),
                                 TextButton(
                                   onPressed: () => Navigator.of(ctx).pop(true),
-                                  child: Text('حذف'),
+                                  child: const Text('حذف'),
                                 ),
                               ],
                             ),
@@ -144,7 +103,7 @@ class _ManageUsersOwnersScreenState extends State<ManageUsersOwnersScreen> {
                             try {
                               await userProvider.deleteUser(user.userId);
                               ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text('تم حذف المستخدم بنجاح')),
+                                const SnackBar(content: Text('تم حذف المستخدم بنجاح')),
                               );
                             } catch (e) {
                               ScaffoldMessenger.of(context).showSnackBar(
@@ -172,7 +131,6 @@ class _ManageUsersOwnersScreenState extends State<ManageUsersOwnersScreen> {
           );
         },
         child: const Icon(Icons.add),
-        child: Icon(Icons.add), // يمكنك إعادة const هنا
       ),
     );
   }
