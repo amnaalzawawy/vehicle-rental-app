@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../providers/user_provider.dart';
 
 class SignUpScreen extends StatefulWidget {
   @override
@@ -41,6 +39,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
       try {
         // فحص إذا كان البريد الإلكتروني موجود في قاعدة البيانات
+        DocumentSnapshot userDoc =
+        await FirebaseFirestore.instance.collection('users').doc(email).get();
         DocumentSnapshot userDoc =
         await FirebaseFirestore.instance.collection('users').doc(email).get();
 
@@ -116,6 +116,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text('التسجيل'),
       ),
@@ -123,6 +124,87 @@ class _SignUpScreenState extends State<SignUpScreen> {
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
+          child: Center(
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  Image.asset(
+                    'assets/icon.jpg',
+                    height: 100,
+                  ),
+                  const SizedBox(height: 30),
+                  _buildTextField(
+                    controller: _emailController,
+                    label: 'البريد الإلكتروني',
+                    icon: Icons.email,
+                    keyboardType: TextInputType.emailAddress,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'يرجى إدخال البريد الإلكتروني';
+                      }
+                      if (!RegExp(r'^[a-zA-Z0-9]+@gmail\.com$').hasMatch(value)) {
+                        return 'يرجى إدخال بريد إلكتروني صالح';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 20),
+                  _buildTextField(
+                    controller: _passwordController,
+                    label: 'كلمة المرور',
+                    icon: Icons.lock,
+                    obscureText: true,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'يرجى إدخال كلمة المرور';
+                      }
+                      if (value.length < 6) {
+                        return 'يجب أن تحتوي كلمة المرور على 6 أحرف على الأقل';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 20),
+                  _buildTextField(
+                    controller: _firstNameController,
+                    label: 'الاسم الأول',
+                    icon: Icons.person,
+                  ),
+                  const SizedBox(height: 20),
+                  _buildTextField(
+                    controller: _lastNameController,
+                    label: 'الاسم الأخير',
+                    icon: Icons.person,
+                  ),
+                  const SizedBox(height: 20),
+                  _buildTextField(
+                    controller: _phoneController,
+                    label: 'رقم الهاتف',
+                    icon: Icons.phone,
+                    keyboardType: TextInputType.phone,
+                  ),
+                  const SizedBox(height: 30),
+                  if (_isLoading)
+                    const Center(child: CircularProgressIndicator())
+                  else
+                    ElevatedButton(
+                      onPressed: _signUp,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.orange,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 16.0, horizontal: 100.0),
+                      ),
+                      child: const Text(
+                        'التسجيل',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                ],
+              ),
+            ),
           child: ListView(
             children: [
               TextFormField(
@@ -186,6 +268,29 @@ class _SignUpScreenState extends State<SignUpScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String label,
+    IconData? icon,
+    bool obscureText = false,
+    TextInputType keyboardType = TextInputType.text,
+    String? Function(String?)? validator,
+  }) {
+    return TextFormField(
+      controller: controller,
+      decoration: InputDecoration(
+        labelText: label,
+        prefixIcon: icon != null ? Icon(icon) : null,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+      ),
+      obscureText: obscureText,
+      keyboardType: keyboardType,
+      validator: validator,
     );
   }
 }
