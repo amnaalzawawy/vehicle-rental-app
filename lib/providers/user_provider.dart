@@ -98,13 +98,13 @@ class UserProvider with ChangeNotifier {
   }
 
   // تسجيل الخروج
-  Future<void> logout() async {
-    await _auth.signOut();
-    _currentUser = null;
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.clear();
-    notifyListeners();
-  }
+  // Future<void> logout() async {
+  //   await _auth.signOut();
+  //   _currentUser = null;
+  //   SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   await prefs.clear();
+  //   notifyListeners();
+  // }
 
   // تحديث بيانات المستخدم
   Future<void> updateUser(UserModel updatedUser) async {

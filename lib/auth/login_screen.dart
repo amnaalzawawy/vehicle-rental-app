@@ -4,6 +4,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SignUpScreen extends StatefulWidget {
+  const SignUpScreen({super.key});
+
   @override
   _SignUpScreenState createState() => _SignUpScreenState();
 }
@@ -128,7 +130,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               child: Column(
                 children: [
                   Image.asset(
-                    'assets/icon.jpg',
+                    'assets/icon.jpg', // قم بتغيير المسار حسب مكان الشعار
                     height: 100,
                   ),
                   const SizedBox(height: 30),
@@ -141,7 +143,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       if (value == null || value.isEmpty) {
                         return 'يرجى إدخال البريد الإلكتروني';
                       }
-                      if (!RegExp(r'^[a-zA-Z0-9]+@gmail\.com$').hasMatch(value)) {
+                      if (!RegExp(r'^[a-zA-Z0-9]+@gmail\.com\$').hasMatch(value)) {
                         return 'يرجى إدخال بريد إلكتروني صالح';
                       }
                       return null;

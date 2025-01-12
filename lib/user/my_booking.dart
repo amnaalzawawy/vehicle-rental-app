@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:untitled2/providers/current_user_provider.dart';
@@ -24,7 +23,7 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
     WidgetsBinding.instance.addPostFrameCallback(
           (timeStamp) {
         UserProvider().getCurrentUser().then(
-              (user) {
+          (user) {
             print("Getting bookings for user....");
             print(user?.userId ?? "NONE");
             if (user != null) {

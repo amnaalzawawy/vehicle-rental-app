@@ -5,6 +5,7 @@ import '../../models/car.dart';
 import '../../providers/car_provider.dart';
 import '../../widgets/custom_drawer.dart';
 import '../../widgets/custom_user_drawer.dart';
+import 'vehicle_card.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class CarCard extends StatefulWidget {
@@ -20,6 +21,7 @@ class CarCard extends StatefulWidget {
 
 class _CarCardState extends State<CarCard> {
   String? imageURL;
+
 
   void getImageURL() async {
     if (widget.car.images.isNotEmpty) {
@@ -126,6 +128,8 @@ class _CarCardState extends State<CarCard> {
 }
 
 class CarScreen extends StatefulWidget {
+  const CarScreen({super.key});
+
   @override
   _CarScreenState createState() => _CarScreenState();
 }

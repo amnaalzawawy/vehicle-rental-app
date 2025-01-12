@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 // import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:untitled2/auth/logout_screen.dart';
 import 'dart:io';
 
 import 'package:untitled2/providers/current_user_provider.dart';
@@ -150,6 +151,7 @@ class _OwnerProfilePageState extends State<OwnerProfilePage> {
                         obscureText: true,
                       ),
                     ),
+
                   ],
                 ),
               ),
@@ -165,6 +167,23 @@ class _OwnerProfilePageState extends State<OwnerProfilePage> {
                   minimumSize: const Size(double.infinity, 50),
                 ),
               ),
+              const SizedBox(height: 12,),
+              ElevatedButton.icon(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => LogoutScreen()),
+                  );
+                },
+                icon: const Icon(Icons.logout, color: Colors.white,),
+                label: Text('تسجيل الخروج', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.white),),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red,
+                  minimumSize: const Size(double.infinity, 50),
+                ),
+              ),
+
+
             ],
           ),
         ),

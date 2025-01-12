@@ -56,13 +56,13 @@ class CustomDrawer extends StatelessWidget {
               Navigator.pushNamed(context, '/vehicle');
             },
           ),
-          ListTile(
-            leading: Icon(AppIcons.advertisements, color: Colors.black),
-            title: Text('Advertisements', style: AppStyles.drawerText),
-            onTap: () {
-              Navigator.pushNamed(context, '/advertisements');
-            },
-          ),
+          // ListTile(
+          //   leading: Icon(AppIcons.advertisements, color: Colors.black),
+          //   title: Text('Advertisements', style: AppStyles.drawerText),
+          //   onTap: () {
+          //     Navigator.pushNamed(context, '/advertisements');
+          //   },
+          // ),
           ListTile(
             leading: Icon(Icons.logout),
             title: Text('Logout'),

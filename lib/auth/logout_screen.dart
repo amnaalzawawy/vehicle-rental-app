@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:untitled2/providers/current_user_provider.dart';
 
 class LogoutScreen extends StatelessWidget {
   @override
@@ -21,8 +23,13 @@ class LogoutScreen extends StatelessWidget {
               children: [
                 ElevatedButton(
                   onPressed: () {
-                    // هنا الكود لمسح البيانات أو تسجيل الخروج
-                    Navigator.pushReplacementNamed(context, '/login'); // يوجه إلى شاشة تسجيل الدخول
+                    Provider.of<UserProvider>(context, listen: false).logout().then(
+                      (value) {
+                        // هنا الكود لمسح البيانات أو تسجيل الخروج
+                        Navigator.pushReplacementNamed(
+                            context, '/login'); // يوجه إلى شاشة تسجيل الدخول
+                      },
+                    );
                   },
                   child: Text('Yes'),
                 ),

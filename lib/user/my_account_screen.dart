@@ -13,6 +13,8 @@ import '../widgets/bottom_navigation_bar.dart';
 import '../widgets/custom_user_drawer.dart';
 
 class AccountScreen extends StatefulWidget {
+  const AccountScreen({super.key});
+
   @override
   _AccountScreenState createState() => _AccountScreenState();
 }
@@ -281,7 +283,7 @@ class _AccountScreenState extends State<AccountScreen> {
               Center(
                 child: TextButton(
                   onPressed: () {
-                    Provider.of<UserProvider>(context, listen: false).logout();
+                    Provider.of<CurrentUserProvider.UserProvider>(context, listen: false).logout();
                     Navigator.pushReplacementNamed(context, '/login');
                   },
                   child: const Text(

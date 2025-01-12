@@ -108,8 +108,6 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 }
 */
-
-/*
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -226,17 +224,16 @@ class MyApp extends StatelessWidget {
         // home: CarDisplayScreen(), // شاشة عرض المركبات مباشرة كواجهة رئيسية
         routes: {
           '/login': (context) => const LoginScreen(),
-          '/signup': (context) => SignUpScreen(),
-          '/myAccount': (context) => AccountScreen(),
-          '/myBooking' :(context) => MyBookingsScreen(),
+          '/signup': (context) => const SignUpScreen(),
+          '/myAccount': (context) => const AccountScreen(),
+          '/myBooking' :(context) => const MyBookingsScreen(),
           '/vehicalScreen' :(context) => const CarDisplayScreen(),
           '/owner/manage' :(context) => const ManageCarPage(),
           '/owner/bookings' :(context) => const BookingManagementPage(),
           '/owner/account' :(context) => const OwnerProfilePage(),
-          '/users' :(context) => UserSearchScreen(),
-          '/' :(context) => const CarDisplayScreen(), // Home replacement
-          '/CarScreen' : (context) => CarScreen(),
-
+          '/users' :(context) => const UserSearchScreen(),
+          '/' :(context) => const HomeRouter(), // Home replacement
+          '/CarScreen' :(context) => const CarScreen(),
         },
       ),
     );

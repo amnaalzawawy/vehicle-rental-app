@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:untitled2/owners/vehicle_Management_screen.dart';
+import '../auth/logout_screen.dart';
 import '../models/icons.dart';
 import '../providers/car_provider.dart';
 import '../widgets/car_card.dart';
@@ -10,17 +11,17 @@ import 'owner_profile_page.dart'; // صفحة معلومات المالك
 //import 'booking_management_page.dart'; // صفحة إدارة الحجوزات
 //import 'financial_transactions_page.dart'; // صفحة المعاملات المالية
 
-class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+class OwnerHomePage extends StatefulWidget {
+  const OwnerHomePage({super.key});
 
   @override
   State<StatefulWidget> createState() {
-    return HomePageState();
+    return OwnerHomePageState();
   }
 }
 
 
-class HomePageState extends State<HomePage>{
+class OwnerHomePageState extends State<OwnerHomePage>{
 
   @override
   void initState() {
@@ -39,13 +40,13 @@ class HomePageState extends State<HomePage>{
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("الصفحة الرئيسية"),
+        title: const Text("الصفحة الرئيسية"),
       ),
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
-            DrawerHeader(
+            const DrawerHeader(
               decoration: BoxDecoration(
                 color: Colors.blue,
               ),
@@ -58,24 +59,33 @@ class HomePageState extends State<HomePage>{
               ),
             ),
             ListTile(
-              leading: Icon(AppIcons.account), // أيقونة حسابي
-              title: Text('حسابي'),
+              leading: const Icon(AppIcons.account), // أيقونة حسابي
+              title: const Text('حسابي'),
               onTap: () {
                 // الانتقال إلى صفحة حسابي
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => OwnerProfilePage()),
+                  MaterialPageRoute(builder: (context) => const OwnerProfilePage()),
                 );
               },
             ),
             ListTile(
-              leading: Icon(AppIcons.bookings), // أيقونة حجوزاتي
-              title: Text('حجوزاتي'),
+              leading: const Icon(AppIcons.bookings), // أيقونة حجوزاتي
+              title: const Text('حجوزاتي'),
               onTap: () {
                 // الانتقال إلى صفحة إدارة الحجوزات
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => BookingManagementPage()),
+                  MaterialPageRoute(builder: (context) => const BookingManagementPage()),
+                );
+              },
+            ), ListTile(
+              leading: const Icon(Icons.logout),
+              title: const Text('تسجيل الخروج'),
+              onTap:  () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => LogoutScreen()),
                 );
               },
             ),
@@ -92,11 +102,11 @@ class HomePageState extends State<HomePage>{
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => ManageCarPage()),
+                  MaterialPageRoute(builder: (context) => const ManageCarPage()),
                 );
               },
-              icon: Icon(AppIcons.vehicle), // أيقونة المركبة
-              label: Text("إضافة مركبة"),
+              icon: const Icon(AppIcons.vehicle), // أيقونة المركبة
+              label: const Text("إضافة مركبة"),
             ),
           ),
           // قائمة المركبات
@@ -104,7 +114,7 @@ class HomePageState extends State<HomePage>{
             child: Consumer<CarProvider>(
               builder: (context, provider, child) {
                 if (provider.cars.isEmpty) {
-                  return Center(child: Text("لا توجد مركبات حالياً"));
+                  return const Center(child: Text("لا توجد مركبات حالياً"));
                 }
                 return ListView.builder(
                   itemCount: provider.cars.length,

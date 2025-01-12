@@ -5,6 +5,7 @@ import '../models/icons.dart';
 import '../style/styles.dart';
 
 
+/// قائمة جانبية للوحة التحكم تحتوي على الروابط الرئيسية
 class CustomDrawer2 extends StatefulWidget {
   const CustomDrawer2({super.key});
 
@@ -49,7 +50,6 @@ class _CustomDrawer2State extends State<CustomDrawer2> {
               Navigator.pushNamed(context, '/CarScreen');
             },
           ),
-
 
           Consumer<UserProvider>(builder: (context, value, child) {
             if(value.currentUser?.role == "admin"){

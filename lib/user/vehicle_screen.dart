@@ -171,7 +171,7 @@ class CarDisplayScreenState extends State<CarDisplayScreen> {
           ),
         ],
       ),
-      drawer: CustomDrawer2(),
+      drawer: const CustomDrawer2(),
       body: Column(
         children: [
           Expanded(
