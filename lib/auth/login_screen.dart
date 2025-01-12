@@ -41,8 +41,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         // فحص إذا كان البريد الإلكتروني موجود في قاعدة البيانات
         DocumentSnapshot userDoc =
         await FirebaseFirestore.instance.collection('users').doc(email).get();
-        DocumentSnapshot userDoc =
-        await FirebaseFirestore.instance.collection('users').doc(email).get();
+
 
         if (userDoc.exists) {
           // إذا كان البريد موجودًا، تحقق من الدور واحفظ الجلسة
@@ -205,69 +204,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 ],
               ),
             ),
-          child: ListView(
-            children: [
-              TextFormField(
-                controller: _emailController,
-                decoration: const InputDecoration(labelText: 'البريد الإلكتروني'),
-                keyboardType: TextInputType.emailAddress,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'يرجى إدخال البريد الإلكتروني';
-                  }
-                  if (!RegExp(r'^[a-zA-Z0-9]+@gmail\.com$').hasMatch(value)) {
-                    return 'يرجى إدخال بريد إلكتروني صالح';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: _passwordController,
-                decoration: const InputDecoration(labelText: 'كلمة المرور'),
-                obscureText: true,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'يرجى إدخال كلمة المرور';
-                  }
-                  if (value.length < 6) {
-                    return 'يجب أن تحتوي كلمة المرور على 6 أحرف على الأقل';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: _firstNameController,
-                decoration: const InputDecoration(labelText: 'الاسم الأول'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'يرجى إدخال الاسم الأول';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: _lastNameController,
-                decoration: const InputDecoration(labelText: 'الاسم الأخير'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'يرجى إدخال الاسم الأخير';
-                  }
-                  return null;
-                },
-              ),
 
-              const SizedBox(height: 20),
-              if (_isLoading)
-                const Center(child: CircularProgressIndicator())
-              else
-                ElevatedButton(
-                  onPressed: _signUp,
-                  child: const Text('التسجيل'),
-                ),
-            ],
-          ),
         ),
-      ),
+      ),)
     );
   }
 

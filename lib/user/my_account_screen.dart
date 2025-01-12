@@ -1,3 +1,5 @@
+
+
 import 'dart:convert';
 import 'dart:io';
 
@@ -220,49 +222,26 @@ class _AccountScreenState extends State<AccountScreen> {
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.grey[600]),
               ),
               const SizedBox(height: 20),
-                            // رقم الهاتف
-                            Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                    Text(
-                                        'رقم الهاتف',
-                                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.grey[700]),
-                                    ),
-                                    IconButton(
-                                        icon: const Icon(Icons.edit, color: Color(0xFFF78B00)),
-                                        onPressed: () {
-                                            setState(() {
-                                                _isEditingPhone = true;
-                                            });
-                                        },
-                                    ),
-                                ],
-                            ),
-                            _isEditingPhone
-                                ? TextField(
-                                controller: _phoneController,
-                                decoration: InputDecoration(
-                                    hintText: 'أدخل رقم هاتفك',
-                                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                                    focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(12),
-                                        borderSide: const BorderSide(color: Color(0xFFF78B00)),
-                                    ),
-                                ),
-                            )
-                                : Text(
-                                user?.phoneNumber ?? '',
-                                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.grey[600]),
-                            ),
-                            const SizedBox(height: 20),
+              // رقم الهاتف
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'رقم الهاتف',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.grey[700]),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.edit, color: Color(0xFFF78B00)),
+                    onPressed: () {
+                      setState(() {
+                        _isEditingPhone = true;
+                      });
+                    },
+                  ),
+                ],
+              ),
 
-                            // رصيد المحفظة
-                            Text(
-                                'رصيد المحفظة',
-                                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.grey[700]),
-                            ),
-
-                            const SizedBox(height: 20),
+              const SizedBox(height: 20),
 
               // زر حفظ التغييرات
               Center(

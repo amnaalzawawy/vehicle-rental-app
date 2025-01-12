@@ -79,17 +79,7 @@ class HomePageState extends State<HomePage>{
                 );
               },
             ),
-            /*ListTile(
-             // leading: Icon(AppIcons.wallet), // أيقونة المعاملات المالية
-             // title: Text('المعاملات المالية'),
-              //onTap: () {
-                // الانتقال إلى صفحة المعاملات المالية
-               // Navigator.push(
-                 // context,
-                  MaterialPageRoute(builder: (context) => FinancialTransactionsPage()),
-                );
-              },
-            ),*/
+
           ],
         ),
       ),

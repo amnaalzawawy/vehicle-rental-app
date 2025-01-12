@@ -128,9 +128,9 @@ class _ManageCarPageState extends State<ManageCarPage> {
                 ),
                 TextFormField(
                   controller: _fuelController,
-                  decoration: const InputDecoration(labelText: 'نوع الوقود'),
+                  decoration: const InputDecoration(labelText: 'الفئة  '),
                   validator: (value) =>
-                  value!.isEmpty ? 'يرجى إدخال نوع الوقود' : null,
+                  value!.isEmpty ? 'يرجى إدخال الفئة ' : null,
                 ),
                 TextFormField(
                   controller: _ownerController,

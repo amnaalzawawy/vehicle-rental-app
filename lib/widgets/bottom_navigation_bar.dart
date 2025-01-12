@@ -19,7 +19,7 @@ class BottomNavigationBarWidget extends StatelessWidget {
 
 
         BottomNavigationBarItem(icon: Icon(Icons.home), label: 'الرئيسية'),
-        BottomNavigationBarItem(icon: Icon(Icons.search), label: 'حجواتي'),
+        BottomNavigationBarItem(icon: Icon(Icons.search), label: 'حجوزاتي'),
         BottomNavigationBarItem(icon: Icon(Icons.account_circle), label: 'حسابي'),
       ],
     );

@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:untitled2/models/car.dart';
 import 'package:untitled2/owners/booking_managment_card.dart';
-import 'package:untitled2/providers/car_provider.dart';
 import 'package:untitled2/providers/current_user_provider.dart';
 import '../models/booking.dart';
 import '../providers/booking_provider.dart';

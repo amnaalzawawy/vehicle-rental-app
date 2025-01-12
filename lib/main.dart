@@ -218,7 +218,7 @@ class MyApp extends StatelessWidget {
       ],
       child: MaterialApp(
         title: 'تطبيق تأجير المركبات',
-        theme: ThemeData.from(colorScheme: ColorScheme.fromSeed(seedColor: Colors.orange)),
+        theme: ThemeData.from(colorScheme: ColorScheme.fromSeed(seedColor: Colors.white)),
         // (
         //   primarySwatch: Colors.orange,
         //   visualDensity: VisualDensity.adaptivePlatformDensity,
@@ -236,7 +236,7 @@ class MyApp extends StatelessWidget {
           '/users' :(context) => UserSearchScreen(),
           '/' :(context) => const CarDisplayScreen(), // Home replacement
           '/CarScreen' : (context) => CarScreen(),
-          '/CarScreen' :(context) => CarScreen(),
+
         },
       ),
     );
