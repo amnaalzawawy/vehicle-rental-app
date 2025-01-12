@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:untitled2/admin/vehicle/vechicle_add_screen.dart';
@@ -11,7 +12,10 @@ class CarCard extends StatefulWidget {
   final VoidCallback onEditPressed; // تمرير الحدث عند الضغط على زر التعديل
   final VoidCallback onDeletePressed; // تمرير الحدث عند الضغط على زر الحذف
 
-  const CarCard({super.key, required this.car, required this.onEditPressed, required this.onDeletePressed});
+  CarCard(
+      {required this.car,
+      required this.onEditPressed,
+      required this.onDeletePressed});
 
   @override
   _CarCardState createState() => _CarCardState();
@@ -20,13 +24,13 @@ class CarCard extends StatefulWidget {
 class _CarCardState extends State<CarCard> {
   String? imageURL;
 
-
   void getImageURL() async {
     if (widget.car.images.isNotEmpty) {
       try {
         var url = await Supabase.instance.client.storage
             .from("cars")
-            .createSignedUrl(widget.car.images[0].replaceAll("cars/", ""), 60000);
+            .createSignedUrl(
+                widget.car.images[0].replaceAll("cars/", ""), 60000);
         setState(() {
           imageURL = url;
         });
@@ -60,23 +64,25 @@ class _CarCardState extends State<CarCard> {
         children: [
           imageURL != null
               ? ClipRRect(
-            borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(12), topRight: Radius.circular(12)),
-            child: Image.network(
-              imageURL!,
-              fit: BoxFit.cover,
-              height: 150,
-              width: double.infinity,
-            ),
-          )
+                  borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(12),
+                      topRight: Radius.circular(12)),
+                  child: Image.network(
+                    imageURL!,
+                    fit: BoxFit.cover,
+                    height: 150,
+                    width: double.infinity,
+                  ),
+                )
               : Container(
-            height: 150,
-            decoration: const BoxDecoration(
-              color: Colors.grey,
-              borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(12), topRight: Radius.circular(12)),
-            ),
-          ),
+                  height: 150,
+                  decoration: const BoxDecoration(
+                    color: Colors.grey,
+                    borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(12),
+                        topRight: Radius.circular(12)),
+                  ),
+                ),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Column(
@@ -84,7 +90,8 @@ class _CarCardState extends State<CarCard> {
               children: [
                 Text(
                   car.name,
-                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                      fontSize: 18, fontWeight: FontWeight.bold),
                   textAlign: TextAlign.right,
                 ),
                 const SizedBox(height: 5),
@@ -188,7 +195,8 @@ class _CarScreenState extends State<CarScreen> {
           Expanded(
             child: Consumer<CarProvider>(
               builder: (context, carProvider, child) {
-                final List<CarModel> filteredCars = carProvider.searchCars(_searchController.text);
+                final List<CarModel> filteredCars =
+                    carProvider.searchCars(_searchController.text);
 
                 if (filteredCars.isEmpty) {
                   return const Center(child: Text('لا توجد نتائج'));
@@ -204,12 +212,14 @@ class _CarScreenState extends State<CarScreen> {
                         // فتح نافذة تعديل المركبة
                         showDialog(
                           context: context,
-                          builder: (context) => AddCarDialog(carToEdit: car), // إرسال السيارة المعدلة
+                          builder: (context) => AddCarDialog(
+                              carToEdit: car), // إرسال السيارة المعدلة
                         );
                       },
                       onDeletePressed: () {
                         // إضافة الكود الخاص بحذف المركبة
-                        Provider.of<CarProvider>(context, listen: false).deleteCar(car.id);
+                        Provider.of<CarProvider>(context, listen: false)
+                            .deleteCar(car.id);
                       },
                     );
                   },
