@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import 'package:untitled2/models/car.dart';
 import 'package:untitled2/owners/booking_managment_card.dart';
 import 'package:untitled2/providers/current_user_provider.dart';
-import '../models/booking.dart';
 import '../providers/booking_provider.dart';
 
 class BookingManagementPage extends StatefulWidget {
@@ -58,7 +57,7 @@ class _BookingManagementPageState extends State<BookingManagementPage> {
                   itemBuilder: (context, index) {
                     final booking = bookingProvider.bookings[index];
 
-                    return BookingManagmentCard(booking: booking);
+                    return BookingManagementCard(booking: booking);
                   },
                 ),
     );

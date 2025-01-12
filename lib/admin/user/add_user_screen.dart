@@ -1,10 +1,5 @@
-
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
-import '../../models/user.dart';
 import '../../models/user.dart';
 import '../../providers/user_provider.dart';
 
@@ -27,7 +22,7 @@ class _AddUserScreenState extends State<AddUserScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('إضافة مستخدم/مالك جديد'),
+        title: const Text('إضافة مستخدم/مالك جديد'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -36,29 +31,29 @@ class _AddUserScreenState extends State<AddUserScreen> {
           child: Column(
             children: [
               TextFormField(
-                decoration: InputDecoration(labelText: 'الاسم الأول'),
+                decoration: const InputDecoration(labelText: 'الاسم الأول'),
                 onSaved: (value) => firstName = value,
                 validator: (value) => value!.isEmpty ? 'الحقل مطلوب' : null,
               ),
               TextFormField(
-                decoration: InputDecoration(labelText: 'الاسم الأخير'),
+                decoration: const InputDecoration(labelText: 'الاسم الأخير'),
                 onSaved: (value) => lastName = value,
                 validator: (value) => value!.isEmpty ? 'الحقل مطلوب' : null,
               ),
               TextFormField(
-                decoration: InputDecoration(labelText: 'البريد الإلكتروني'),
+                decoration: const InputDecoration(labelText: 'البريد الإلكتروني'),
                 onSaved: (value) => email = value,
                 validator: (value) => value!.isEmpty ? 'الحقل مطلوب' : null,
               ),
               TextFormField(
-                decoration: InputDecoration(labelText: 'رقم الهاتف'),
+                decoration: const InputDecoration(labelText: 'رقم الهاتف'),
                 onSaved: (value) => phoneNumber = value,
                 validator: (value) => value!.isEmpty ? 'الحقل مطلوب' : null,
               ),
               DropdownButtonFormField<String>(
                 value: role,
-                decoration: InputDecoration(labelText: 'الدور'),
-                items: [
+                decoration: const InputDecoration(labelText: 'الدور'),
+                items: const [
                   DropdownMenuItem(value: 'مستخدم', child: Text('مستخدم')),
                   DropdownMenuItem(value: 'مالك', child: Text('مالك')),
                   DropdownMenuItem(value: 'أدمن', child: Text('أدمن')),
@@ -69,12 +64,12 @@ class _AddUserScreenState extends State<AddUserScreen> {
               if (role == 'أدمن') ...[
                 TextFormField(
                   obscureText: true,
-                  decoration: InputDecoration(labelText: 'كلمة المرور'),
+                  decoration: const InputDecoration(labelText: 'كلمة المرور'),
                   onSaved: (value) => password = value,
                   validator: (value) => value!.isEmpty ? 'الحقل مطلوب' : null,
                 ),
               ],
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
@@ -95,7 +90,7 @@ class _AddUserScreenState extends State<AddUserScreen> {
                     Navigator.pop(context);
                   }
                 },
-                child: Text('إضافة'),
+                child: const Text('إضافة'),
               ),
             ],
           ),

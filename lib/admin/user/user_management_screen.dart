@@ -2,18 +2,18 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:untitled2/widgets/custom_drawer.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import '../../models/user.dart';
 import '../../providers/user_provider.dart';
 import 'add_user_screen.dart';
 import 'edit_user_screen.dart';
 
 class ManageUsersOwnersScreen extends StatefulWidget {
+  const ManageUsersOwnersScreen({super.key});
+
   @override
-  _ManageUsersOwnersScreenState createState() => _ManageUsersOwnersScreenState();
+  ManageUsersOwnersScreenState createState() => ManageUsersOwnersScreenState();
 }
 
-class _ManageUsersOwnersScreenState extends State<ManageUsersOwnersScreen> {
+class ManageUsersOwnersScreenState extends State<ManageUsersOwnersScreen> {
   @override
   void initState() {
     super.initState();
@@ -38,7 +38,7 @@ class _ManageUsersOwnersScreenState extends State<ManageUsersOwnersScreen> {
       appBar: AppBar(
         title: const Text('إدارة المستخدمين والمالكين'),
       ),
-      drawer: CustomDrawer(),
+      drawer: const CustomDrawer(),
       body: Consumer<UserProvider>(
         builder: (context, provider, child) {
           final users = provider.filteredUsers;

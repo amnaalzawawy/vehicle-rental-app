@@ -5,11 +5,9 @@ import '../auth/logout_screen.dart';
 import '../models/icons.dart';
 import '../providers/car_provider.dart';
 import '../widgets/car_card.dart';
-//import '../models/app_icons.dart'; // استدعاء الأيقونات من ملف app_icons.dart
 import 'booking_management_screen.dart';
 import 'owner_profile_page.dart'; // صفحة معلومات المالك
-//import 'booking_management_page.dart'; // صفحة إدارة الحجوزات
-//import 'financial_transactions_page.dart'; // صفحة المعاملات المالية
+
 
 class OwnerHomePage extends StatefulWidget {
   const OwnerHomePage({super.key});

@@ -7,7 +7,7 @@ import 'package:intl/intl.dart';
 class BookingScreen extends StatefulWidget {
   final CarModel car;
 
-  BookingScreen({required this.car});
+  const BookingScreen({super.key, required this.car});
 
   @override
   _BookingScreenState createState() => _BookingScreenState();

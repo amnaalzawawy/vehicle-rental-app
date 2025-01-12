@@ -4,7 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class FilterWidget extends StatefulWidget {
   final Function(Map<String, dynamic>) onFilterApply;
 
-  const FilterWidget({Key? key, required this.onFilterApply}) : super(key: key);
+  const FilterWidget({super.key, required this.onFilterApply});
 
   @override
   _FilterWidgetState createState() => _FilterWidgetState();
@@ -14,7 +14,6 @@ class _FilterWidgetState extends State<FilterWidget> {
   String? selectedCategory; // فئة المركبة
   String? selectedOwner; // اسم المالك
   String? selectedPriceRange; // نطاق السعر (سلسلة نصية مثل "<100")
-
   List<String> categories = []; // قائمة الفئات التي سيتم تحديثها من Firestore
   List<String> owners = []; // قائمة المالكين التي سيتم تحديثها من Firestore
 
@@ -97,16 +96,16 @@ class _FilterWidgetState extends State<FilterWidget> {
               Padding(
                 padding: const EdgeInsets.only(bottom: 8.0),
                 child: categories.isEmpty // التحقق من أن الفئات تم تحميلها
-                    ? CircularProgressIndicator() // عرض تحميل أثناء جلب الفئات
+                    ? const CircularProgressIndicator() // عرض تحميل أثناء جلب الفئات
                     : DropdownButtonFormField<String>(
                   value: selectedCategory,
                   decoration: InputDecoration(
                     labelText: 'فئة المركبة',
-                    labelStyle: TextStyle(color: Colors.orange),
+                    labelStyle: const TextStyle(color: Colors.orange),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    contentPadding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                    contentPadding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
                   ),
                   items: categories.map((category) {
                     return DropdownMenuItem(
@@ -125,16 +124,16 @@ class _FilterWidgetState extends State<FilterWidget> {
               Padding(
                 padding: const EdgeInsets.only(bottom: 8.0),
                 child: owners.isEmpty // التحقق من أن المالكين تم تحميلهم
-                    ? CircularProgressIndicator() // عرض تحميل أثناء جلب المالكون
+                    ? const CircularProgressIndicator() // عرض تحميل أثناء جلب المالكون
                     : DropdownButtonFormField<String>(
                   value: selectedOwner,
                   decoration: InputDecoration(
                     labelText: 'مالك المركبة',
-                    labelStyle: TextStyle(color: Colors.orange),
+                    labelStyle: const TextStyle(color: Colors.orange),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    contentPadding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                    contentPadding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
                   ),
                   items: owners.map((owner) {
                     return DropdownMenuItem(
@@ -156,11 +155,11 @@ class _FilterWidgetState extends State<FilterWidget> {
                   value: selectedPriceRange,
                   decoration: InputDecoration(
                     labelText: 'السعر اليومي',
-                    labelStyle: TextStyle(color: Colors.orange),
+                    labelStyle: const TextStyle(color: Colors.orange),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    contentPadding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                    contentPadding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
                   ),
                   items: [
                     '<100',
@@ -186,10 +185,10 @@ class _FilterWidgetState extends State<FilterWidget> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10), // منحنى الزر
                   ),
-                  padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                  padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
                 ),
                 onPressed: applyFilters,
-                child: Text(
+                child: const Text(
                   'تطبيق',
                   style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
                 ),

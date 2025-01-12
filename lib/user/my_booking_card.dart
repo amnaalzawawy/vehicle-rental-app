@@ -12,9 +12,9 @@ import 'package:untitled2/providers/car_provider.dart';
 import 'edit_booking.dart';
 
 class MyBookingCard extends StatefulWidget{
-  Booking booking;
+  final Booking booking;
 
-  MyBookingCard({ required this.booking, super.key});
+  const MyBookingCard({ required this.booking, super.key});
 
   @override
   State<StatefulWidget> createState() {
@@ -90,9 +90,9 @@ class MyBookingCardState extends State<MyBookingCard>{
                           content: Text('تم حذف الحجز بنجاح')),
                     );
                   },
-                  child: const Text('حذف الحجز'),
                   style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.red),
+                  child: const Text('حذف الحجز'),
                 ),
               ],
             ),

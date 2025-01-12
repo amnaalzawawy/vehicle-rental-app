@@ -61,7 +61,7 @@ class _CarCardState extends State<CarCard> {
               ),
             ),
           ListTile(
-            title: Text(widget.car.name, style: TextStyle(fontWeight: FontWeight.bold)),
+            title: Text(widget.car.name, style: const TextStyle(fontWeight: FontWeight.bold)),
             subtitle: Text('التصنيف: ${widget.car.category} - السعر اليومي: \$${widget.car.pricePerDay}'),
           ),
           Row(
@@ -69,13 +69,13 @@ class _CarCardState extends State<CarCard> {
             children: [
               TextButton.icon(
                 onPressed: widget.onEdit,
-                icon: Icon(Icons.edit, color: Colors.blue),
-                label: Text("تعديل", style: TextStyle(color: Colors.blue)),
+                icon: const Icon(Icons.edit, color: Colors.blue),
+                label: const Text("تعديل", style: TextStyle(color: Colors.blue)),
               ),
               TextButton.icon(
                 onPressed: widget.onDelete,
-                icon: Icon(Icons.delete, color: Colors.red),
-                label: Text("حذف", style: TextStyle(color: Colors.red)),
+                icon: const Icon(Icons.delete, color: Colors.red),
+                label: const Text("حذف", style: TextStyle(color: Colors.red)),
               ),
             ],
           ),

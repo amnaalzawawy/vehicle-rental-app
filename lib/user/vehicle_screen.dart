@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
@@ -35,11 +34,13 @@ class CarDisplayScreenState extends State<CarDisplayScreen> {
       Provider.of<UserProvider>(context, listen: false).getCurrentUser();
     });
 
-    userProvider.getCurrentUser().then((value) {
-      setState(() {
-        user = value;
-      });
-    },);
+    userProvider.getCurrentUser().then(
+      (value) {
+        setState(() {
+          user = value;
+        });
+      },
+    );
   }
 
   // جلب المركبات من قاعدة البيانات
@@ -109,13 +110,7 @@ class CarDisplayScreenState extends State<CarDisplayScreen> {
     setState(() {
       _selectedIndex = index;
     });
-    // if (role == 'admin') {
-    //   Navigator.pushReplacementNamed(context, '/CarScreen');
-    // } else if (role == 'owner') {
-    //   Navigator.pushReplacementNamed(context, '/ownerDashboard');
-    // } else {
-    //   Navigator.pushReplacementNamed(context, '/myAccount');
-    // }
+
     // يمكنك إضافة التنقل بين الصفحات هنا
     var userProvider = UserProvider();
 
@@ -124,12 +119,12 @@ class CarDisplayScreenState extends State<CarDisplayScreen> {
         if (user != null) {
           switch (index) {
             case 1:
-            if (user.role == "owner") {
-              Navigator.pushNamed(context, "/owner/bookings");
-            }
-            if(user.role == "user") {
-              Navigator.pushNamed(context, "/myBooking");
-            }
+              if (user.role == "owner") {
+                Navigator.pushNamed(context, "/owner/bookings");
+              }
+              if (user.role == "user") {
+                Navigator.pushNamed(context, "/myBooking");
+              }
 
               break;
             case 2:
@@ -177,8 +172,7 @@ class CarDisplayScreenState extends State<CarDisplayScreen> {
           Expanded(
             child: _filteredCars.isEmpty
                 ? const Center(child: Text('لا توجد مركبات لعرضها'))
-                : 
-            ListView.builder(
+                : ListView.builder(
                     itemCount: _filteredCars.length,
                     itemBuilder: (context, index) {
                       return CarCard(
@@ -202,9 +196,14 @@ class CarDisplayScreenState extends State<CarDisplayScreen> {
         selectedIndex: _selectedIndex,
         onItemTapped: _onItemTapped,
       ),
-      floatingActionButton: user?.role == "owner" ? FloatingActionButton(onPressed: (){
+      floatingActionButton: user?.role == "owner"
+          ? FloatingActionButton(
+              onPressed: () {
                 Navigator.pushNamed(context, "/owner/manage");
-      }, child: const Icon(Icons.add),) : null,
+              },
+              child: const Icon(Icons.add),
+            )
+          : null,
     );
   }
 }

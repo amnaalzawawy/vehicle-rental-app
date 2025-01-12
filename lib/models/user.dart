@@ -30,7 +30,6 @@ class UserModel {
       'phoneNumber': phoneNumber,
       'email': email, // حفظ البريد الإلكتروني
       'passwordHash': passwordHash, // حفظ تجزئة كلمة المرور
-
       'profileImageBase64': profileImageBase64, // حفظ الصورة كـ Base64
       'role': role, // حفظ دور المستخدم
       'socialLoginProvider': socialLoginProvider, // حفظ طريقة التسجيل الاجتماعي
@@ -46,7 +45,6 @@ class UserModel {
       phoneNumber: map['phoneNumber'] ?? "",
       email: map['email'] ?? "", // استرجاع البريد الإلكتروني
       passwordHash: map['passwordHash'] ?? "", // استرجاع تجزئة كلمة المرور
-
       profileImageBase64: map['profileImageBase64'] ?? "", // استرجاع الصورة كـ Base64
       role: map['role'] ?? "user", // استرجاع دور المستخدم
       socialLoginProvider: map['socialLoginProvider']?? "", // استرجاع طريقة التسجيل الاجتماعي
@@ -61,7 +59,6 @@ class UserModel {
     String? phoneNumber,
     String? email, // تعديل البريد الإلكتروني
     String? passwordHash, // تعديل تجزئة كلمة المرور
-
     String? profileImageBase64,
     String? role,
     String? socialLoginProvider, // تعديل طريقة التسجيل الاجتماعي

@@ -3,9 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:untitled2/admin/vehicle/vechicle_add_screen.dart';
 import '../../models/car.dart';
 import '../../providers/car_provider.dart';
-import '../../widgets/custom_drawer.dart';
 import '../../widgets/custom_user_drawer.dart';
-import 'vehicle_card.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class CarCard extends StatefulWidget {
@@ -13,7 +11,7 @@ class CarCard extends StatefulWidget {
   final VoidCallback onEditPressed; // تمرير الحدث عند الضغط على زر التعديل
   final VoidCallback onDeletePressed; // تمرير الحدث عند الضغط على زر الحذف
 
-  CarCard({required this.car, required this.onEditPressed, required this.onDeletePressed});
+  const CarCard({super.key, required this.car, required this.onEditPressed, required this.onDeletePressed});
 
   @override
   _CarCardState createState() => _CarCardState();
@@ -170,7 +168,7 @@ class _CarScreenState extends State<CarScreen> {
           ),
         ],
       ),
-      drawer: CustomDrawer2(),
+      drawer: const CustomDrawer2(),
       body: Column(
         children: [
           Padding(

@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-// import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:untitled2/auth/logout_screen.dart';
-import 'dart:io';
-
 import 'package:untitled2/providers/current_user_provider.dart';
 
 class OwnerProfilePage extends StatefulWidget {
-  const OwnerProfilePage({Key? key}) : super(key: key);
+  const OwnerProfilePage({super.key});
 
   @override
   State<OwnerProfilePage> createState() => _OwnerProfilePageState();
@@ -16,37 +13,12 @@ class OwnerProfilePage extends StatefulWidget {
 
 class _OwnerProfilePageState extends State<OwnerProfilePage> {
   final user = FirebaseAuth.instance.currentUser; // المستخدم الحالي
-  File? _image; // لحفظ الصورة المؤقتة
   final picker = ImagePicker();
   String? imageUrl;
 
   final _fristNameController = TextEditingController();
   final _lastNameController = TextEditingController();
   final _passwordController = TextEditingController();
-
-  // اختيار صورة من المعرض
-  Future<void> _pickImage() async {
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-    if (pickedFile != null) {
-      setState(() {
-        _image = File(pickedFile.path);
-      });
-      await _uploadImage();
-    }
-  }
-
-  // رفع الصورة إلى Firebase Storage
-  Future<void> _uploadImage() async {
-    if (_image == null) return;
-    // TODO: Migrate to Supabase
-    // final storageRef = FirebaseStorage.instance.ref().child('owner_images/${user?.uid}.jpg');
-
-    // await storageRef.putFile(_image!);
-    // final url = await storageRef.getDownloadURL();
-    // setState(() {
-    //   imageUrl = url;
-    // });
-  }
 
   // تغيير الرقم السري
   Future<void> _changePassword() async {
@@ -87,19 +59,7 @@ class _OwnerProfilePageState extends State<OwnerProfilePage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // صورة المالك
-              // GestureDetector(
-              //   onTap: _pickImage,
-              //   child: CircleAvatar(
-              //     radius: 60,
-              //     backgroundImage: imageUrl != null
-              //         ? NetworkImage(imageUrl!)
-              //         : AssetImage('assets/default_avatar.png') as ImageProvider,
-              //     child: _image == null ? Icon(Icons.camera_alt) : null,
-              //   ),
-              // ),
               const SizedBox(height: 20),
-
               // تفاصيل المالك
               Card(
                 elevation: 2,
@@ -182,8 +142,6 @@ class _OwnerProfilePageState extends State<OwnerProfilePage> {
                   minimumSize: const Size(double.infinity, 50),
                 ),
               ),
-
-
             ],
           ),
         ),

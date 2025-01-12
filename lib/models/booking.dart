@@ -52,7 +52,7 @@ class Booking {
       carId: data['carId'],
       userId: data['userId'],
       date: data['date'] != null ? DateTime.parse(data['date']) : null,
-      totalAmount: data['totalAmount'] != null ? data['totalAmount'].toDouble() : null,
+      totalAmount: data['totalAmount']?.toDouble(),
       userName: data['userName'] ?? '',
       vehicleDetails: data['vehicleDetails'] != null ? Map<String, dynamic>.from(data['vehicleDetails']) : null, // تحويل vehicleDetails إلى Map
       startDate: data['startDate'] != null ? (data['startDate'] as Timestamp).toDate() : null,

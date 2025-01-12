@@ -6,16 +6,16 @@ import 'package:untitled2/models/user.dart';
 import 'package:untitled2/providers/booking_provider.dart';
 import 'package:untitled2/providers/current_user_provider.dart';
 
-class BookingManagmentCard extends StatefulWidget {
+class BookingManagementCard extends StatefulWidget {
   final Booking booking;
 
-  BookingManagmentCard({super.key, required this.booking});
+  const BookingManagementCard({super.key, required this.booking});
 
   @override
-  State<BookingManagmentCard> createState() => _BookingManagmentCardState();
+  State<BookingManagementCard> createState() => _BookingManagementCardState();
 }
 
-class _BookingManagmentCardState extends State<BookingManagmentCard> {
+class _BookingManagementCardState extends State<BookingManagementCard> {
   UserModel? user;
 
   @override
@@ -40,7 +40,7 @@ class _BookingManagmentCardState extends State<BookingManagmentCard> {
       margin: const EdgeInsets.all(8.0),
       child: ListTile(
         title: Text(widget.booking.vehicleDetails != null
-            ? widget.booking.vehicleDetails!['name'] ?? "تفاصيل المركبة غير متوفرة"
+            ? widget.booking.vehicleDetails!["name"] ?? "تفاصيل المركبة غير متوفرة"
             : "تفاصيل المركبة غير متوفرة"),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -53,16 +53,6 @@ class _BookingManagmentCardState extends State<BookingManagmentCard> {
         ),
         trailing: PopupMenuButton<String>(
           onSelected: (value) async {
-           // if (value == 'confirm') {
-            //  await bookingProvider.updateBooking(
-            //      widget.booking.id!, {'status': 'Confirmed'}
-//);
-            //} else
-             // if (value == 'complete') {
-            //  await bookingProvider.updateBooking(
-             //     widget.booking.id!, {'status': 'Completed'}
-            //  );
-           // } else
               if (value == 'cancel') {
               await bookingProvider.updateBooking(
                   widget.booking.id!, {'status': 'Cancelled'}
@@ -73,8 +63,6 @@ class _BookingManagmentCardState extends State<BookingManagmentCard> {
             }
           },
           itemBuilder: (context) => [
-          //  const PopupMenuItem(value: 'confirm', child: Text('تأكيد الحجز')),
-          //  const PopupMenuItem(value: 'complete', child: Text('إكمال الحجز')),
             const PopupMenuItem(value: 'cancel', child: Text('إلغاء الحجز')),
             const PopupMenuItem(value: 'delete', child: Text('حذف الحجز')),
           ],

@@ -1,15 +1,8 @@
-
-
-import 'dart:convert';
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:untitled2/models/user.dart';
 import '../providers/user_provider.dart';
 import '../providers/current_user_provider.dart' as CurrentUserProvider;
-import '../widgets/bottom_navigation_bar.dart';
 import '../widgets/custom_user_drawer.dart';
 
 class AccountScreen extends StatefulWidget {
@@ -23,8 +16,6 @@ class _AccountScreenState extends State<AccountScreen> {
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
-  String? _profileImageBase64;
-  int _selectedIndex = 0;
   bool _isEditingFirstName = false;
   bool _isEditingLastName = false;
   bool _isEditingPhone = false;
@@ -46,7 +37,6 @@ class _AccountScreenState extends State<AccountScreen> {
         _firstNameController.text = value?.firstName ?? '';
         _lastNameController.text = value?.lastName ?? '';
         _phoneController.text = value?.phoneNumber ?? '';
-        _profileImageBase64 = user?.profileImageBase64;
       });
     });
   }
@@ -55,27 +45,14 @@ class _AccountScreenState extends State<AccountScreen> {
     final user = Provider.of<UserProvider>(context, listen: false).currentUser;
     if (user != null) {
       setState(() {
-        _firstNameController.text = user.firstName ?? '';
-        _lastNameController.text = user.lastName ?? '';
-        _phoneController.text = user.phoneNumber ?? '';
-        _profileImageBase64 = user.profileImageBase64;
+        _firstNameController.text = user.firstName;
+        _lastNameController.text = user.lastName;
+        _phoneController.text = user.phoneNumber;
       });
     }
   }
 
-  bool _hasChanges() {
-    final user = Provider.of<UserProvider>(context, listen: false).currentUser;
-    if (user == null) return false;
-    return _firstNameController.text != user.firstName ||
-        _lastNameController.text != user.lastName ||
-        _phoneController.text != user.phoneNumber ||
-        _profileImageBase64 != user.profileImageBase64;
-  }
 
-  Future<String> _convertImageToBase64(String filePath) async {
-    final bytes = await File(filePath).readAsBytes();
-    return base64Encode(bytes);
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -85,7 +62,7 @@ class _AccountScreenState extends State<AccountScreen> {
         backgroundColor: const Color(0xFFF78B00),
         elevation: 0,
       ),
-      drawer: CustomDrawer2(),
+      drawer: const CustomDrawer2(),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: SingleChildScrollView(
@@ -142,7 +119,6 @@ class _AccountScreenState extends State<AccountScreen> {
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.grey[600]),
               ),
               const SizedBox(height: 20),
-
               // الاسم الأخير
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,  // محاذاة الأيقونة إلى اليسار

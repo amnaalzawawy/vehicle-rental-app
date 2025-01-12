@@ -8,7 +8,7 @@ import '../providers/current_user_provider.dart';
 class CarDetailScreen extends StatefulWidget {
   final CarModel car;
 
-  CarDetailScreen({required this.car});
+  const CarDetailScreen({super.key, required this.car});
 
   @override
   State<StatefulWidget> createState() => CarDetailScreenState();
@@ -16,7 +16,7 @@ class CarDetailScreen extends StatefulWidget {
 
 class CarDetailScreenState extends State<CarDetailScreen> {
   List<String> imageURLs = [];
-  UserModel? owner = null;
+  UserModel? owner;
 
   void getImageURL() async {
     if (widget.car.images.isNotEmpty) {
@@ -129,7 +129,7 @@ class CarDetailScreenState extends State<CarDetailScreen> {
                         );
                       },
                       style: ElevatedButton.styleFrom(
-                        padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                        padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),

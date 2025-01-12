@@ -6,13 +6,15 @@ import '../style/styles.dart';
 
 /// قائمة جانبية للوحة التحكم تحتوي على الروابط الرئيسية
 class CustomDrawer extends StatelessWidget {
+  const CustomDrawer({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
         children: <Widget>[
-          DrawerHeader(
+          const DrawerHeader(
             decoration: BoxDecoration(
               color: Color(0xFFF78B00),  // اللون الأساسي للـDrawer
             ),
@@ -56,13 +58,6 @@ class CustomDrawer extends StatelessWidget {
               Navigator.pushNamed(context, '/vehicle');
             },
           ),
-          // ListTile(
-          //   leading: Icon(AppIcons.advertisements, color: Colors.black),
-          //   title: Text('Advertisements', style: AppStyles.drawerText),
-          //   onTap: () {
-          //     Navigator.pushNamed(context, '/advertisements');
-          //   },
-          // ),
           ListTile(
             leading: Icon(Icons.logout),
             title: Text('Logout'),

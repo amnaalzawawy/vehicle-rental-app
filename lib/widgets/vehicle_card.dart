@@ -24,7 +24,8 @@ class CarCardState extends State<CarCard> {
       try {
         var url = await Supabase.instance.client.storage
             .from("cars")
-            .createSignedUrl(widget.car.images[0].replaceAll("cars/", ""), 60000);
+            .createSignedUrl(
+                widget.car.images[0].replaceAll("cars/", ""), 60000);
         setState(() {
           imageURL = url;
         });
@@ -51,7 +52,8 @@ class CarCardState extends State<CarCard> {
       margin: const EdgeInsets.all(8.0),
       elevation: 5.0,
       shape: RoundedRectangleBorder(
-        side: const BorderSide(color: Color(0xfff78B00), width: 2), // إطار برتقالي
+        side: const BorderSide(color: Color(0xfff78B00), width: 2),
+        // إطار برتقالي
         borderRadius: BorderRadius.circular(12), // إضافة زاوية مدورة
       ),
       child: Column(
@@ -60,24 +62,25 @@ class CarCardState extends State<CarCard> {
           // عرض الصورة الأولى من الصور
           imageURL != null
               ? ClipRRect(
-            borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(12), topRight: Radius.circular(12)),
-            child: Image.network(
-              imageURL!,
-              fit: BoxFit.cover,
-              height: 150,
-              width: double.infinity,
-            ),
-          )
+                  borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(12),
+                      topRight: Radius.circular(12)),
+                  child: Image.network(
+                    imageURL!,
+                    fit: BoxFit.cover,
+                    height: 150,
+                    width: double.infinity,
+                  ),
+                )
               : Container(
-            height: 150,
-            decoration: const BoxDecoration(
-              color: Colors.grey,
-              borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(12),
-                  topRight: Radius.circular(12)),
-            ),
-          ),
+                  height: 150,
+                  decoration: const BoxDecoration(
+                    color: Colors.grey,
+                    borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(12),
+                        topRight: Radius.circular(12)),
+                  ),
+                ),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Column(
@@ -105,19 +108,23 @@ class CarCardState extends State<CarCard> {
                   textAlign: TextAlign.right,
                 ),
                 const SizedBox(height: 10),
-                // زر الحجز
+                // const زر الحجز
                 ElevatedButton(
                   onPressed: widget.onPressed, // تمرير الحدث
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xfff78B00), // خلفية البرتقالي
-                    foregroundColor: Colors.white, // نص أبيض
-                    minimumSize: const Size(double.infinity, 40), // حجم الزر
+                    backgroundColor: const Color(0xfff78B00),
+                    // خلفية البرتقالي
+                    foregroundColor: Colors.white,
+                    // نص أبيض
+                    minimumSize: const Size(double.infinity, 40),
+                    // حجم الزر
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8), // زاوية مدورة
                     ),
                     elevation: 8, // تأثير الظل
                   ),
-                  child: const Text('احجز الآن', style: TextStyle(fontSize: 18)),
+                  child:
+                      const Text('احجز الآن', style: TextStyle(fontSize: 18)),
                 ),
               ],
             ),

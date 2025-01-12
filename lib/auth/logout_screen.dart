@@ -3,21 +3,23 @@ import 'package:provider/provider.dart';
 import 'package:untitled2/providers/current_user_provider.dart';
 
 class LogoutScreen extends StatelessWidget {
+  const LogoutScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Logout'),
+        title: const Text('Logout'),
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
+            const Text(
               'Are you sure you want to log out?',
               style: TextStyle(fontSize: 18),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -31,14 +33,14 @@ class LogoutScreen extends StatelessWidget {
                       },
                     );
                   },
-                  child: Text('Yes'),
+                  child: const Text('Yes'),
                 ),
-                SizedBox(width: 20),
+                const SizedBox(width: 20),
                 ElevatedButton(
                   onPressed: () {
                     Navigator.pop(context); // العودة إلى الشاشة السابقة
                   },
-                  child: Text('No'),
+                  child: const Text('No'),
                 ),
               ],
             ),

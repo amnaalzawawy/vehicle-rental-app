@@ -1,4 +1,3 @@
-// شاشة البحث عن مستخدم
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../models/user.dart';
@@ -25,7 +24,7 @@ class _UserSearchScreenState extends State<UserSearchScreen> {
         .search(_searchController.text)
         .then((value) {
       setState(() {
-        users = value ?? [];
+        users = value;
         loading = false;
       });
     }).catchError((error) {
@@ -136,9 +135,7 @@ class _UserSearchScreenState extends State<UserSearchScreen> {
                                 await Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => EditUserScreen(
-                                      user: user,
-                                    ),
+                                    builder: (context) => EditUserScreen(user: user),
                                   ),
                                 );
                                 searchUsers();

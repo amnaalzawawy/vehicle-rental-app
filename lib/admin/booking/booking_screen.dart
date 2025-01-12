@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
 import '../../models/booking.dart';
 import '../../providers/booking_provider.dart';
 import '../../widgets/custom_drawer.dart';
@@ -8,6 +7,8 @@ import 'booking_form.dart';
 import 'booking_detail_screen.dart';
 
 class BookingScreen extends StatefulWidget {
+  const BookingScreen({super.key});
+
   @override
   _BookingScreenState createState() => _BookingScreenState();
 }
@@ -44,10 +45,10 @@ class _BookingScreenState extends State<BookingScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Manage Bookings'),
+        title: const Text('Manage Bookings'),
         actions: [
           IconButton(
-            icon: Icon(Icons.add),
+            icon: const Icon(Icons.add),
             onPressed: () {
               Navigator.push(
                 context,
@@ -59,7 +60,7 @@ class _BookingScreenState extends State<BookingScreen> {
           ),
         ],
       ),
-      drawer: CustomDrawer(),
+      drawer: const CustomDrawer(),
       body: Column(
         children: [
           Padding(
@@ -70,7 +71,7 @@ class _BookingScreenState extends State<BookingScreen> {
                 Expanded(
                   child: DropdownButton<String>(
                     value: _selectedStatus,
-                    items: [
+                    items: const [
                       DropdownMenuItem(value: 'All', child: Text('All')),
                       DropdownMenuItem(value: 'Pending', child: Text('Pending')),
                       DropdownMenuItem(value: 'Confirmed', child: Text('Confirmed')),
@@ -81,13 +82,13 @@ class _BookingScreenState extends State<BookingScreen> {
                         _selectedStatus = value!;
                       });
                     },
-                    hint: Text('Select Status'),
+                    hint: const Text('Select Status'),
                   ),
                 ),
-                SizedBox(width: 10),
+                const SizedBox(width: 10),
                 // فلترة حسب التاريخ
                 IconButton(
-                  icon: Icon(Icons.calendar_today),
+                  icon: const Icon(Icons.calendar_today),
                   onPressed: () async {
                     DateTime? selectedDate = await showDatePicker(
                       context: context,
@@ -107,13 +108,13 @@ class _BookingScreenState extends State<BookingScreen> {
           ),
           Expanded(
             child: bookingProvider.isLoading
-                ? Center(child: CircularProgressIndicator())
+                ? const Center(child: CircularProgressIndicator())
                 : ListView.builder(
               itemCount: filteredBookings.length,
               itemBuilder: (ctx, index) {
                 final booking = filteredBookings[index];
                 return Card(
-                  margin: EdgeInsets.all(10),
+                  margin: const EdgeInsets.all(10),
                   child: ListTile(
                     title: Text('Booking by: ${booking.userName}'),
                     subtitle: Text('Vehicle: ${booking.vehicleDetails}'),
@@ -121,7 +122,7 @@ class _BookingScreenState extends State<BookingScreen> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         IconButton(
-                          icon: Icon(Icons.edit, color: Colors.blue),
+                          icon: const Icon(Icons.edit, color: Colors.blue),
                           onPressed: () {
                             Navigator.push(
                               context,
@@ -132,26 +133,26 @@ class _BookingScreenState extends State<BookingScreen> {
                           },
                         ),
                         IconButton(
-                          icon: Icon(Icons.delete, color: Colors.red),
+                          icon: const Icon(Icons.delete, color: Colors.red),
                           onPressed: () async {
                             final confirm = await showDialog<bool>(
                               context: context,
                               builder: (BuildContext context) {
                                 return AlertDialog(
-                                  title: Text('Confirm Delete'),
-                                  content: Text('Are you sure you want to delete this booking?'),
+                                  title: const Text('Confirm Delete'),
+                                  content: const Text('Are you sure you want to delete this booking?'),
                                   actions: [
                                     TextButton(
                                       onPressed: () {
                                         Navigator.of(context).pop(false);
                                       },
-                                      child: Text('Cancel'),
+                                      child: const Text('Cancel'),
                                     ),
                                     TextButton(
                                       onPressed: () {
                                         Navigator.of(context).pop(true);
                                       },
-                                      child: Text('Delete'),
+                                      child: const Text('Delete'),
                                     ),
                                   ],
                                 );
@@ -161,18 +162,18 @@ class _BookingScreenState extends State<BookingScreen> {
                               try {
                                 await bookingProvider.deleteBooking(booking.id!);
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text('Booking deleted successfully')),
+                                  const SnackBar(content: Text('Booking deleted successfully')),
                                 );
                               } catch (error) {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text('Error deleting booking')),
+                                  const SnackBar(content: Text('Error deleting booking')),
                                 );
                               }
                             }
                           },
                         ),
                         IconButton(
-                          icon: Icon(Icons.info, color: Colors.green),
+                          icon: const Icon(Icons.info, color: Colors.green),
                           onPressed: () {
                             Navigator.push(
                               context,

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart'; // لاستعمال Firebase Authentication
 import 'package:cloud_firestore/cloud_firestore.dart'; // لاستعمال Firestore
@@ -39,7 +40,9 @@ class AuthProvider with ChangeNotifier {
           notifyListeners(); // إعلام المستمعين لتحديث الواجهة
         },
         verificationFailed: (FirebaseAuthException e) {
-          print("فشل التحقق: ${e.message}");
+          if (kDebugMode) {
+            print("فشل التحقق: ${e.message}");
+          }
           throw Exception("فشل التحقق: ${e.message}"); // إعادة الخطأ في حالة الفشل
         },
         codeSent: (String verificationId, int? resendToken) {
@@ -52,7 +55,9 @@ class AuthProvider with ChangeNotifier {
         },
       );
     } catch (e) {
-      print("خطأ في تسجيل الدخول: $e");
+      if (kDebugMode) {
+        print("خطأ في تسجيل الدخول: $e");
+      }
       throw Exception("حدث خطأ أثناء عملية التحقق.");
     }
   }

@@ -5,7 +5,7 @@ class CustomButton extends StatelessWidget {
   final VoidCallback onPressed;
   final Color color;
 
-  CustomButton({
+  const CustomButton({super.key,
     required this.text,
     required this.onPressed,
     this.color = const Color(0xFFF78B00), // اللون المفضل (F78B00)
@@ -16,11 +16,11 @@ class CustomButton extends StatelessWidget {
     return ElevatedButton(
       onPressed: onPressed,
       style: ButtonStyle(
-        backgroundColor: MaterialStateProperty.all(color),
+        backgroundColor: WidgetStatePropertyAll(color),
       ),
       child: Text(
         text,
-        style: TextStyle(color: Colors.white),
+        style: const TextStyle(color: Colors.white),
       ),
     );
   }

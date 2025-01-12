@@ -2,14 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'dart:io';
-
 import 'package:untitled2/models/car.dart';
 import '../../providers/car_provider.dart';
 
 class AddCarDialog extends StatefulWidget {
   final CarModel? carToEdit;
 
-  AddCarDialog({this.carToEdit});
+  const AddCarDialog({super.key, this.carToEdit});
 
   @override
   _AddCarDialogState createState() => _AddCarDialogState();
@@ -54,48 +53,48 @@ class _AddCarDialogState extends State<AddCarDialog> {
           children: [
             TextField(
               controller: _nameController,
-              decoration: InputDecoration(labelText: 'اسم المركبة'),
+              decoration: const InputDecoration(labelText: 'اسم المركبة'),
             ),
             TextField(
               controller: _categoryController,
-              decoration: InputDecoration(labelText: 'فئة المركبة'),
+              decoration: const InputDecoration(labelText: 'فئة المركبة'),
             ),
             TextField(
               controller: _ownerNameController,
-              decoration: InputDecoration(labelText: 'اسم المالك'),
+              decoration: const InputDecoration(labelText: 'اسم المالك'),
             ),
             TextField(
               controller: _priceController,
-              decoration: InputDecoration(labelText: 'السعر اليومي (بالدينار)'),
+              decoration: const InputDecoration(labelText: 'السعر اليومي (بالدينار)'),
               keyboardType: TextInputType.number,
             ),
             TextField(
               controller: _distanceMeterController,
-              decoration: InputDecoration(labelText: 'المسافة المقطوعة (كم)'),
+              decoration: const InputDecoration(labelText: 'المسافة المقطوعة (كم)'),
             ),
             TextField(
               controller: _fuelTypeController,
-              decoration: InputDecoration(labelText: 'نوع الوقود'),
+              decoration: const InputDecoration(labelText: 'نوع الوقود'),
             ),
             TextField(
               controller: _plateNumberController,
-              decoration: InputDecoration(labelText: 'رقم اللوحة'),
+              decoration: const InputDecoration(labelText: 'رقم اللوحة'),
             ),
             TextField(
               controller: _seatsNumberController,
-              decoration: InputDecoration(labelText: 'عدد المقاعد'),
+              decoration: const InputDecoration(labelText: 'عدد المقاعد'),
             ),
             TextField(
               controller: _transmissionTypeController,
-              decoration: InputDecoration(labelText: 'نوع ناقل الحركة'),
+              decoration: const InputDecoration(labelText: 'نوع ناقل الحركة'),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             ElevatedButton(
               onPressed: _pickImages,
-              child: Text('تحميل الصور'),
+              child: const Text('تحميل الصور'),
             ),
             if (_imageUrls.isNotEmpty)
-              Container(
+              SizedBox(
                 height: 100,
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
@@ -121,7 +120,7 @@ class _AddCarDialogState extends State<AddCarDialog> {
           onPressed: () {
             Navigator.of(context).pop();
           },
-          child: Text('إلغاء'),
+          child: const Text('إلغاء'),
         ),
         if (widget.carToEdit == null)
           TextButton(
@@ -147,7 +146,7 @@ class _AddCarDialogState extends State<AddCarDialog> {
                 _showValidationError();
               }
             },
-            child: Text('إضافة'),
+            child: const Text('إضافة'),
           )
         else
           Row(
@@ -176,7 +175,7 @@ class _AddCarDialogState extends State<AddCarDialog> {
                     _showValidationError();
                   }
                 },
-                child: Text('تعديل'),
+                child: const Text('تعديل'),
               ),
               TextButton(
                 onPressed: () {
@@ -184,7 +183,7 @@ class _AddCarDialogState extends State<AddCarDialog> {
                       .deleteCar(widget.carToEdit!.id);
                   Navigator.of(context).pop();
                 },
-                child: Text('حذف', style: TextStyle(color: Colors.red)),
+                child: const Text('حذف', style: TextStyle(color: Colors.red)),
               ),
             ],
           ),
@@ -194,7 +193,7 @@ class _AddCarDialogState extends State<AddCarDialog> {
 
   Future<void> _pickImages() async {
     final pickedFiles = await _picker.pickMultiImage();
-    if (pickedFiles != null) {
+    if (pickedFiles.isNotEmpty) {
       setState(() {
         _imageUrls = pickedFiles.map((file) => file.path).toList();
       });
@@ -216,7 +215,7 @@ class _AddCarDialogState extends State<AddCarDialog> {
 
   void _showValidationError() {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('يرجى ملء جميع الحقول بشكل صحيح')),
+      const SnackBar(content: Text('يرجى ملء جميع الحقول بشكل صحيح')),
     );
   }
 }

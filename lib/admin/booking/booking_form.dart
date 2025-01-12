@@ -6,7 +6,7 @@ import '../../providers/booking_provider.dart';
 class BookingFormScreen extends StatefulWidget {
   final Booking? bookingToEdit;
 
-  BookingFormScreen({this.bookingToEdit});
+  const BookingFormScreen({super.key, this.bookingToEdit});
 
   @override
   _BookingFormScreenState createState() => _BookingFormScreenState();
@@ -40,7 +40,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
       ownerName = '';
       plateNumber = '';
       startDate = DateTime.now();
-      endDate = DateTime.now().add(Duration(days: 1));
+      endDate = DateTime.now().add(const Duration(days: 1));
     }
   }
 
@@ -65,21 +65,21 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final userId = 'userId'; // استبدلها بـ userId الحقيقي
+    const userId = 'userId'; // استبدلها بـ userId الحقيقي
 
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.bookingToEdit != null ? 'Edit Booking' : 'Add Booking'),
       ),
       body: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
           child: Column(
             children: [
               TextFormField(
                 initialValue: userName,
-                decoration: InputDecoration(labelText: 'User Name'),
+                decoration: const InputDecoration(labelText: 'User Name'),
                 onSaved: (value) => userName = value ?? '',
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -90,7 +90,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
               ),
               TextFormField(
                 initialValue: carName,
-                decoration: InputDecoration(labelText: 'Car Name'),
+                decoration: const InputDecoration(labelText: 'Car Name'),
                 onSaved: (value) => carName = value ?? '',
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -101,7 +101,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
               ),
               TextFormField(
                 initialValue: carCategory,
-                decoration: InputDecoration(labelText: 'Car Category'),
+                decoration: const InputDecoration(labelText: 'Car Category'),
                 onSaved: (value) => carCategory = value ?? '',
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -112,7 +112,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
               ),
               TextFormField(
                 initialValue: ownerName,
-                decoration: InputDecoration(labelText: 'Owner Name'),
+                decoration: const InputDecoration(labelText: 'Owner Name'),
                 onSaved: (value) => ownerName = value ?? '',
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -123,7 +123,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
               ),
               TextFormField(
                 initialValue: plateNumber,
-                decoration: InputDecoration(labelText: 'Plate Number'),
+                decoration: const InputDecoration(labelText: 'Plate Number'),
                 onSaved: (value) => plateNumber = value ?? '',
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -137,7 +137,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                 children: [
                   Text('Start Date: ${startDate.toLocal()}'),
                   IconButton(
-                    icon: Icon(Icons.calendar_today),
+                    icon: const Icon(Icons.calendar_today),
                     onPressed: () => _selectDate(context, true),
                   ),
                 ],
@@ -147,12 +147,12 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                 children: [
                   Text('End Date: ${endDate.toLocal()}'),
                   IconButton(
-                    icon: Icon(Icons.calendar_today),
+                    icon: const Icon(Icons.calendar_today),
                     onPressed: () => _selectDate(context, false),
                   ),
                 ],
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {

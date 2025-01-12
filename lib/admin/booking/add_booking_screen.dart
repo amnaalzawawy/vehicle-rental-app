@@ -5,6 +5,9 @@ import '../../models/booking.dart';
 import '../../providers/booking_provider.dart';
 
 class AddBookingScreen extends StatefulWidget {
+
+  const AddBookingScreen({super.key});
+
   @override
   _AddBookingScreenState createState() => _AddBookingScreenState();
 }
@@ -26,7 +29,7 @@ class _AddBookingScreenState extends State<AddBookingScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('إضافة حجز'),
+        title: const Text('إضافة حجز'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -36,7 +39,7 @@ class _AddBookingScreenState extends State<AddBookingScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               TextFormField(
-                decoration: InputDecoration(labelText: 'اسم العميل'),
+                decoration: const InputDecoration(labelText: 'اسم العميل'),
                 onSaved: (value) {
                   userName = value!;
                 },
@@ -48,7 +51,7 @@ class _AddBookingScreenState extends State<AddBookingScreen> {
                 },
               ),
               TextFormField(
-                decoration: InputDecoration(labelText: 'اسم السيارة'),
+                decoration: const InputDecoration(labelText: 'اسم السيارة'),
                 onSaved: (value) {
                   carName = value!;
                 },
@@ -60,7 +63,7 @@ class _AddBookingScreenState extends State<AddBookingScreen> {
                 },
               ),
               TextFormField(
-                decoration: InputDecoration(labelText: 'فئة السيارة'),
+                decoration: const InputDecoration(labelText: 'فئة السيارة'),
                 onSaved: (value) {
                   carCategory = value!;
                 },
@@ -72,7 +75,7 @@ class _AddBookingScreenState extends State<AddBookingScreen> {
                 },
               ),
               TextFormField(
-                decoration: InputDecoration(labelText: 'اسم المالك'),
+                decoration: const InputDecoration(labelText: 'اسم المالك'),
                 onSaved: (value) {
                   ownerName = value!;
                 },
@@ -84,7 +87,7 @@ class _AddBookingScreenState extends State<AddBookingScreen> {
                 },
               ),
               TextFormField(
-                decoration: InputDecoration(labelText: 'رقم اللوحة'),
+                decoration: const InputDecoration(labelText: 'رقم اللوحة'),
                 onSaved: (value) {
                   plateNumber = value!;
                 },
@@ -97,7 +100,7 @@ class _AddBookingScreenState extends State<AddBookingScreen> {
               ),
               // استخدم DatePicker لاختيار التواريخ
               // على سبيل المثال، استخدام `showDatePicker` لاختيار startDate و endDate
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
@@ -127,7 +130,7 @@ class _AddBookingScreenState extends State<AddBookingScreen> {
                     Navigator.pop(context);
                   }
                 },
-                child: Text('إضافة الحجز'),
+                child: const Text('إضافة الحجز'),
               ),
             ],
           ),

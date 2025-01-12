@@ -31,7 +31,6 @@ class UserProvider with ChangeNotifier {
     try {
       debugPrint(userid);
       var user =await _firestore.collection("users").where("userId", isEqualTo: userid).get();
-      // var user = await _firestore.collection("users").doc(userid).get();
       if(user.size > 0) {
         return UserModel.fromMap(user.docs[0].data());
       }

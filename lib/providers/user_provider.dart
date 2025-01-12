@@ -1,9 +1,7 @@
-import 'dart:convert'; // لتحويل الصورة إلى Base64
-import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import "package:shared_preferences/shared_preferences.dart";
 import '../models/user.dart';
 
 class UserProvider with ChangeNotifier {
@@ -97,15 +95,6 @@ class UserProvider with ChangeNotifier {
     }
   }
 
-  // تسجيل الخروج
-  // Future<void> logout() async {
-  //   await _auth.signOut();
-  //   _currentUser = null;
-  //   SharedPreferences prefs = await SharedPreferences.getInstance();
-  //   await prefs.clear();
-  //   notifyListeners();
-  // }
-
   // تحديث بيانات المستخدم
   Future<void> updateUser(UserModel updatedUser) async {
     try {
@@ -125,7 +114,7 @@ class UserProvider with ChangeNotifier {
     try {
       final snapshot = await _firestore.collection('users').get();
       _users = snapshot.docs.map((doc) =>
-          UserModel.fromMap(doc.data() as Map<String, dynamic>)).toList();
+          UserModel.fromMap(doc.data())).toList();
       notifyListeners();
     } catch (e) {
       debugPrint('Error fetching users: $e');
@@ -153,7 +142,7 @@ class UserProvider with ChangeNotifier {
   // وظيفة لإضافة مستخدم جديد
   Future<void> addUser(UserModel user) async {
     try {
-      DocumentReference docRef = await _firestore.collection('users').add(user.toMap());
+      await _firestore.collection('users').add(user.toMap());
       await fetchUsersAndOwners();
       notifyListeners();
     } catch (e) {
@@ -169,7 +158,7 @@ class UserProvider with ChangeNotifier {
           .get();
 
       List<UserModel> users = snapshot.docs.map((doc) =>
-          UserModel.fromMap(doc.data() as Map<String, dynamic>)).toList();
+          UserModel.fromMap(doc.data())).toList();
       return users;
     } catch (e) {
       debugPrint('Error searching users: $e');

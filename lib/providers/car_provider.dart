@@ -14,17 +14,17 @@ class CarProvider with ChangeNotifier {
 
   // وظيفة لإضافة مركبة جديدة
   Future<void> addCar(CarModel car) async {
-    print("Adding new car");
+
     try {
       var user = UserProvider().firebaseUser;
       car.owner = user?.uid ?? "";
       var doc = await _carCollection.add(car.toMap());
-      print("Car add: ${doc.id}");
+
       // supabase upload file
       var image = File((car.images).first);
       var extension = image.path.split(".").last;
       var filename = "${const Uuid().v4()}.$extension";
-      print("Car file: $filename");
+
       final String fullPath = await Supabase.instance.client.storage.from('cars').upload(
         filename,
         image,
@@ -34,7 +34,7 @@ class CarProvider with ChangeNotifier {
             "imageUrls":[fullPath]
           });
 
-      print("Car file added successfully: $fullPath");
+
 
       await fetchCars(); // إعادة تحميل البيانات بعد الإضافة
       notifyListeners();

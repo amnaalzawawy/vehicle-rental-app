@@ -6,14 +6,14 @@ class BookingTile extends StatelessWidget {
   final Function()? onDelete;
   final Function()? onEdit;
 
-  BookingTile({required this.booking, this.onDelete, this.onEdit});
+  const BookingTile({super.key, required this.booking, this.onDelete, this.onEdit});
 
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       child: ListTile(
-        contentPadding: EdgeInsets.all(16),
+        contentPadding: const EdgeInsets.all(16),
         title: Text(booking.userName ?? ""),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -28,11 +28,11 @@ class BookingTile extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             IconButton(
-              icon: Icon(Icons.edit),
+              icon: const Icon(Icons.edit),
               onPressed: onEdit,
             ),
             IconButton(
-              icon: Icon(Icons.delete),
+              icon: const Icon(Icons.delete),
               onPressed: onDelete,
             ),
           ],

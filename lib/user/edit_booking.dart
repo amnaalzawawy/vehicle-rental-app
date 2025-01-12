@@ -6,7 +6,7 @@ import '../models/booking.dart';
 class BookingEditScreen extends StatefulWidget {
   final Booking booking;
 
-  BookingEditScreen({required this.booking});
+  const BookingEditScreen({super.key, required this.booking});
 
   @override
   _BookingEditScreenState createState() => _BookingEditScreenState();
@@ -38,10 +38,10 @@ class _BookingEditScreenState extends State<BookingEditScreen> {
         'startDate': DateTime.parse(_startDateController.text),
         'endDate': DateTime.parse(_endDateController.text),
       });
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('تم تعديل الحجز بنجاح')));
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('تم تعديل الحجز بنجاح')));
       Navigator.pop(context);
     } catch (error) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('حدث خطأ أثناء تعديل الحجز')));
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('حدث خطأ أثناء تعديل الحجز')));
     }
   }
 
@@ -62,32 +62,32 @@ class _BookingEditScreenState extends State<BookingEditScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('تعديل الحجز'),
+        title: const Text('تعديل الحجز'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('تاريخ البداية:'),
+            const Text('تاريخ البداية:'),
             TextField(
               controller: _startDateController,
-              decoration: InputDecoration(hintText: 'اختار تاريخ البداية'),
+              decoration: const InputDecoration(hintText: 'اختار تاريخ البداية'),
               readOnly: true, // لجعل الحقل قابل للقراءة فقط
               onTap: () => _selectDate(context, _startDateController), // عند الضغط على الحقل، يفتح منتقي التاريخ
             ),
-            SizedBox(height: 16),
-            Text('تاريخ النهاية:'),
+            const SizedBox(height: 16),
+            const Text('تاريخ النهاية:'),
             TextField(
               controller: _endDateController,
-              decoration: InputDecoration(hintText: 'اختار تاريخ النهاية'),
+              decoration: const InputDecoration(hintText: 'اختار تاريخ النهاية'),
               readOnly: true, // لجعل الحقل قابل للقراءة فقط
               onTap: () => _selectDate(context, _endDateController), // عند الضغط على الحقل، يفتح منتقي التاريخ
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: _updateBooking,
-              child: Text('تحديث الحجز'),
+              child: const Text('تحديث الحجز'),
             ),
           ],
         ),

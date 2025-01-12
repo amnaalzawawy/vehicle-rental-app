@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 import 'package:untitled2/models/car.dart';
 import 'package:untitled2/models/user.dart';
 import 'package:untitled2/providers/current_user_provider.dart';
-
 import 'vechicle_add_screen.dart';
 
 class OwnerCarCard extends StatefulWidget {
